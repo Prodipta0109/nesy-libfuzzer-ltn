@@ -1,0 +1,12 @@
+x = ltn.Variable('x', torch.tensor([]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=1.0)
+phi0 = Forall(['x'], P0(x), AggregMean())
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 409, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 362, in run
+    raise OracleViolation(f"closed formula phi{k} has truth value {v.tolist()} "
+                          f"outside [0,1] with finite inputs")
+OracleViolation: closed formula phi0 has truth value nan outside [0,1] with finite inputs

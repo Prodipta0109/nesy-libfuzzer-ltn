@@ -1,0 +1,23 @@
+x = ltn.Variable('x', torch.tensor([]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=-1.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 408, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 386, in _formula
+    return self.quantified(depth)
+           ~~~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 338, in quantified
+    self.check_qdtype(out, guarded=True)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 364, in check_qdtype
+    raise K.DtypeViolation(f"Quantifier({'guarded' if guarded else 'unguarded'}): returns "
+                           f"{out.value.dtype} for float32 truth values")
+ltn_checks.DtypeViolation: Quantifier(guarded): returns torch.float64 for float32 truth values

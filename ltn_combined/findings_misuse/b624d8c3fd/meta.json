@@ -1,0 +1,6 @@
+{
+ "signature": "GradientViolation@ltn_fuzz_combined.py:439: non-finite gradient with finite inputs, unstable operator in use",
+ "count": 219,
+ "first_seen_sec": 21.9,
+ "first_seen_exec": 26757
+}

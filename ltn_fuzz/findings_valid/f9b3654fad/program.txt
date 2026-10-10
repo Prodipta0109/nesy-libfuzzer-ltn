@@ -1,0 +1,17 @@
+x = ltn.Variable('x', torch.tensor([0.0, 0.0, 0.0]))
+y = ltn.Variable('y', torch.tensor([]))
+z = ltn.Variable('z', torch.tensor([]))
+c0 = ltn.Constant(torch.tensor([0.0]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=4.961703777313232)
+f0 = Function(lambda x: x * 5.0)
+phi0 = Forall(['x'], Equiv(AndMin(),ImpliesKleeneDienes())(Equiv(AndMin(),ImpliesKleeneDienes())(Equiv(AndMin(),ImpliesKleeneDienes())(P0(x), P0(x)), Equiv(AndProd(stable=True),ImpliesGodel())(P0(f0(c0)), P0(x))), Equiv(AndMin(),ImpliesKleeneDienes())(Forall(['x'], P0(x), AggregPMeanError(p=0.5, stable=True)), P0(c0))), AggregMin())
+phi1 = Forall(['y'], ImpliesLuk(Forall(['x'], Equiv(AndMin(),ImpliesGodel())(P0(f0(c0)), P0(x)), AggregPMeanError(p=0.5, stable=True)), Equiv(AndMin(),ImpliesReichenbach(stable=True))(Equiv(AndMin(),ImpliesKleeneDienes())(P0(y), P0(c0)), P0(c0))), AggregPMean(p=3, stable=False))
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 417, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 370, in run
+    raise OracleViolation(f"closed formula has truth value {v.tolist()} outside [0,1] "
+                          f"[empty_domain={self.empty_domain} aggs={sorted(self.aggs)}]")
+OracleViolation: closed formula has truth value nan outside [0,1] [empty_domain=True aggs=['Min', 'PMean', 'PMeanError']]

@@ -1,0 +1,92 @@
+INFO: Instrumenting ltn
+INFO: Instrumenting ltn.core
+INFO: Instrumenting ltn.fuzzy_ops
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 104
+INFO:      408 files found in /root/nsfuzz/ltn_combined/corpus_misuse
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: seed corpus: files: 408 min: 1b max: 178b total: 17508b rss: 522Mb
+#409	INITED cov: 285 ft: 1123 corp: 210/7380b exec/s: 409 rss: 536Mb
+#1024	pulse  cov: 285 ft: 1123 corp: 210/7380b lim: 174 exec/s: 512 rss: 538Mb
+#2048	pulse  cov: 285 ft: 1123 corp: 210/7380b lim: 181 exec/s: 512 rss: 545Mb
+#2948	REDUCE cov: 285 ft: 1123 corp: 210/7374b lim: 195 exec/s: 491 rss: 550Mb L: 31/167 MS: 4 InsertByte-ChangeBit-ChangeByte-EraseBytes-
+#4071	REDUCE cov: 285 ft: 1123 corp: 210/7372b lim: 202 exec/s: 508 rss: 556Mb L: 140/167 MS: 3 InsertByte-ChangeByte-EraseBytes-
+#4096	pulse  cov: 285 ft: 1123 corp: 210/7372b lim: 202 exec/s: 512 rss: 556Mb
+#4704	REDUCE cov: 285 ft: 1123 corp: 210/7369b lim: 202 exec/s: 522 rss: 559Mb L: 53/167 MS: 3 ShuffleBytes-ChangeBinInt-EraseBytes-
+#5053	REDUCE cov: 285 ft: 1123 corp: 210/7368b lim: 202 exec/s: 505 rss: 562Mb L: 77/167 MS: 4 ChangeBit-ShuffleBytes-ShuffleBytes-EraseBytes-
+#7400	REDUCE cov: 285 ft: 1123 corp: 210/7364b lim: 223 exec/s: 493 rss: 573Mb L: 52/167 MS: 2 CMP-EraseBytes- DE: "\000\000"-
+#8192	pulse  cov: 285 ft: 1123 corp: 210/7364b lim: 230 exec/s: 512 rss: 578Mb
+#10065	REDUCE cov: 285 ft: 1123 corp: 210/7362b lim: 244 exec/s: 503 rss: 587Mb L: 91/167 MS: 5 InsertByte-EraseBytes-InsertByte-ChangeBit-ChangeByte-
+#13716	REDUCE cov: 285 ft: 1123 corp: 210/7361b lim: 274 exec/s: 489 rss: 606Mb L: 52/167 MS: 1 EraseBytes-
+#15597	REDUCE cov: 285 ft: 1123 corp: 210/7355b lim: 290 exec/s: 487 rss: 616Mb L: 23/167 MS: 1 EraseBytes-
+#16018	REDUCE cov: 285 ft: 1123 corp: 210/7353b lim: 290 exec/s: 485 rss: 617Mb L: 138/167 MS: 1 EraseBytes-
+#16384	pulse  cov: 285 ft: 1123 corp: 210/7353b lim: 290 exec/s: 468 rss: 619Mb
+#18055	REDUCE cov: 285 ft: 1123 corp: 210/7351b lim: 306 exec/s: 451 rss: 627Mb L: 57/167 MS: 2 PersAutoDict-EraseBytes- DE: "\000\000"-
+#18571	REDUCE cov: 285 ft: 1123 corp: 210/7350b lim: 306 exec/s: 442 rss: 630Mb L: 104/167 MS: 1 EraseBytes-
+#20643	REDUCE cov: 285 ft: 1123 corp: 210/7348b lim: 322 exec/s: 439 rss: 643Mb L: 29/167 MS: 2 PersAutoDict-EraseBytes- DE: "\000\000"-
+#22044	REDUCE cov: 285 ft: 1123 corp: 210/7347b lim: 330 exec/s: 440 rss: 649Mb L: 24/167 MS: 1 EraseBytes-
+#22723	REDUCE cov: 285 ft: 1123 corp: 210/7345b lim: 330 exec/s: 445 rss: 652Mb L: 118/167 MS: 4 CMP-ShuffleBytes-ShuffleBytes-EraseBytes- DE: "\377\377\377\377\377\377\377\377"-
+#22984	REDUCE cov: 285 ft: 1123 corp: 210/7327b lim: 330 exec/s: 442 rss: 656Mb L: 62/167 MS: 1 EraseBytes-
+#23262	REDUCE cov: 285 ft: 1123 corp: 210/7326b lim: 330 exec/s: 447 rss: 656Mb L: 103/167 MS: 3 ChangeBit-InsertRepeatedBytes-EraseBytes-
+#32768	pulse  cov: 285 ft: 1123 corp: 210/7326b lim: 418 exec/s: 442 rss: 710Mb
+#35663	REDUCE cov: 285 ft: 1123 corp: 210/7313b lim: 450 exec/s: 445 rss: 726Mb L: 78/167 MS: 1 EraseBytes-
+#39482	REDUCE cov: 285 ft: 1123 corp: 210/7312b lim: 482 exec/s: 448 rss: 746Mb L: 28/167 MS: 4 CopyPart-ChangeByte-EraseBytes-ChangeBinInt-
+#40518	REDUCE cov: 285 ft: 1123 corp: 210/7309b lim: 490 exec/s: 450 rss: 752Mb L: 54/167 MS: 1 EraseBytes-
+#44790	REDUCE cov: 285 ft: 1123 corp: 210/7305b lim: 532 exec/s: 452 rss: 777Mb L: 23/167 MS: 2 EraseBytes-ChangeByte-
+#44931	REDUCE cov: 285 ft: 1123 corp: 210/7303b lim: 532 exec/s: 453 rss: 777Mb L: 64/167 MS: 1 EraseBytes-
+#45493	REDUCE cov: 285 ft: 1123 corp: 210/7302b lim: 532 exec/s: 450 rss: 781Mb L: 34/167 MS: 2 PersAutoDict-EraseBytes- DE: "\000\000"-
+#47145	REDUCE cov: 285 ft: 1123 corp: 210/7300b lim: 541 exec/s: 453 rss: 791Mb L: 136/167 MS: 2 CopyPart-EraseBytes-
+#49316	REDUCE cov: 285 ft: 1123 corp: 210/7297b lim: 559 exec/s: 448 rss: 803Mb L: 25/167 MS: 1 EraseBytes-
+#51549	REDUCE cov: 285 ft: 1123 corp: 210/7295b lim: 577 exec/s: 452 rss: 815Mb L: 25/167 MS: 3 ChangeBinInt-ChangeBit-EraseBytes-
+#53418	REDUCE cov: 285 ft: 1123 corp: 210/7291b lim: 595 exec/s: 452 rss: 827Mb L: 99/167 MS: 4 PersAutoDict-PersAutoDict-PersAutoDict-EraseBytes- DE: "\000\000"-"\377\377\377\377\377\377\377\377"-"\377\377\377\377\377\377\377\377"-
+#55736	REDUCE cov: 285 ft: 1123 corp: 210/7290b lim: 613 exec/s: 453 rss: 840Mb L: 62/167 MS: 3 ChangeBinInt-ShuffleBytes-EraseBytes-
+#57252	REDUCE cov: 285 ft: 1123 corp: 210/7286b lim: 622 exec/s: 454 rss: 848Mb L: 38/167 MS: 1 EraseBytes-
+#58047	REDUCE cov: 285 ft: 1123 corp: 210/7285b lim: 622 exec/s: 453 rss: 852Mb L: 68/167 MS: 5 InsertRepeatedBytes-CrossOver-ChangeByte-ChangeASCIIInt-EraseBytes-
+#60286	REDUCE cov: 285 ft: 1123 corp: 210/7279b lim: 640 exec/s: 456 rss: 866Mb L: 39/167 MS: 4 ChangeByte-ChangeBit-CopyPart-EraseBytes-
+
+[NEW FINDING] OracleViolation@ltn_fuzz_combined.py:414: closed formula has truth value nan outside [N,N] [empty_domain=True aggs=['Mean', 'PMean', 'PMeanError']]
+#63221	REDUCE cov: 285 ft: 1123 corp: 210/7278b lim: 667 exec/s: 454 rss: 883Mb L: 76/167 MS: 5 ChangeBinInt-CopyPart-ChangeByte-ChangeBit-EraseBytes-
+#64562	REDUCE cov: 285 ft: 1123 corp: 210/7277b lim: 676 exec/s: 454 rss: 892Mb L: 120/167 MS: 1 EraseBytes-
+#65536	pulse  cov: 285 ft: 1123 corp: 210/7277b lim: 685 exec/s: 451 rss: 897Mb
+#78478	REDUCE cov: 285 ft: 1123 corp: 210/7271b lim: 811 exec/s: 456 rss: 967Mb L: 93/167 MS: 1 EraseBytes-
+#78769	REDUCE cov: 285 ft: 1123 corp: 210/7270b lim: 811 exec/s: 457 rss: 969Mb L: 61/167 MS: 1 EraseBytes-
+#81286	REDUCE cov: 285 ft: 1123 corp: 210/7268b lim: 829 exec/s: 454 rss: 984Mb L: 38/167 MS: 2 ChangeBit-EraseBytes-
+#82562	REDUCE cov: 285 ft: 1123 corp: 210/7266b lim: 838 exec/s: 456 rss: 991Mb L: 64/167 MS: 1 EraseBytes-
+#84163	REDUCE cov: 285 ft: 1123 corp: 210/7263b lim: 847 exec/s: 454 rss: 1000Mb L: 31/167 MS: 1 EraseBytes-
+#87394	REDUCE cov: 285 ft: 1123 corp: 210/7262b lim: 874 exec/s: 455 rss: 1017Mb L: 22/167 MS: 1 EraseBytes-
+#87860	REDUCE cov: 285 ft: 1123 corp: 210/7259b lim: 874 exec/s: 455 rss: 1019Mb L: 20/167 MS: 1 EraseBytes-
+#88962	REDUCE cov: 285 ft: 1123 corp: 210/7255b lim: 883 exec/s: 456 rss: 1026Mb L: 28/167 MS: 2 EraseBytes-PersAutoDict- DE: "\000\000"-
+#90298	REDUCE cov: 285 ft: 1123 corp: 210/7254b lim: 892 exec/s: 456 rss: 1036Mb L: 26/167 MS: 1 EraseBytes-
+#90424	REDUCE cov: 285 ft: 1123 corp: 210/7253b lim: 892 exec/s: 456 rss: 1036Mb L: 38/167 MS: 1 EraseBytes-
+#94055	REDUCE cov: 285 ft: 1123 corp: 210/7252b lim: 928 exec/s: 456 rss: 1054Mb L: 92/167 MS: 1 EraseBytes-
+#98097	REDUCE cov: 285 ft: 1123 corp: 210/7251b lim: 964 exec/s: 456 rss: 1077Mb L: 77/167 MS: 2 ChangeBit-EraseBytes-
+#99633	REDUCE cov: 285 ft: 1123 corp: 210/7250b lim: 973 exec/s: 457 rss: 1086Mb L: 166/166 MS: 1 EraseBytes-
+#104290	REDUCE cov: 285 ft: 1123 corp: 210/7246b lim: 1018 exec/s: 457 rss: 1111Mb L: 29/166 MS: 2 EraseBytes-ShuffleBytes-
+#105766	REDUCE cov: 285 ft: 1123 corp: 210/7245b lim: 1027 exec/s: 457 rss: 1120Mb L: 23/166 MS: 1 EraseBytes-
+#107401	REDUCE cov: 285 ft: 1123 corp: 210/7243b lim: 1037 exec/s: 457 rss: 1131Mb L: 75/166 MS: 5 ChangeBinInt-InsertByte-CopyPart-InsertByte-EraseBytes-
+#113652	REDUCE cov: 285 ft: 1123 corp: 210/7242b lim: 1097 exec/s: 456 rss: 1163Mb L: 155/166 MS: 1 EraseBytes-
+#123696	REDUCE cov: 285 ft: 1123 corp: 210/7241b lim: 1187 exec/s: 459 rss: 1218Mb L: 19/166 MS: 4 PersAutoDict-EraseBytes-CopyPart-ChangeBinInt- DE: "\000\000"-
+#126882	REDUCE cov: 285 ft: 1123 corp: 210/7240b lim: 1217 exec/s: 459 rss: 1237Mb L: 34/166 MS: 1 EraseBytes-
+#129900	REDUCE cov: 285 ft: 1123 corp: 210/7235b lim: 1247 exec/s: 460 rss: 1254Mb L: 61/166 MS: 3 CopyPart-ChangeByte-EraseBytes-
+
+[NEW FINDING] OracleViolation@ltn_fuzz_combined.py:414: closed formula has truth value nan outside [N,N] [empty_domain=True aggs=['Min', 'PMean', 'PMeanError']]
+#131072	pulse  cov: 285 ft: 1123 corp: 210/7235b lim: 1257 exec/s: 459 rss: 1260Mb
+#131643	REDUCE cov: 285 ft: 1123 corp: 210/7226b lim: 1257 exec/s: 460 rss: 1263Mb L: 88/166 MS: 3 ChangeBit-InsertRepeatedBytes-EraseBytes-
+#134625	REDUCE cov: 285 ft: 1123 corp: 210/7225b lim: 1277 exec/s: 461 rss: 1281Mb L: 2/166 MS: 2 InsertByte-EraseBytes-
+#137076	REDUCE cov: 285 ft: 1123 corp: 210/7224b lim: 1297 exec/s: 461 rss: 1295Mb L: 91/166 MS: 1 EraseBytes-
+#137824	REDUCE cov: 285 ft: 1123 corp: 210/7215b lim: 1297 exec/s: 460 rss: 1299Mb L: 44/166 MS: 3 ChangeByte-EraseBytes-PersAutoDict- DE: "\000\000"-
+#138874	DONE   cov: 285 ft: 1123 corp: 210/7215b lim: 1307 exec/s: 461 rss: 1306Mb
+###### Recommended dictionary. ######
+"\000\000" # Uses: 7023
+"\377\377\377\377\377\377\377\377" # Uses: 5096
+###### End of recommended dictionary. ######
+Done 138874 runs in 301 second(s)
+stat::number_of_executed_units: 138874
+stat::average_exec_per_sec:     461
+stat::new_units_added:          56
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              1306

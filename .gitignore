@@ -1,0 +1,7 @@
+venv/
+ltn_torch/
+__pycache__/
+*.pyc
+*:Zone.Identifier
+crash-*
+ltn_dimensions.csv

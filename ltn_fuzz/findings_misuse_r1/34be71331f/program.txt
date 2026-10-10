@@ -1,0 +1,20 @@
+x = ltn.Variable('x', torch.tensor([]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=0.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 409, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 356, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 334, in formula
+    return self.quantified(depth)
+           ~~~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 315, in quantified
+    out = Q(qvars, body, cond_vars=[self.vars[cond_lab]], cond_fn=cond_fn)
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1503, in __call__
+    output = self.agg_op(formula.value, aggregation_dims, mask=mask.value, **kwargs)
+  File "/root/nsfuzz/ltn_torch/ltn/fuzzy_ops.py", line 1220, in __call__
+    out = torch.amin(xs, dim=dim, keepdim=keepdim)
+IndexError: amin(): Expected reduction dim 0 to have non-zero size.

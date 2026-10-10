@@ -1,0 +1,6 @@
+{
+ "signature": "IndexError@fuzzy_ops.py:1220: amin(): Expected reduction dim N to have non-zero size.",
+ "count": 134864,
+ "first_seen_sec": 0.0,
+ "first_seen_exec": 1
+}

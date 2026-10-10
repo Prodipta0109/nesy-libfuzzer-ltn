@@ -1,0 +1,14 @@
+x = ltn.Variable('x', torch.tensor([0.0, 0.0, -88.0]))
+P0 = Predicate(clamp, arity=1, w=[3.2552082538604736], b=-4.993468284606934)
+phi0 = Forall(['x'], ImpliesLuk(P0(x), P0(x)), AggregMin())
+sat = SatAgg(AggregPMeanError(p=0.5, stable=False))(phi...) = 1.0
+loss.backward(); non-finite truth-value grads: 2
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 439, in run
+    raise GradientViolation(
+        "non-finite gradient with finite inputs, unstable operator in use")
+GradientViolation: non-finite gradient with finite inputs, unstable operator in use

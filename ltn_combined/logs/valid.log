@@ -1,0 +1,39 @@
+INFO: Instrumenting ltn
+INFO: Instrumenting ltn.core
+INFO: Instrumenting ltn.fuzzy_ops
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 101
+INFO:      405 files found in /home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/corpus_valid
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: seed corpus: files: 405 min: 1b max: 195b total: 17563b rss: 274Mb
+#406	INITED cov: 339 ft: 1355 corp: 203/6969b exec/s: 406 rss: 287Mb
+#512	pulse  cov: 339 ft: 1355 corp: 203/6969b lim: 145 exec/s: 256 rss: 290Mb
+#1024	pulse  cov: 339 ft: 1355 corp: 203/6969b lim: 152 exec/s: 341 rss: 292Mb
+#2048	pulse  cov: 339 ft: 1355 corp: 203/6969b lim: 159 exec/s: 409 rss: 301Mb
+#2564	REDUCE cov: 339 ft: 1355 corp: 203/6942b lim: 166 exec/s: 427 rss: 303Mb L: 42/145 MS: 3 ChangeASCIIInt-InsertByte-EraseBytes-
+#2620	REDUCE cov: 339 ft: 1355 corp: 203/6934b lim: 166 exec/s: 436 rss: 305Mb L: 137/144 MS: 1 EraseBytes-
+#3467	REDUCE cov: 339 ft: 1355 corp: 203/6933b lim: 173 exec/s: 385 rss: 311Mb L: 134/144 MS: 3 InsertByte-ShuffleBytes-EraseBytes-
+#4096	pulse  cov: 339 ft: 1355 corp: 203/6933b lim: 173 exec/s: 409 rss: 314Mb
+#4425	REDUCE cov: 339 ft: 1355 corp: 203/6931b lim: 180 exec/s: 402 rss: 317Mb L: 32/144 MS: 3 CopyPart-InsertByte-EraseBytes-
+#4817	REDUCE cov: 339 ft: 1355 corp: 203/6918b lim: 180 exec/s: 401 rss: 320Mb L: 36/144 MS: 2 ChangeByte-EraseBytes-
+#5593	REDUCE cov: 339 ft: 1355 corp: 203/6915b lim: 187 exec/s: 399 rss: 324Mb L: 38/144 MS: 1 EraseBytes-
+#5625	REDUCE cov: 339 ft: 1355 corp: 203/6913b lim: 187 exec/s: 401 rss: 324Mb L: 33/144 MS: 2 ChangeBit-EraseBytes-
+#7761	REDUCE cov: 339 ft: 1355 corp: 203/6911b lim: 208 exec/s: 408 rss: 342Mb L: 40/144 MS: 1 EraseBytes-
+#8192	pulse  cov: 339 ft: 1355 corp: 203/6911b lim: 208 exec/s: 409 rss: 345Mb
+#9478	REDUCE cov: 339 ft: 1355 corp: 203/6910b lim: 222 exec/s: 412 rss: 354Mb L: 116/144 MS: 2 ChangeByte-EraseBytes-
+#10374	REDUCE cov: 339 ft: 1355 corp: 203/6909b lim: 229 exec/s: 399 rss: 359Mb L: 17/144 MS: 1 EraseBytes-
+#10380	REDUCE cov: 339 ft: 1355 corp: 203/6906b lim: 229 exec/s: 399 rss: 359Mb L: 69/144 MS: 1 EraseBytes-
+#13150	REDUCE cov: 339 ft: 1355 corp: 203/6903b lim: 250 exec/s: 410 rss: 379Mb L: 141/142 MS: 5 CrossOver-EraseBytes-ShuffleBytes-ChangeBit-CopyPart-
+#15337	REDUCE cov: 339 ft: 1355 corp: 203/6900b lim: 265 exec/s: 403 rss: 396Mb L: 39/142 MS: 2 InsertByte-EraseBytes-
+#16384	pulse  cov: 339 ft: 1355 corp: 203/6900b lim: 273 exec/s: 399 rss: 404Mb
+#24527	DONE   cov: 339 ft: 1355 corp: 203/6900b lim: 353 exec/s: 402 rss: 461Mb
+Done 24527 runs in 61 second(s)
+stat::number_of_executed_units: 24527
+stat::average_exec_per_sec:     402
+stat::new_units_added:          13
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              461

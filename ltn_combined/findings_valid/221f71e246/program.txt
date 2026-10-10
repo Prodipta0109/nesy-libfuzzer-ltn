@@ -1,0 +1,19 @@
+x = ltn.Variable('x', torch.tensor([0.0, 0.0, -inf]))
+P0 = Predicate(sigmoid, arity=1, w=[3.3999999521443642e+38], b=0.0)
+phi0 = Forall(['x'], P0(x), AggregMean())
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 419, in run
+    sat = fo.SatAgg(C(agg))(*closed)
+  File "/root/nsfuzz/ltn_torch/ltn/fuzzy_ops.py", line 1673, in __call__
+    return self.agg_op(truth_values, dim=0)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 280, in __call__
+    out = base.__call__(self, *args, **kwargs)
+  File "/root/nsfuzz/ltn_torch/ltn/fuzzy_ops.py", line 1402, in __call__
+    return torch.pow(torch.mean(xs, dim=dim, keepdim=keepdim), 1 / p)
+                                                               ~~^~~
+ZeroDivisionError: division by zero

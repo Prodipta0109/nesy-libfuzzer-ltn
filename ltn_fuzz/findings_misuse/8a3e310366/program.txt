@@ -1,0 +1,30 @@
+x = ltn.Variable('x', torch.tensor([-4.921875, 10.0, -10.0]))
+y = ltn.Variable('y', torch.tensor([9.999999747378752e-05, 0.0, -1.0]))
+z = ltn.Variable('z', torch.tensor([]))
+c0 = ltn.Constant(torch.tensor([4.765625]))
+P0 = Predicate(sigmoid, arity=2, w=[-1.1568082571029663, 5.0], b=1.8627450466156006)
+P1 = Predicate(clamp, arity=1, w=[0.0], b=1.8627450466156006)
+phi0 = Equiv(AndMin(),ImpliesKleeneDienes())(Equiv(AndMin(),ImpliesKleeneDienes())(Equiv(AndMin(),ImpliesGoguen(stable=True))(P0(z, x), P1(x)), Forall(ltn.diag(x,y), P0(x,y), AggregMean())), P0(c0, c0))
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 417, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 364, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 340, in formula
+    g, s2 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 340, in formula
+    g, s2 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 342, in formula
+    return self.quantified(depth)
+           ~~~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 326, in quantified
+    out = Q(qvars, body)
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1520, in __call__
+    aggregation_dims = [formula.free_vars.index(var) for var in aggregation_vars]
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+ValueError: 'z' is not in list

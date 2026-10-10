@@ -1,0 +1,17 @@
+x = ltn.Variable('x', torch.tensor([]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=-1.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 408, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 370, in formula
+    self.check_struct(f, "formula " + s.split("(")[0])
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 358, in check_struct
+    raise K.StructureViolation(f"{what}: value shape {shape} but free variables {fv} "
+                               f"need shape {want}")
+ltn_checks.StructureViolation: formula Exists: value shape () but free variables ['x'] need shape (0,)

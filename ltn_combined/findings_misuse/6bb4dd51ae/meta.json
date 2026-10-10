@@ -1,0 +1,6 @@
+{
+ "signature": "OracleViolation@ltn_fuzz_combined.py:414: closed formula has truth value nan outside [N,N] [empty_domain=True aggs=['Mean', 'PMean']]",
+ "count": 44,
+ "first_seen_sec": 33.0,
+ "first_seen_exec": 35903
+}

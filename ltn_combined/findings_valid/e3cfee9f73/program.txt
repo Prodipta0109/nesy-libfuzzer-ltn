@@ -1,0 +1,26 @@
+x = ltn.Variable('x', torch.tensor([]))
+P0 = Predicate(sigmoid, arity=1, w=[-inf], b=0.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 408, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 386, in _formula
+    return self.quantified(depth)
+           ~~~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 337, in quantified
+    out = Q(qvars, body, cond_vars=[self.vars[cond_lab]], cond_fn=cond_fn)
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1503, in __call__
+    output = self.agg_op(formula.value, aggregation_dims, mask=mask.value, **kwargs)
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 280, in __call__
+    out = base.__call__(self, *args, **kwargs)
+  File "/root/nsfuzz/ltn_torch/ltn/fuzzy_ops.py", line 1512, in __call__
+    return 1. - torch.pow(torch.div(numerator, denominator), 1 / p)
+                                                             ~~^~~
+ZeroDivisionError: division by zero

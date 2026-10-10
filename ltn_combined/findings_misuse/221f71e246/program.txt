@@ -1,0 +1,21 @@
+x = ltn.Variable('x', torch.tensor([]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=0.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 410, in run
+    f, s = self.close(f, s)
+           ~~~~~~~~~~^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 394, in close
+    f = self.check_qdtype(Q(vs, f), guarded=False)
+                          ~^^^^^^^
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1522, in __call__
+    output = self.agg_op(formula.value, dim=tuple(aggregation_dims), **kwargs)
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 280, in __call__
+    out = base.__call__(self, *args, **kwargs)
+  File "/root/nsfuzz/ltn_torch/ltn/fuzzy_ops.py", line 1402, in __call__
+    return torch.pow(torch.mean(xs, dim=dim, keepdim=keepdim), 1 / p)
+                                                               ~~^~~
+ZeroDivisionError: division by zero

@@ -1,0 +1,6 @@
+{
+ "signature": "ValueError@core.py:1520: 'y' is not in list",
+ "count": 138,
+ "first_seen_sec": 59.6,
+ "first_seen_exec": 52690
+}

@@ -1,0 +1,15 @@
+seed #2 from tests/tests.py::test_Connective: NotGodel() kwargs={}
+value change: none; args = [[0.4421335458755493, 0.7109872102737427, 0.5888018012046814, 0.8407002091407776, 0.20139026641845703]]
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 507, in run
+    out = C(op)(*args, **kwargs)
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 285, in __call__
+    _check_connective(base, self, args, out)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 164, in _check_connective
+    raise DtypeViolation(f"{name}: output {out64.dtype} for input torch.float64")
+ltn_checks.DtypeViolation: NotGodel(): output torch.float32 for input torch.float64

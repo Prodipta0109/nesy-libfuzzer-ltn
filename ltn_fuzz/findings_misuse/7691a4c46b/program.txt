@@ -1,0 +1,17 @@
+x = ltn.Variable('x', torch.tensor([-4.921875, 10.0, -10.0]))
+y = ltn.Variable('y', torch.tensor([9.999999747378752e-05, 0.0, -1.0]))
+z = ltn.Variable('z', torch.tensor([]))
+c0 = ltn.Constant(torch.tensor([4.765625]))
+P0 = Predicate(sigmoid, arity=2, w=[-1.1568082571029663, 5.0], b=-1.156768798828125)
+P1 = Predicate(clamp, arity=1, w=[0.0], b=4.98046875)
+phi0 = Equiv(AndMin(),ImpliesKleeneDienes())(Equiv(AndMin(),ImpliesKleeneDienes())(Equiv(AndMin(),ImpliesGoguen(stable=True))(P0(z, x), P1(x)), Exists(ltn.diag(x,y), P0(x,y), AggregMean())), P0(c0, c0))
+phi1 = Forall(['x', 'y', 'z'], AndMin(P0(x, y), Equiv(AndMin(),ImpliesKleeneDienes())(ImpliesGoguen(P0(z, z), P0(c0, x)), Exists(['x'], P1(x), cond_vars=[x], cond_fn=sum<4.823528528213501, AggregMean()))), AggregPMean(p=1, stable=True))
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 417, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 370, in run
+    raise OracleViolation(f"closed formula has truth value {v.tolist()} outside [0,1] "
+                          f"[empty_domain={self.empty_domain} aggs={sorted(self.aggs)}]")
+OracleViolation: closed formula has truth value nan outside [0,1] [empty_domain=True aggs=['Mean', 'PMean']]

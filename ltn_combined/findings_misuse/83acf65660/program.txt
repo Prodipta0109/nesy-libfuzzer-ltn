@@ -1,0 +1,35 @@
+x = ltn.Variable('x', torch.tensor([1.0]))
+c0 = ltn.Constant(torch.tensor([1.0]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=1.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 408, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 383, in _formula
+    f, s1 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 383, in _formula
+    f, s1 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 386, in _formula
+    return self.quantified(depth)
+           ~~~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 341, in quantified
+    out = Q(qvars, body)
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1520, in __call__
+    aggregation_dims = [formula.free_vars.index(var) for var in aggregation_vars]
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+ValueError: 'x' is not in list

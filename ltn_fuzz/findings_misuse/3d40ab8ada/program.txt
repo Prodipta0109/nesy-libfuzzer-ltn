@@ -1,0 +1,25 @@
+x = ltn.Variable('x', torch.tensor([5.058596134185791]))
+y = ltn.Variable('y', torch.tensor([-9.999951362609863]))
+z = ltn.Variable('z', torch.tensor([]))
+c0 = ltn.Constant(torch.tensor([-2.235295295715332]))
+P0 = Predicate(sigmoid, arity=1, w=[0.0], b=-1.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 417, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 364, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 340, in formula
+    g, s2 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 342, in formula
+    return self.quantified(depth)
+           ~~~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 323, in quantified
+    out = Q(qvars, body, cond_vars=[self.vars[cond_lab]], cond_fn=cond_fn)
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1502, in __call__
+    aggregation_dims = [formula.free_vars.index(var) for var in aggregation_vars]
+                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+ValueError: 'y' is not in list

@@ -1,0 +1,37 @@
+x = ltn.Variable('x', torch.tensor([1.0]))
+P0 = Predicate(sigmoid, arity=1, w=[-1.0], b=-88.0)
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 551, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 408, in run
+    f, s = self.formula()
+           ~~~~~~~~~~~~^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 384, in _formula
+    g, s2 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 383, in _formula
+    f, s1 = self.formula(depth + 1)
+            ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 369, in formula
+    f, s = self._formula(depth)
+           ~~~~~~~~~~~~~^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_fuzz_combined.py", line 385, in _formula
+    return c(f, g), f"{n}({s1}, {s2})"
+           ~^^^^^^
+  File "/root/nsfuzz/ltn_torch/ltn/core.py", line 1227, in __call__
+    output = self.connective_op(*proc_objs)
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 285, in __call__
+    _check_connective(base, self, args, out)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/nsfuzz/ltn_combined/ltn_checks.py", line 199, in _check_connective
+    raise MetamorphicViolation(f"{name}: stable and unstable versions differ by {d:.3g} "
+                               f"(documented bound {TOL_STABLE})")
+ltn_checks.MetamorphicViolation: ImpliesGoguen(stable=False): stable and unstable versions differ by 1 (documented bound 0.0003)

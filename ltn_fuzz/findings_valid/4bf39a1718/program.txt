@@ -1,0 +1,16 @@
+x = ltn.Variable('x', torch.tensor([[9.526960372924805, 8.847639083862305]]))
+y = ltn.Variable('y', torch.tensor([]))
+P0 = Predicate(step, arity=2, w=[3.3999999521443642e+38, -5.0], b=1.705881953239441)
+P1 = Predicate(step, arity=2, w=[-4.257812976837158, -3.1176559925079346], b=-4.999967575073242)
+f0 = Function(lambda x: x * 4.999876022338867)
+phi0 = AndMin(Exists(['x'], P1(x, x), AggregMean()), Exists(['x'], P1(x, x), cond_vars=[x], cond_fn=sum<6.235294114742459, AggregPMean(p=3, stable=False)))
+phi1 = Forall(['y', 'x'], P0(y, x), AggregPMeanError(p=1, stable=True))
+
+Traceback (most recent call last):
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 417, in TestOneInput
+    bld.run()
+    ~~~~~~~^^
+  File "/root/nsfuzz/ltn_fuzz/ltn_fuzz.py", line 370, in run
+    raise OracleViolation(f"closed formula has truth value {v.tolist()} outside [0,1] "
+                          f"[empty_domain={self.empty_domain} aggs={sorted(self.aggs)}]")
+OracleViolation: closed formula has truth value nan outside [0,1] [empty_domain=True aggs=['Mean', 'PMean', 'PMeanError']]

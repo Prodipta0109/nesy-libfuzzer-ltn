@@ -1,0 +1,6 @@
+{
+ "signature": "RuntimeError@fuzzy_ops.py:1220: amin(): Expected reduction dim to be specified for input.numel() == N Specify the reduction dim with the 'dim' argument.",
+ "count": 8550,
+ "first_seen_sec": 3.6,
+ "first_seen_exec": 5825
+}
