@@ -1,0 +1,78 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1002
+INFO:       37 files found in campaign3/corpus1
+INFO: seed corpus: files: 37 min: 4b max: 160b total: 1193b rss: 582Mb
+#32	pulse  cov: 687 ft: 2069 corp: 28/503b exec/s: 5 rss: 749Mb
+#38	INITED cov: 688 ft: 2091 corp: 33/927b exec/s: 4 rss: 769Mb
+#40	NEW    cov: 688 ft: 2131 corp: 34/942b lim: 200 exec/s: 3 rss: 769Mb L: 15/130 MS: 2 InsertByte-InsertByte-
+#64	pulse  cov: 688 ft: 2131 corp: 34/942b lim: 200 exec/s: 3 rss: 782Mb
+#87	REDUCE cov: 688 ft: 2131 corp: 34/939b lim: 200 exec/s: 2 rss: 816Mb L: 21/130 MS: 2 ChangeBit-EraseBytes-
+[FINDING af11b4a7a8] param_range/t_learn_ranges: SUPERVISED lr=100.0 weights=[0.0, 0.0] bias=101.00000762939453
+#97	NEW    cov: 691 ft: 2134 corp: 35/947b lim: 200 exec/s: 2 rss: 816Mb L: 8/130 MS: 5 EraseBytes-ChangeByte-ChangeBinInt-ChangeByte-CMP- DE: "\000\000\000\000"-
+#128	pulse  cov: 691 ft: 2134 corp: 35/947b lim: 200 exec/s: 3 rss: 816Mb
+[FINDING a196487238] exception/t_fol_shapes: Exception: S is not a stored formula, can't set facts
+#169	NEW    cov: 693 ft: 2149 corp: 36/951b lim: 200 exec/s: 3 rss: 816Mb L: 4/130 MS: 2 ChangeByte-ChangeBinInt-
+#256	pulse  cov: 693 ft: 2149 corp: 36/951b lim: 200 exec/s: 4 rss: 816Mb
+#260	REDUCE cov: 693 ft: 2149 corp: 36/950b lim: 200 exec/s: 4 rss: 816Mb L: 9/130 MS: 1 EraseBytes-
+#297	REDUCE cov: 693 ft: 2149 corp: 36/948b lim: 200 exec/s: 4 rss: 822Mb L: 8/130 MS: 2 InsertByte-EraseBytes-
+#338	REDUCE cov: 693 ft: 2149 corp: 36/945b lim: 200 exec/s: 4 rss: 822Mb L: 12/130 MS: 1 EraseBytes-
+#359	REDUCE cov: 693 ft: 2149 corp: 36/938b lim: 200 exec/s: 4 rss: 822Mb L: 24/130 MS: 1 EraseBytes-
+#366	REDUCE cov: 693 ft: 2149 corp: 36/933b lim: 200 exec/s: 4 rss: 822Mb L: 9/130 MS: 2 PersAutoDict-EraseBytes- DE: "\000\000\000\000"-
+#397	REDUCE cov: 693 ft: 2149 corp: 36/930b lim: 200 exec/s: 4 rss: 834Mb L: 45/130 MS: 1 EraseBytes-
+#407	REDUCE cov: 693 ft: 2149 corp: 36/928b lim: 200 exec/s: 4 rss: 834Mb L: 15/130 MS: 5 ChangeByte-CMP-CrossOver-EraseBytes-CMP- DE: "\001\000\000\000\000\000\000*"-"\000\000\000\000\000\000\000<"-
+#512	pulse  cov: 693 ft: 2149 corp: 36/928b lim: 200 exec/s: 4 rss: 834Mb
+#520	NEW    cov: 693 ft: 2168 corp: 37/1085b lim: 200 exec/s: 4 rss: 834Mb L: 157/157 MS: 3 ShuffleBytes-ShuffleBytes-InsertRepeatedBytes-
+#533	NEW    cov: 693 ft: 2178 corp: 38/1091b lim: 200 exec/s: 4 rss: 834Mb L: 6/157 MS: 3 CrossOver-EraseBytes-ChangeByte-
+#534	REDUCE cov: 693 ft: 2178 corp: 38/1080b lim: 200 exec/s: 4 rss: 834Mb L: 22/157 MS: 1 EraseBytes-
+#585	REDUCE cov: 693 ft: 2178 corp: 38/1071b lim: 200 exec/s: 4 rss: 834Mb L: 36/157 MS: 1 EraseBytes-
+#638	REDUCE cov: 693 ft: 2178 corp: 38/1069b lim: 200 exec/s: 5 rss: 834Mb L: 5/157 MS: 3 InsertByte-ChangeBit-EraseBytes-
+#639	REDUCE cov: 693 ft: 2178 corp: 38/1063b lim: 200 exec/s: 5 rss: 834Mb L: 16/157 MS: 1 EraseBytes-
+#645	REDUCE cov: 693 ft: 2178 corp: 38/1062b lim: 200 exec/s: 5 rss: 834Mb L: 12/157 MS: 1 EraseBytes-
+#727	REDUCE cov: 693 ft: 2208 corp: 39/1083b lim: 200 exec/s: 5 rss: 834Mb L: 21/157 MS: 2 ChangeBit-CrossOver-
+#733	REDUCE cov: 693 ft: 2208 corp: 39/1079b lim: 200 exec/s: 5 rss: 834Mb L: 5/157 MS: 1 EraseBytes-
+#740	REDUCE cov: 693 ft: 2208 corp: 39/1076b lim: 200 exec/s: 5 rss: 834Mb L: 7/157 MS: 2 CopyPart-EraseBytes-
+#795	NEW    cov: 693 ft: 2235 corp: 40/1098b lim: 200 exec/s: 6 rss: 834Mb L: 22/157 MS: 5 ChangeByte-ShuffleBytes-CMP-CopyPart-CopyPart- DE: "\377\377\377\377"-
+#826	REDUCE cov: 693 ft: 2235 corp: 40/1087b lim: 200 exec/s: 6 rss: 834Mb L: 13/157 MS: 1 EraseBytes-
+#852	NEW    cov: 693 ft: 2236 corp: 41/1108b lim: 200 exec/s: 6 rss: 834Mb L: 21/157 MS: 1 CrossOver-
+#890	REDUCE cov: 693 ft: 2236 corp: 41/1105b lim: 200 exec/s: 6 rss: 838Mb L: 72/157 MS: 3 InsertByte-InsertByte-EraseBytes-
+#892	REDUCE cov: 693 ft: 2236 corp: 41/1102b lim: 200 exec/s: 6 rss: 838Mb L: 4/157 MS: 2 EraseBytes-ChangeBinInt-
+#902	DONE   cov: 693 ft: 2236 corp: 41/1102b lim: 200 exec/s: 5 rss: 838Mb
+###### Recommended dictionary. ######
+"\000\000\000\000" # Uses: 41
+"\001\000\000\000\000\000\000*" # Uses: 18
+"\000\000\000\000\000\000\000<" # Uses: 15
+"\377\377\377\377" # Uses: 2
+###### End of recommended dictionary. ######
+Done 902 runs in 152 second(s)
+stat::number_of_executed_units: 902
+stat::average_exec_per_sec:     5
+stat::new_units_added:          26
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              838

@@ -1,0 +1,7 @@
+{
+ "kind": "oracle:t_data",
+ "detail": "ConfusionMatrix modified the caller's class list: ['a', 'b', 'd']",
+ "loc": "",
+ "context": "T7 ConfusionMatrix given_list=True items=[('d', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a'), ('a', 'a')]",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 686, in t_data\n    raise Bug(f\"ConfusionMatrix modified the caller's class list: {start}\")\nBug: ConfusionMatrix modified the caller's class list: ['a', 'b', 'd']\n"
+}

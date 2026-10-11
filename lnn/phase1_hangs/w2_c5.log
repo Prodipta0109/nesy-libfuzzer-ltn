@@ -1,0 +1,457 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 205
+INFO:      177 files found in camp/corpus2
+INFO: seed corpus: files: 177 min: 4b max: 196b total: 10353b rss: 582Mb
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#64	pulse  cov: 575 ft: 1688 corp: 35/723b exec/s: 32 rss: 738Mb
+#128	pulse  cov: 664 ft: 2188 corp: 65/2143b exec/s: 32 rss: 745Mb
+#178	INITED cov: 670 ft: 2436 corp: 87/4748b exec/s: 29 rss: 745Mb
+#188	REDUCE cov: 670 ft: 2436 corp: 87/4666b lim: 200 exec/s: 26 rss: 745Mb L: 114/196 MS: 5 ChangeBinInt-ChangeBinInt-ShuffleBytes-InsertRepeatedBytes-EraseBytes-
+#193	REDUCE cov: 670 ft: 2436 corp: 87/4664b lim: 200 exec/s: 27 rss: 745Mb L: 38/196 MS: 5 EraseBytes-ShuffleBytes-ChangeByte-ChangeBit-CrossOver-
+#256	pulse  cov: 670 ft: 2436 corp: 87/4664b lim: 200 exec/s: 32 rss: 745Mb
+#260	REDUCE cov: 670 ft: 2436 corp: 87/4647b lim: 200 exec/s: 32 rss: 745Mb L: 86/196 MS: 2 InsertByte-EraseBytes-
+#305	REDUCE cov: 670 ft: 2436 corp: 87/4645b lim: 200 exec/s: 33 rss: 745Mb L: 27/196 MS: 5 CopyPart-InsertByte-ShuffleBytes-ChangeBinInt-EraseBytes-
+#317	REDUCE cov: 670 ft: 2436 corp: 87/4620b lim: 200 exec/s: 31 rss: 745Mb L: 37/196 MS: 2 ChangeBit-EraseBytes-
+#328	NEW    cov: 670 ft: 2438 corp: 88/4695b lim: 200 exec/s: 32 rss: 745Mb L: 75/196 MS: 1 ChangeBinInt-
+#334	NEW    cov: 670 ft: 2442 corp: 89/4842b lim: 200 exec/s: 33 rss: 745Mb L: 147/196 MS: 1 InsertRepeatedBytes-
+#365	REDUCE cov: 670 ft: 2442 corp: 89/4814b lim: 200 exec/s: 33 rss: 746Mb L: 73/196 MS: 1 EraseBytes-
+#391	NEW    cov: 670 ft: 2456 corp: 90/4859b lim: 200 exec/s: 32 rss: 746Mb L: 45/196 MS: 1 ShuffleBytes-
+#397	NEW    cov: 670 ft: 2457 corp: 91/5048b lim: 200 exec/s: 33 rss: 746Mb L: 189/196 MS: 1 CopyPart-
+#484	REDUCE cov: 670 ft: 2457 corp: 91/5034b lim: 200 exec/s: 26 rss: 767Mb L: 20/196 MS: 2 ChangeBit-EraseBytes-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#512	pulse  cov: 670 ft: 2457 corp: 91/5034b lim: 200 exec/s: 26 rss: 767Mb
+#540	REDUCE cov: 670 ft: 2457 corp: 91/4985b lim: 200 exec/s: 27 rss: 767Mb L: 66/196 MS: 1 EraseBytes-
+#561	REDUCE cov: 670 ft: 2457 corp: 91/4947b lim: 200 exec/s: 28 rss: 767Mb L: 66/196 MS: 1 EraseBytes-
+#562	REDUCE cov: 670 ft: 2457 corp: 91/4944b lim: 200 exec/s: 28 rss: 767Mb L: 19/196 MS: 1 EraseBytes-
+#582	REDUCE cov: 670 ft: 2457 corp: 91/4943b lim: 200 exec/s: 29 rss: 767Mb L: 76/196 MS: 5 ChangeBinInt-ChangeASCIIInt-CMP-CMP-EraseBytes- DE: "\377\377\377\377\377\377\377&"-"\377\377\377\377\377\377\377\001"-
+#607	NEW    cov: 670 ft: 2458 corp: 92/5002b lim: 200 exec/s: 27 rss: 767Mb L: 59/196 MS: 5 ChangeBit-ShuffleBytes-InsertByte-CopyPart-PersAutoDict- DE: "\377\377\377\377\377\377\377&"-
+#619	REDUCE cov: 670 ft: 2458 corp: 92/4986b lim: 200 exec/s: 28 rss: 767Mb L: 13/196 MS: 2 CrossOver-ChangeBit-
+#620	REDUCE cov: 670 ft: 2458 corp: 92/4984b lim: 200 exec/s: 28 rss: 767Mb L: 23/196 MS: 1 EraseBytes-
+#629	REDUCE cov: 670 ft: 2458 corp: 92/4980b lim: 200 exec/s: 28 rss: 767Mb L: 62/196 MS: 4 ChangeBinInt-InsertRepeatedBytes-EraseBytes-EraseBytes-
+#649	REDUCE cov: 670 ft: 2458 corp: 92/4928b lim: 200 exec/s: 28 rss: 767Mb L: 137/196 MS: 5 CMP-CrossOver-CopyPart-ChangeByte-EraseBytes- DE: "\377\377\377\377\377\377\377("-
+#677	REDUCE cov: 670 ft: 2458 corp: 92/4896b lim: 200 exec/s: 28 rss: 767Mb L: 118/196 MS: 3 ChangeBit-InsertByte-EraseBytes-
+#679	NEW    cov: 670 ft: 2462 corp: 93/4938b lim: 200 exec/s: 28 rss: 767Mb L: 42/196 MS: 2 ChangeASCIIInt-PersAutoDict- DE: "\377\377\377\377\377\377\377&"-
+#685	REDUCE cov: 670 ft: 2462 corp: 93/4921b lim: 200 exec/s: 28 rss: 767Mb L: 45/196 MS: 1 EraseBytes-
+#712	REDUCE cov: 670 ft: 2462 corp: 93/4901b lim: 200 exec/s: 27 rss: 767Mb L: 40/196 MS: 2 ChangeBit-EraseBytes-
+#726	REDUCE cov: 670 ft: 2462 corp: 93/4881b lim: 200 exec/s: 27 rss: 767Mb L: 73/196 MS: 4 PersAutoDict-CopyPart-InsertByte-EraseBytes- DE: "\377\377\377\377\377\377\377&"-
+#731	REDUCE cov: 670 ft: 2462 corp: 93/4875b lim: 200 exec/s: 28 rss: 767Mb L: 13/196 MS: 5 ChangeBinInt-CrossOver-InsertByte-ShuffleBytes-EraseBytes-
+#754	REDUCE cov: 670 ft: 2462 corp: 93/4871b lim: 200 exec/s: 29 rss: 767Mb L: 34/196 MS: 3 ChangeBit-CopyPart-EraseBytes-
+#782	REDUCE cov: 670 ft: 2462 corp: 93/4864b lim: 200 exec/s: 28 rss: 767Mb L: 36/196 MS: 3 ChangeByte-ChangeByte-EraseBytes-
+#809	REDUCE cov: 670 ft: 2462 corp: 93/4838b lim: 200 exec/s: 27 rss: 768Mb L: 47/196 MS: 2 ChangeBit-EraseBytes-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#862	REDUCE cov: 670 ft: 2462 corp: 93/4827b lim: 200 exec/s: 28 rss: 768Mb L: 29/196 MS: 3 PersAutoDict-PersAutoDict-EraseBytes- DE: "\377\377\377\377\377\377\377&"-"\377\377\377\377\377\377\377&"-
+#875	REDUCE cov: 670 ft: 2475 corp: 94/4854b lim: 200 exec/s: 29 rss: 768Mb L: 27/196 MS: 3 EraseBytes-ChangeASCIIInt-ChangeASCIIInt-
+#912	REDUCE cov: 670 ft: 2476 corp: 95/4936b lim: 200 exec/s: 28 rss: 768Mb L: 82/196 MS: 2 ChangeBit-EraseBytes-
+#915	REDUCE cov: 670 ft: 2476 corp: 95/4908b lim: 200 exec/s: 28 rss: 768Mb L: 54/196 MS: 3 InsertByte-ShuffleBytes-EraseBytes-
+#952	REDUCE cov: 670 ft: 2476 corp: 95/4907b lim: 200 exec/s: 28 rss: 768Mb L: 146/196 MS: 2 CopyPart-EraseBytes-
+#1024	pulse  cov: 670 ft: 2476 corp: 95/4907b lim: 200 exec/s: 29 rss: 768Mb
+#1024	REDUCE cov: 670 ft: 2476 corp: 95/4898b lim: 200 exec/s: 29 rss: 768Mb L: 10/196 MS: 2 InsertByte-EraseBytes-
+#1084	NEW    cov: 670 ft: 2477 corp: 96/4933b lim: 200 exec/s: 29 rss: 770Mb L: 35/196 MS: 5 PersAutoDict-CrossOver-ShuffleBytes-EraseBytes-EraseBytes- DE: "\377\377\377\377\377\377\377&"-
+#1122	REDUCE cov: 670 ft: 2477 corp: 96/4912b lim: 200 exec/s: 28 rss: 770Mb L: 121/196 MS: 3 InsertRepeatedBytes-ChangeBit-EraseBytes-
+#1123	REDUCE cov: 670 ft: 2477 corp: 96/4889b lim: 200 exec/s: 28 rss: 770Mb L: 130/196 MS: 1 EraseBytes-
+#1194	REDUCE cov: 670 ft: 2477 corp: 96/4885b lim: 200 exec/s: 29 rss: 771Mb L: 14/196 MS: 1 EraseBytes-
+#1200	REDUCE cov: 670 ft: 2477 corp: 96/4876b lim: 200 exec/s: 29 rss: 771Mb L: 20/196 MS: 1 EraseBytes-
+#1221	REDUCE cov: 670 ft: 2486 corp: 97/4969b lim: 200 exec/s: 29 rss: 771Mb L: 93/196 MS: 1 EraseBytes-
+#1347	REDUCE cov: 670 ft: 2486 corp: 97/4922b lim: 200 exec/s: 29 rss: 778Mb L: 54/196 MS: 1 EraseBytes-
+#1351	REDUCE cov: 670 ft: 2486 corp: 97/4912b lim: 200 exec/s: 29 rss: 779Mb L: 182/196 MS: 4 PersAutoDict-ChangeBit-ShuffleBytes-EraseBytes- DE: "\377\377\377\377\377\377\377\001"-
+#1362	REDUCE cov: 670 ft: 2486 corp: 97/4908b lim: 200 exec/s: 28 rss: 779Mb L: 18/196 MS: 1 EraseBytes-
+#1409	NEW    cov: 670 ft: 2487 corp: 98/4953b lim: 200 exec/s: 29 rss: 779Mb L: 45/196 MS: 2 ChangeBit-ChangeBinInt-
+#1430	REDUCE cov: 670 ft: 2487 corp: 98/4931b lim: 200 exec/s: 29 rss: 779Mb L: 62/196 MS: 1 EraseBytes-
+#1450	REDUCE cov: 670 ft: 2487 corp: 98/4877b lim: 200 exec/s: 29 rss: 779Mb L: 67/196 MS: 5 CopyPart-ChangeBinInt-ChangeBit-ChangeBinInt-EraseBytes-
+#1466	REDUCE cov: 670 ft: 2487 corp: 98/4873b lim: 200 exec/s: 29 rss: 779Mb L: 30/196 MS: 1 EraseBytes-
+#1477	NEW    cov: 670 ft: 2497 corp: 99/4892b lim: 200 exec/s: 29 rss: 779Mb L: 19/196 MS: 1 ChangeBit-
+#1480	NEW    cov: 670 ft: 2509 corp: 100/4919b lim: 200 exec/s: 29 rss: 779Mb L: 27/196 MS: 3 PersAutoDict-ChangeBinInt-PersAutoDict- DE: "\377\377\377\377\377\377\377&"-"\377\377\377\377\377\377\377&"-
+#1508	REDUCE cov: 670 ft: 2509 corp: 100/4917b lim: 200 exec/s: 29 rss: 779Mb L: 21/196 MS: 3 ChangeByte-ChangeByte-EraseBytes-
+#1550	REDUCE cov: 670 ft: 2509 corp: 100/4909b lim: 200 exec/s: 29 rss: 779Mb L: 26/196 MS: 2 ChangeBinInt-EraseBytes-
+#1566	NEW    cov: 671 ft: 2510 corp: 101/4919b lim: 200 exec/s: 29 rss: 779Mb L: 10/196 MS: 1 ChangeBinInt-
+#1569	REDUCE cov: 671 ft: 2510 corp: 101/4879b lim: 200 exec/s: 29 rss: 779Mb L: 71/196 MS: 3 ShuffleBytes-ChangeBinInt-EraseBytes-
+#1580	REDUCE cov: 671 ft: 2510 corp: 101/4878b lim: 200 exec/s: 29 rss: 779Mb L: 5/196 MS: 1 EraseBytes-
+#1581	REDUCE cov: 671 ft: 2510 corp: 101/4866b lim: 200 exec/s: 29 rss: 779Mb L: 14/196 MS: 1 EraseBytes-
+#1592	REDUCE cov: 671 ft: 2510 corp: 101/4843b lim: 200 exec/s: 28 rss: 779Mb L: 44/196 MS: 1 EraseBytes-
+#1630	REDUCE cov: 671 ft: 2510 corp: 101/4804b lim: 200 exec/s: 28 rss: 779Mb L: 62/196 MS: 3 InsertByte-ChangeBinInt-EraseBytes-
+#1701	REDUCE cov: 671 ft: 2510 corp: 101/4796b lim: 200 exec/s: 29 rss: 779Mb L: 11/196 MS: 1 EraseBytes-
+#1712	REDUCE cov: 671 ft: 2510 corp: 101/4772b lim: 200 exec/s: 29 rss: 779Mb L: 94/196 MS: 1 EraseBytes-
+#1723	NEW    cov: 673 ft: 2513 corp: 102/4799b lim: 200 exec/s: 29 rss: 779Mb L: 27/196 MS: 1 ChangeByte-
+#1734	REDUCE cov: 673 ft: 2513 corp: 102/4762b lim: 200 exec/s: 28 rss: 779Mb L: 60/196 MS: 1 EraseBytes-
+#1739	NEW    cov: 673 ft: 2527 corp: 103/4865b lim: 200 exec/s: 28 rss: 779Mb L: 103/196 MS: 5 InsertByte-CMP-CMP-ChangeASCIIInt-CopyPart- DE: "4\000\000\000\000\000\000\000"-"=\000\000\000\000\000\000\000"-
+#1743	REDUCE cov: 673 ft: 2527 corp: 103/4852b lim: 200 exec/s: 28 rss: 779Mb L: 23/196 MS: 4 ChangeByte-ChangeByte-CrossOver-EraseBytes-
+#1789	REDUCE cov: 673 ft: 2527 corp: 103/4836b lim: 200 exec/s: 28 rss: 779Mb L: 43/196 MS: 1 EraseBytes-
+#1875	REDUCE cov: 673 ft: 2527 corp: 103/4826b lim: 200 exec/s: 28 rss: 780Mb L: 17/196 MS: 1 EraseBytes-
+#1878	REDUCE cov: 673 ft: 2527 corp: 103/4808b lim: 200 exec/s: 28 rss: 780Mb L: 25/196 MS: 3 ChangeByte-CrossOver-EraseBytes-
+#1883	REDUCE cov: 673 ft: 2527 corp: 103/4806b lim: 200 exec/s: 28 rss: 780Mb L: 53/196 MS: 5 ChangeByte-CrossOver-ChangeByte-InsertByte-EraseBytes-
+#1888	REDUCE cov: 673 ft: 2527 corp: 103/4777b lim: 200 exec/s: 29 rss: 780Mb L: 85/196 MS: 5 CMP-InsertRepeatedBytes-PersAutoDict-ChangeBinInt-EraseBytes- DE: "<\000\000\000\000\000\000\000"-"\377\377\377\377\377\377\377("-
+#1904	REDUCE cov: 673 ft: 2527 corp: 103/4776b lim: 200 exec/s: 28 rss: 780Mb L: 103/196 MS: 1 EraseBytes-
+#1926	REDUCE cov: 673 ft: 2528 corp: 104/4797b lim: 200 exec/s: 28 rss: 780Mb L: 21/196 MS: 2 ChangeBit-ChangeByte-
+#1927	REDUCE cov: 673 ft: 2528 corp: 104/4782b lim: 200 exec/s: 28 rss: 780Mb L: 51/196 MS: 1 EraseBytes-
+#1934	REDUCE cov: 673 ft: 2528 corp: 104/4758b lim: 200 exec/s: 28 rss: 780Mb L: 43/196 MS: 2 CopyPart-EraseBytes-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#1972	REDUCE cov: 673 ft: 2528 corp: 104/4757b lim: 200 exec/s: 28 rss: 780Mb L: 41/196 MS: 3 ChangeBinInt-CMP-EraseBytes- DE: "\001\000\000\000\000\000\000\001"-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#2028	REDUCE cov: 673 ft: 2528 corp: 104/4753b lim: 200 exec/s: 27 rss: 788Mb L: 20/196 MS: 1 EraseBytes-
+#2033	REDUCE cov: 673 ft: 2528 corp: 104/4750b lim: 200 exec/s: 27 rss: 788Mb L: 44/196 MS: 5 CopyPart-InsertRepeatedBytes-CMP-InsertByte-EraseBytes- DE: "\377\377"-
+#2048	pulse  cov: 673 ft: 2528 corp: 104/4750b lim: 200 exec/s: 28 rss: 788Mb
+#2056	REDUCE cov: 673 ft: 2528 corp: 104/4731b lim: 200 exec/s: 27 rss: 788Mb L: 31/196 MS: 3 ShuffleBytes-CopyPart-EraseBytes-
+#2115	REDUCE cov: 673 ft: 2528 corp: 104/4727b lim: 200 exec/s: 27 rss: 792Mb L: 13/196 MS: 4 CopyPart-CMP-ShuffleBytes-EraseBytes- DE: "\001\000\000\000"-
+#2131	REDUCE cov: 673 ft: 2528 corp: 104/4718b lim: 200 exec/s: 26 rss: 792Mb L: 36/196 MS: 1 EraseBytes-
+#2143	REDUCE cov: 673 ft: 2528 corp: 104/4715b lim: 200 exec/s: 27 rss: 792Mb L: 17/196 MS: 2 ChangeByte-EraseBytes-
+#2169	REDUCE cov: 673 ft: 2528 corp: 104/4714b lim: 200 exec/s: 26 rss: 794Mb L: 63/196 MS: 1 EraseBytes-
+#2187	REDUCE cov: 673 ft: 2528 corp: 104/4710b lim: 200 exec/s: 26 rss: 794Mb L: 21/196 MS: 3 PersAutoDict-ChangeBinInt-EraseBytes- DE: "\001\000\000\000\000\000\000\001"-
+#2227	REDUCE cov: 673 ft: 2528 corp: 104/4697b lim: 200 exec/s: 26 rss: 796Mb L: 23/196 MS: 5 ChangeBit-ShuffleBytes-ChangeBinInt-CMP-EraseBytes- DE: "\377\377"-
+#2253	REDUCE cov: 673 ft: 2528 corp: 104/4670b lim: 200 exec/s: 26 rss: 797Mb L: 49/196 MS: 1 EraseBytes-
+#2262	NEW    cov: 673 ft: 2530 corp: 105/4785b lim: 200 exec/s: 26 rss: 797Mb L: 115/196 MS: 4 ChangeByte-CopyPart-ChangeBinInt-InsertRepeatedBytes-
+#2263	REDUCE cov: 673 ft: 2530 corp: 105/4763b lim: 200 exec/s: 26 rss: 797Mb L: 31/196 MS: 1 EraseBytes-
+#2269	REDUCE cov: 673 ft: 2530 corp: 105/4733b lim: 200 exec/s: 26 rss: 797Mb L: 41/196 MS: 1 EraseBytes-
+#2295	REDUCE cov: 673 ft: 2530 corp: 105/4709b lim: 200 exec/s: 26 rss: 803Mb L: 27/196 MS: 1 EraseBytes-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#2307	REDUCE cov: 673 ft: 2530 corp: 105/4707b lim: 200 exec/s: 26 rss: 804Mb L: 8/196 MS: 2 ShuffleBytes-EraseBytes-
+#2322	REDUCE cov: 673 ft: 2530 corp: 105/4705b lim: 200 exec/s: 26 rss: 804Mb L: 12/196 MS: 5 ChangeBit-ShuffleBytes-ShuffleBytes-PersAutoDict-EraseBytes- DE: "4\000\000\000\000\000\000\000"-
+#2337	REDUCE cov: 673 ft: 2530 corp: 105/4683b lim: 200 exec/s: 26 rss: 804Mb L: 32/196 MS: 5 ChangeByte-ShuffleBytes-InsertByte-InsertByte-EraseBytes-
+#2341	REDUCE cov: 673 ft: 2530 corp: 105/4679b lim: 200 exec/s: 26 rss: 804Mb L: 28/196 MS: 4 ShuffleBytes-ShuffleBytes-ChangeByte-EraseBytes-
+#2353	NEW    cov: 673 ft: 2573 corp: 106/4701b lim: 200 exec/s: 26 rss: 804Mb L: 22/196 MS: 2 CopyPart-ShuffleBytes-
+#2359	REDUCE cov: 673 ft: 2573 corp: 106/4691b lim: 200 exec/s: 26 rss: 804Mb L: 33/196 MS: 1 EraseBytes-
+#2361	NEW    cov: 673 ft: 2582 corp: 107/4792b lim: 200 exec/s: 26 rss: 804Mb L: 101/196 MS: 2 ChangeBinInt-CopyPart-
+#2407	REDUCE cov: 673 ft: 2582 corp: 107/4787b lim: 200 exec/s: 26 rss: 804Mb L: 39/196 MS: 1 EraseBytes-
+#2509	REDUCE cov: 673 ft: 2582 corp: 107/4786b lim: 200 exec/s: 26 rss: 804Mb L: 8/196 MS: 2 ChangeByte-EraseBytes-
+#2521	REDUCE cov: 673 ft: 2582 corp: 107/4757b lim: 200 exec/s: 26 rss: 804Mb L: 43/196 MS: 2 CMP-EraseBytes- DE: "\001\000\000\000\000\000\000<"-
+#2544	REDUCE cov: 673 ft: 2582 corp: 107/4739b lim: 200 exec/s: 26 rss: 804Mb L: 44/196 MS: 3 ChangeBit-ChangeBinInt-EraseBytes-
+#2568	REDUCE cov: 673 ft: 2582 corp: 107/4731b lim: 200 exec/s: 26 rss: 804Mb L: 23/196 MS: 4 CMP-EraseBytes-ShuffleBytes-CopyPart- DE: "\377\377\377\377\377\377\377#"-
+#2634	REDUCE cov: 673 ft: 2582 corp: 107/4718b lim: 200 exec/s: 26 rss: 804Mb L: 28/196 MS: 1 EraseBytes-
+#2676	REDUCE cov: 673 ft: 2582 corp: 107/4688b lim: 200 exec/s: 26 rss: 804Mb L: 43/196 MS: 2 InsertByte-EraseBytes-
+#2712	NEW    cov: 673 ft: 2587 corp: 108/4791b lim: 200 exec/s: 26 rss: 804Mb L: 103/196 MS: 1 ChangeByte-
+#2767	REDUCE cov: 673 ft: 2587 corp: 108/4788b lim: 200 exec/s: 27 rss: 804Mb L: 16/196 MS: 5 CopyPart-ChangeByte-ChangeByte-ShuffleBytes-EraseBytes-
+#2795	REDUCE cov: 673 ft: 2587 corp: 108/4770b lim: 200 exec/s: 27 rss: 804Mb L: 22/196 MS: 3 InsertByte-PersAutoDict-EraseBytes- DE: "=\000\000\000\000\000\000\000"-
+#2801	REDUCE cov: 673 ft: 2587 corp: 108/4764b lim: 200 exec/s: 26 rss: 804Mb L: 24/196 MS: 1 EraseBytes-
+#2807	REDUCE cov: 673 ft: 2587 corp: 108/4737b lim: 200 exec/s: 26 rss: 804Mb L: 48/196 MS: 1 EraseBytes-
+#2838	REDUCE cov: 673 ft: 2587 corp: 108/4733b lim: 200 exec/s: 27 rss: 804Mb L: 13/196 MS: 1 EraseBytes-
+#2860	REDUCE cov: 673 ft: 2587 corp: 108/4726b lim: 200 exec/s: 27 rss: 804Mb L: 5/196 MS: 2 EraseBytes-EraseBytes-
+#2882	REDUCE cov: 673 ft: 2587 corp: 108/4709b lim: 200 exec/s: 27 rss: 804Mb L: 20/196 MS: 2 ChangeByte-EraseBytes-
+#2890	REDUCE cov: 673 ft: 2587 corp: 108/4704b lim: 200 exec/s: 27 rss: 804Mb L: 132/196 MS: 3 InsertRepeatedBytes-PersAutoDict-EraseBytes- DE: "\377\377\377\377\377\377\377\001"-
+#2918	REDUCE cov: 673 ft: 2587 corp: 108/4702b lim: 200 exec/s: 27 rss: 804Mb L: 15/196 MS: 3 CrossOver-InsertByte-EraseBytes-
+#2945	REDUCE cov: 673 ft: 2587 corp: 108/4683b lim: 200 exec/s: 27 rss: 805Mb L: 78/196 MS: 2 ShuffleBytes-EraseBytes-
+#3071	REDUCE cov: 673 ft: 2587 corp: 108/4661b lim: 200 exec/s: 27 rss: 805Mb L: 79/196 MS: 1 EraseBytes-
+#3082	REDUCE cov: 673 ft: 2587 corp: 108/4632b lim: 200 exec/s: 27 rss: 805Mb L: 103/196 MS: 1 EraseBytes-
+#3104	REDUCE cov: 673 ft: 2587 corp: 108/4625b lim: 200 exec/s: 26 rss: 805Mb L: 14/196 MS: 2 PersAutoDict-EraseBytes- DE: "\377\377\377\377\377\377\377&"-
+#3108	NEW    cov: 673 ft: 2594 corp: 109/4645b lim: 200 exec/s: 27 rss: 805Mb L: 20/196 MS: 4 ChangeBinInt-ChangeBit-InsertByte-ChangeBit-
+#3129	REDUCE cov: 673 ft: 2594 corp: 109/4640b lim: 200 exec/s: 26 rss: 808Mb L: 40/196 MS: 1 EraseBytes-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#3164	NEW    cov: 673 ft: 2595 corp: 110/4840b lim: 200 exec/s: 26 rss: 812Mb L: 200/200 MS: 5 InsertRepeatedBytes-ChangeBinInt-InsertByte-PersAutoDict-CrossOver- DE: "\377\377\377\377\377\377\377("-
+#3184	REDUCE cov: 673 ft: 2595 corp: 110/4810b lim: 200 exec/s: 26 rss: 812Mb L: 49/200 MS: 5 ShuffleBytes-ChangeByte-InsertByte-InsertByte-EraseBytes-
+#3192	REDUCE cov: 673 ft: 2595 corp: 110/4807b lim: 200 exec/s: 26 rss: 812Mb L: 127/200 MS: 3 ChangeByte-CopyPart-EraseBytes-
+#3273	REDUCE cov: 673 ft: 2598 corp: 111/4924b lim: 200 exec/s: 26 rss: 812Mb L: 117/200 MS: 1 CrossOver-
+#3309	REDUCE cov: 673 ft: 2598 corp: 111/4859b lim: 200 exec/s: 26 rss: 814Mb L: 131/200 MS: 1 EraseBytes-
+#3317	REDUCE cov: 673 ft: 2598 corp: 111/4852b lim: 200 exec/s: 26 rss: 814Mb L: 35/200 MS: 3 ChangeByte-ShuffleBytes-EraseBytes-
+#3340	REDUCE cov: 673 ft: 2598 corp: 111/4824b lim: 200 exec/s: 26 rss: 814Mb L: 50/200 MS: 3 CrossOver-ChangeByte-EraseBytes-
+#3343	NEW    cov: 673 ft: 2603 corp: 112/4949b lim: 200 exec/s: 25 rss: 834Mb L: 125/200 MS: 3 ChangeByte-CopyPart-PersAutoDict- DE: "<\000\000\000\000\000\000\000"-
+#3347	REDUCE cov: 673 ft: 2603 corp: 112/4948b lim: 200 exec/s: 25 rss: 834Mb L: 15/200 MS: 4 PersAutoDict-InsertRepeatedBytes-EraseBytes-EraseBytes- DE: "\001\000\000\000"-
+#3358	REDUCE cov: 673 ft: 2603 corp: 112/4920b lim: 200 exec/s: 25 rss: 835Mb L: 75/200 MS: 1 EraseBytes-
+#3359	REDUCE cov: 673 ft: 2611 corp: 113/4927b lim: 200 exec/s: 25 rss: 835Mb L: 7/200 MS: 1 EraseBytes-
+#3370	REDUCE cov: 673 ft: 2611 corp: 113/4924b lim: 200 exec/s: 25 rss: 835Mb L: 28/200 MS: 1 EraseBytes-
+#3446	REDUCE cov: 673 ft: 2611 corp: 113/4922b lim: 200 exec/s: 25 rss: 835Mb L: 41/200 MS: 1 EraseBytes-
+#3458	REDUCE cov: 673 ft: 2611 corp: 113/4912b lim: 200 exec/s: 25 rss: 835Mb L: 20/200 MS: 2 ChangeByte-EraseBytes-
+#3514	REDUCE cov: 673 ft: 2611 corp: 113/4903b lim: 200 exec/s: 25 rss: 835Mb L: 51/200 MS: 1 EraseBytes-
+#3575	REDUCE cov: 673 ft: 2611 corp: 113/4881b lim: 200 exec/s: 24 rss: 857Mb L: 22/200 MS: 1 EraseBytes-
+#3577	REDUCE cov: 673 ft: 2611 corp: 113/4880b lim: 200 exec/s: 24 rss: 857Mb L: 19/200 MS: 2 CopyPart-EraseBytes-
+#3593	REDUCE cov: 673 ft: 2611 corp: 113/4873b lim: 200 exec/s: 24 rss: 857Mb L: 7/200 MS: 1 EraseBytes-
+#3612	REDUCE cov: 673 ft: 2611 corp: 113/4870b lim: 200 exec/s: 24 rss: 858Mb L: 39/200 MS: 4 ChangeByte-PersAutoDict-ChangeByte-EraseBytes- DE: "\377\377\377\377\377\377\377&"-
+#3623	REDUCE cov: 673 ft: 2611 corp: 113/4869b lim: 200 exec/s: 24 rss: 858Mb L: 9/200 MS: 1 EraseBytes-
+#3654	REDUCE cov: 673 ft: 2611 corp: 113/4847b lim: 200 exec/s: 24 rss: 858Mb L: 23/200 MS: 1 EraseBytes-
+#3660	REDUCE cov: 673 ft: 2611 corp: 113/4843b lim: 200 exec/s: 24 rss: 858Mb L: 16/200 MS: 1 EraseBytes-
+#3661	REDUCE cov: 673 ft: 2611 corp: 113/4806b lim: 200 exec/s: 24 rss: 858Mb L: 49/200 MS: 1 EraseBytes-
+#3712	REDUCE cov: 673 ft: 2611 corp: 113/4798b lim: 200 exec/s: 24 rss: 867Mb L: 13/200 MS: 1 EraseBytes-
+#3788	REDUCE cov: 673 ft: 2611 corp: 113/4782b lim: 200 exec/s: 24 rss: 867Mb L: 35/200 MS: 1 EraseBytes-
+#3847	NEW    cov: 673 ft: 2613 corp: 114/4885b lim: 200 exec/s: 24 rss: 867Mb L: 103/200 MS: 4 ChangeByte-ShuffleBytes-ChangeByte-ChangeByte-
+#3903	REDUCE cov: 673 ft: 2613 corp: 114/4878b lim: 200 exec/s: 24 rss: 869Mb L: 34/200 MS: 1 EraseBytes-
+#3909	NEW    cov: 673 ft: 2615 corp: 115/5070b lim: 200 exec/s: 24 rss: 869Mb L: 192/200 MS: 1 InsertRepeatedBytes-
+#3911	REDUCE cov: 673 ft: 2615 corp: 115/5061b lim: 200 exec/s: 24 rss: 869Mb L: 19/200 MS: 2 ChangeByte-EraseBytes-
+#3938	REDUCE cov: 673 ft: 2615 corp: 115/5051b lim: 200 exec/s: 24 rss: 871Mb L: 28/200 MS: 2 ChangeByte-EraseBytes-
+#3952	REDUCE cov: 673 ft: 2628 corp: 116/5082b lim: 200 exec/s: 24 rss: 871Mb L: 31/200 MS: 4 PersAutoDict-CMP-CopyPart-PersAutoDict- DE: "\377\377"-"<\000\000\000\000\000\000\000"-"\377\377\377\377\377\377\377\001"-
+#3974	REDUCE cov: 673 ft: 2628 corp: 116/5051b lim: 200 exec/s: 24 rss: 871Mb L: 169/192 MS: 2 ChangeBit-EraseBytes-
+#3980	REDUCE cov: 673 ft: 2628 corp: 116/5050b lim: 200 exec/s: 24 rss: 871Mb L: 18/192 MS: 1 EraseBytes-
+#3983	REDUCE cov: 673 ft: 2630 corp: 117/5149b lim: 200 exec/s: 23 rss: 871Mb L: 99/192 MS: 3 CrossOver-ChangeASCIIInt-EraseBytes-
+#3984	NEW    cov: 673 ft: 2633 corp: 118/5253b lim: 200 exec/s: 24 rss: 871Mb L: 104/192 MS: 1 InsertByte-
+#3987	REDUCE cov: 673 ft: 2633 corp: 118/5241b lim: 200 exec/s: 24 rss: 871Mb L: 33/192 MS: 3 ShuffleBytes-ChangeBit-EraseBytes-
+#3998	REDUCE cov: 673 ft: 2633 corp: 118/5232b lim: 200 exec/s: 24 rss: 874Mb L: 18/192 MS: 1 EraseBytes-
+#4016	REDUCE cov: 673 ft: 2633 corp: 118/5226b lim: 200 exec/s: 24 rss: 874Mb L: 9/192 MS: 3 ShuffleBytes-ShuffleBytes-EraseBytes-
+#4038	REDUCE cov: 673 ft: 2633 corp: 118/5222b lim: 200 exec/s: 24 rss: 874Mb L: 17/192 MS: 2 ChangeByte-EraseBytes-
+#4088	DONE   cov: 673 ft: 2633 corp: 118/5222b lim: 200 exec/s: 23 rss: 883Mb
+###### Recommended dictionary. ######
+"\377\377\377\377\377\377\377&" # Uses: 74
+"\377\377\377\377\377\377\377\001" # Uses: 49
+"\377\377\377\377\377\377\377(" # Uses: 60
+"4\000\000\000\000\000\000\000" # Uses: 17
+"=\000\000\000\000\000\000\000" # Uses: 18
+"<\000\000\000\000\000\000\000" # Uses: 16
+"\001\000\000\000\000\000\000\001" # Uses: 22
+"\377\377" # Uses: 28
+"\001\000\000\000" # Uses: 16
+"\001\000\000\000\000\000\000<" # Uses: 4
+"\377\377\377\377\377\377\377#" # Uses: 13
+###### End of recommended dictionary. ######
+Done 4088 runs in 172 second(s)
+stat::number_of_executed_units: 4088
+stat::average_exec_per_sec:     23
+stat::new_units_added:          157
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              883

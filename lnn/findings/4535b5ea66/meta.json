@@ -1,0 +1,6 @@
+{
+ "kind": "nonconvergence/t_conv",
+ "msg": "Exists_wrap0 Exists ['a', 'b', 'c'] wrap=0 data={('a',): <Fact.FALSE: (0.0, 0.0)>, ('b',): (0.0, 0.0), ('c',): <Fact.TRUE: (1.0, 1.0)>} steps=60 upd=tensor(62.)",
+ "where": "",
+ "trace": ""
+}

@@ -1,0 +1,17 @@
+{
+ "id": "A4",
+ "rows": [
+  {
+   "label": "no bug planted (control)",
+   "inputs": 150,
+   "crash_only_detects": 0,
+   "oracle_detects": 1
+  },
+  {
+   "label": "bug planted: And result lowered by 0.05",
+   "inputs": 150,
+   "crash_only_detects": 0,
+   "oracle_detects": 55
+  }
+ ]
+}

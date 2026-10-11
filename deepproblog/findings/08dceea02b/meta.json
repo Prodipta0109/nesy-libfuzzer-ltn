@@ -1,0 +1,7 @@
+{
+ "kind": "oracle:t_data",
+ "detail": "QueryDataset round trip changed ('f(X,5,0)', 3.552713678800501e-15, {X: 0}) -> ('f(X,5,0)', 4e-15, {X: 0})",
+ "loc": "",
+ "context": "T7 QueryDataset round trip [('f(X,5,0)', {X: 0}, 3.552713678800501e-15), ('f(0)', {}, 0.0)]",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 627, in t_data\n    raise Bug(f\"QueryDataset round trip changed {(str(a_.query), a_.p, a_.substitution)} -> {(str(b_.query), b_.p, b_.substitution)}\")\nBug: QueryDataset round trip changed ('f(X,5,0)', 3.552713678800501e-15, {X: 0}) -> ('f(X,5,0)', 4e-15, {X: 0})\n"
+}

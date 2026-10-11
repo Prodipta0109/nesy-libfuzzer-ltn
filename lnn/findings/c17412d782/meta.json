@@ -1,0 +1,6 @@
+{
+ "kind": "nonconvergence/t_weights",
+ "msg": "weights_Implies w=(0.5, 1.5) beta=0.9 data=[(0.0, 1.0), (0.2, 0.2)] steps=60",
+ "where": "",
+ "trace": ""
+}

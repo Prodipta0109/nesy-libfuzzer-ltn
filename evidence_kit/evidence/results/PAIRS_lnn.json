@@ -1,0 +1,54 @@
+{
+ "id": "PAIRS_lnn",
+ "rows": [
+  {
+   "dimension": "L1 formula structure",
+   "bug": "L7",
+   "only change": "quantifier nested under a connective",
+   "control": "OK",
+   "fuzzer value": "BUG: ValueError: tuple.index(x): x not in tuple"
+  },
+  {
+   "dimension": "L2 truth bounds / data",
+   "bug": "L1",
+   "only change": "operand interval (0.3,0.5) -> exact point (0.4,0.4)",
+   "control": "OK (2 steps)",
+   "fuzzer value": "BUG: infer() used all 60 steps: never converges"
+  },
+  {
+   "dimension": "L3 first-order structure",
+   "bug": "L6",
+   "only change": "S(b)=true -> S(b)=false",
+   "control": "OK",
+   "fuzzer value": "BUG: consistent data reported as contradiction"
+  },
+  {
+   "dimension": "L4 neuron configuration",
+   "bug": "L1",
+   "only change": "weights (1,1) -> (1,0.5)",
+   "control": "OK (2 steps)",
+   "fuzzer value": "BUG: infer() used all 60 steps: never converges"
+  },
+  {
+   "dimension": "L5 inference control",
+   "bug": "L2",
+   "only change": "And -> Exists, then infer() twice",
+   "control": "OK",
+   "fuzzer value": "BUG: second infer() on an unchanged model still reports updates (5.0)"
+  },
+  {
+   "dimension": "L6 learning",
+   "bug": "L4",
+   "only change": "loss on And -> loss on Iff",
+   "control": "OK",
+   "fuzzer value": "BUG: UnboundLocalError: cannot access local variable 'true_hinge' where it is not associated with a valu"
+  },
+  {
+   "dimension": "L7 API / grounding table",
+   "bug": "L8",
+   "only change": "R(x,y) -> reflexive R(x,x)",
+   "control": "OK",
+   "fuzzer value": "BUG: ValueError: Length mismatch: Expected axis has 2 elements, new values have 1 elements"
+  }
+ ]
+}

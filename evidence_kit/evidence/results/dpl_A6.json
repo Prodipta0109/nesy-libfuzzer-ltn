@@ -1,0 +1,19 @@
+{
+ "id": "A6",
+ "rows": [
+  {
+   "label": "rule order: \\+ f(X), g(X)  (negation first)",
+   "result": {
+    "q(1)": 0.7,
+    "q(2)": 0.7
+   }
+  },
+  {
+   "label": "rule order: g(X), \\+ f(X)  (generator first)",
+   "result": {
+    "q(1)": 0.7,
+    "q(2)": 1.0
+   }
+  }
+ ]
+}

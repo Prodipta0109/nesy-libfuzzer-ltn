@@ -1,0 +1,6 @@
+{
+ "kind": "nonconvergence/t_conv",
+ "msg": "Forall_wrap1 Forall ['a', 'b'] wrap=1 data={('a',): <Fact.TRUE: (1.0, 1.0)>, ('b',): <Fact.TRUE: (1.0, 1.0)>} steps=60 upd=tensor(62.)",
+ "where": "",
+ "trace": ""
+}

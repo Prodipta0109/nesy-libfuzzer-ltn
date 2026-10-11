@@ -1,0 +1,7 @@
+{
+ "kind": "oracle:t_learn",
+ "detail": "annotated disjunction mass 1.25 > 1 after step (fixed 0.25, learned 1.0)",
+ "loc": "",
+ "context": "T4 lr=0.0 target=0.25 loss=mse steps=3 mode=3\nt(0.25)::f.\n0.25::g1; t(3.4905944797200984e-10)::g2.\nq :- f, g1.\n",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 433, in t_learn\n    raise Bug(f\"annotated disjunction mass {fixed + learned} > 1 after step (fixed {fixed}, learned {learned})\")\nBug: annotated disjunction mass 1.25 > 1 after step (fixed 0.25, learned 1.0)\n"
+}

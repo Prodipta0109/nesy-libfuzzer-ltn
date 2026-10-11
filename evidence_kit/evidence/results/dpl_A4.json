@@ -1,0 +1,32 @@
+{
+ "id": "A4",
+ "exceptions": [
+  "exception:t_names:TypeError @ builtins.py:67",
+  "exception:t_api:FileNotFoundError @ __init__.py:28",
+  "exception:t_names:IndexError @ builtins.py:80",
+  "exception:t_names:TypeError @ builtins.py:97",
+  "exception:t_names:TypeError @ builtins.py:89",
+  "exception:t_names:AttributeError @ model.py:73",
+  "exception:t_names:AttributeError @ builtins.py:47",
+  "exception:t_names:TypeError @ builtins.py:63",
+  "exception:t_names:TypeError @ builtins.py:59",
+  "exception:t_names:TypeError @ builtins.py:85",
+  "exception:t_train:FileNotFoundError @ __init__.py:28",
+  "exception:t_data:AttributeError @ model.py:127",
+  "exception:t_names:TypeError @ builtins.py:73",
+  "exception:t_data:FileNotFoundError @ __init__.py:28",
+  "exception:t_learn:ZeroDivisionError @ optimizer.py:95",
+  "exception:t_api:TypeError @ query.py:94"
+ ],
+ "oracle_only": [
+  "oracle:t_api @ ",
+  "oracle:t_data @ ",
+  "oracle:t_data @ ",
+  "oracle:t_data @ ",
+  "oracle:t_data @ ",
+  "oracle:t_data @ ",
+  "oracle:t_learn @ ",
+  "oracle:t_data @ ",
+  "oracle:t_data @ dataset.py:326"
+ ]
+}

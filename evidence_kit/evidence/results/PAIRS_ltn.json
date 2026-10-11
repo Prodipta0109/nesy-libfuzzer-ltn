@@ -1,0 +1,54 @@
+{
+ "id": "PAIRS_ltn",
+ "rows": [
+  {
+   "dimension": "D1 data values",
+   "bug": "F24",
+   "only change": "ImpliesGoguen(stable=True) on (0.2, 0.9) -> (0, 0)",
+   "control": "OK (1.0)",
+   "fuzzer value": "BUG: 0.0 -> 0.0 gave 0.0000, expected about 1.0"
+  },
+  {
+   "dimension": "D2 data shape",
+   "bug": "F1",
+   "only change": "3 individuals -> 0 individuals",
+   "control": "OK (0.731)",
+   "fuzzer value": "BUG: result is NaN for 0 individuals"
+  },
+  {
+   "dimension": "D3 predicate / dtype",
+   "bug": "F26",
+   "only change": "float32 input -> float64 input to NotGodel",
+   "control": "OK",
+   "fuzzer value": "BUG: float torch.float64 in -> torch.float32 out"
+  },
+  {
+   "dimension": "D4 formula structure",
+   "bug": "F31",
+   "only change": "SatAgg of 1 formula -> of no formulas",
+   "control": "OK",
+   "fuzzer value": "BUG: RuntimeError: stack expects a non-empty TensorList"
+  },
+  {
+   "dimension": "D5 quantifier setup (p)",
+   "bug": "F2",
+   "only change": "AggregPMean p=2 -> p=0",
+   "control": "OK",
+   "fuzzer value": "BUG: ZeroDivisionError: division by zero"
+  },
+  {
+   "dimension": "D6 satisfaction + backward",
+   "bug": "F27",
+   "only change": "gradient of unstable PMean at 0.5 -> at 0",
+   "control": "OK",
+   "fuzzer value": "BUG: gradient [nan, nan, nan]"
+  },
+  {
+   "dimension": "D7 API boundary",
+   "bug": "F33",
+   "only change": "Variable from a 2-D tensor -> 0-d scalar tensor",
+   "control": "OK",
+   "fuzzer value": "BUG: IndexError: tuple index out of range"
+  }
+ ]
+}

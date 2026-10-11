@@ -1,0 +1,7 @@
+{
+ "kind": "oracle:t_data",
+ "detail": "NumericIncorrectOutputMutator keeps drawing without ever finding a different value (infinite loop)",
+ "loc": "dataset.py:326",
+ "context": "T7 mutator domain=[0] value=0 change_p=False p=0.0",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 648, in t_data\n    out = mut(0, Query(Term(\"f\", Constant(v)), p=p))\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/dataset.py\", line 326, in __call__\n    new_v = rng.choice(self.domain)\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 602, in choice\n    raise Bug(\"NumericIncorrectOutputMutator keeps drawing without ever finding a different value (infinite loop)\")\nBug: NumericIncorrectOutputMutator keeps drawing without ever finding a different value (infinite loop)\n"
+}

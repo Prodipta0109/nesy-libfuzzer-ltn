@@ -1,0 +1,13 @@
+{
+ "id": "A13",
+ "rows": [
+  {
+   "label": "with cap: infer(max_steps=60)",
+   "result": "returned (60 steps used, flagged as non-convergence)"
+  },
+  {
+   "label": "A13 off: infer() with no cap",
+   "result": "HANGS (killed after 20 s)"
+  }
+ ]
+}

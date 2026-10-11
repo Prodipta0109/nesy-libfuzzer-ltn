@@ -1,0 +1,63 @@
+{
+ "id": "DIM-L3",
+ "title": "dimension first-order structure (Forall/Exists, groundings)",
+ "why": "Quantifier bugs (L2, L6, L7, L8) are only reachable through first-order formulas.",
+ "on": {
+  "label": "full harness",
+  "seconds": 192.0,
+  "execs": 5000,
+  "cov": 673,
+  "ft": 2643,
+  "corpus": 139,
+  "exec_s": 26,
+  "rss_mb": 844,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 9,
+  "finding_kinds": [
+   "nonconvergence/t_weights @ ",
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "classical_mismatch/t_classical @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "raw_calls": 670
+ },
+ "off": {
+  "label": "without: first-order structure (Forall/Exists, groundings)",
+  "seconds": 244.0,
+  "execs": 4132,
+  "cov": 396,
+  "ft": 1901,
+  "corpus": 110,
+  "exec_s": 17,
+  "rss_mb": 838,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 5,
+  "finding_kinds": [
+   "nonconvergence/t_weights @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "wrong_bounds/t_upward @ ",
+   "wrong_bounds/t_upward @ "
+  ],
+  "bugs": [
+   "L1",
+   "L3",
+   "L4"
+  ],
+  "raw_calls": 126
+ },
+ "note": "bugs lost without this dimension: ['L2']"
+}

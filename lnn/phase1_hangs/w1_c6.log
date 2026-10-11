@@ -1,0 +1,97 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 106
+INFO:      181 files found in camp/corpus1
+INFO: seed corpus: files: 181 min: 4b max: 200b total: 8621b rss: 583Mb
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#64	pulse  cov: 661 ft: 2181 corp: 51/395b exec/s: 21 rss: 743Mb
+#128	pulse  cov: 665 ft: 2562 corp: 83/1326b exec/s: 12 rss: 775Mb
+#182	INITED cov: 666 ft: 2630 corp: 108/4113b exec/s: 14 rss: 775Mb
+#183	REDUCE cov: 666 ft: 2630 corp: 108/4099b lim: 200 exec/s: 14 rss: 775Mb L: 68/196 MS: 1 EraseBytes-
+#197	REDUCE cov: 666 ft: 2630 corp: 108/4052b lim: 200 exec/s: 14 rss: 775Mb L: 61/196 MS: 4 InsertByte-CopyPart-CrossOver-EraseBytes-
+#224	REDUCE cov: 666 ft: 2630 corp: 108/4013b lim: 200 exec/s: 16 rss: 775Mb L: 111/196 MS: 2 ShuffleBytes-EraseBytes-
+#256	pulse  cov: 666 ft: 2630 corp: 108/4013b lim: 200 exec/s: 16 rss: 775Mb
+#284	NEW    cov: 666 ft: 2638 corp: 109/4076b lim: 200 exec/s: 15 rss: 775Mb L: 63/196 MS: 5 ChangeByte-EraseBytes-CrossOver-CrossOver-ChangeBinInt-
+#360	REDUCE cov: 666 ft: 2638 corp: 109/4046b lim: 200 exec/s: 17 rss: 775Mb L: 166/190 MS: 1 EraseBytes-
+#402	REDUCE cov: 666 ft: 2638 corp: 109/4028b lim: 200 exec/s: 17 rss: 775Mb L: 46/190 MS: 2 ShuffleBytes-EraseBytes-
+#415	REDUCE cov: 666 ft: 2638 corp: 109/3979b lim: 200 exec/s: 17 rss: 775Mb L: 51/190 MS: 3 ShuffleBytes-ShuffleBytes-EraseBytes-
+#466	REDUCE cov: 666 ft: 2638 corp: 109/3975b lim: 200 exec/s: 17 rss: 775Mb L: 121/190 MS: 1 EraseBytes-
+#510	REDUCE cov: 666 ft: 2638 corp: 109/3974b lim: 200 exec/s: 18 rss: 775Mb L: 9/190 MS: 4 ChangeByte-CrossOver-ChangeByte-EraseBytes-
+#512	pulse  cov: 666 ft: 2638 corp: 109/3974b lim: 200 exec/s: 18 rss: 775Mb
+#547	REDUCE cov: 666 ft: 2638 corp: 109/3933b lim: 200 exec/s: 18 rss: 776Mb L: 78/190 MS: 2 InsertRepeatedBytes-EraseBytes-
+#573	REDUCE cov: 666 ft: 2638 corp: 109/3921b lim: 200 exec/s: 18 rss: 776Mb L: 47/190 MS: 1 EraseBytes-
+
+ === Timeout: 30s elapsed, timeout=25s ===
+Thread 0x00007f9e458a96c0 (most recent call first):
+  File "/usr/lib/python3.13/threading.py", line 363 in wait
+  File "/usr/lib/python3.13/threading.py", line 660 in wait
+  File "/usr/local/lib/python3.13/dist-packages/tqdm/_monitor.py", line 69 in run
+  File "/usr/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  File "/usr/lib/python3.13/threading.py", line 1015 in _bootstrap
+
+Current thread 0x00007f9f1a42b080 (most recent call first):
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 237 in tensorise
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 268 in bool_tensor
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 259 in bool_and
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 160 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 294 in contradicting_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 281 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/_gm.py", line 83 in downward_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/connective_neuron.py", line 117 in downward
+  File "/home/claude/lnn/src/lnn/model.py", line 438 in _traverse_execute
+  File "/home/claude/lnn/src/lnn/model.py", line 501 in _infer
+  File "/home/claude/lnn/src/lnn/model.py", line 468 in infer
+  File "/home/claude/lnn/src/lnn/model.py", line 619 in train
+  File "/home/claude/lnn/lnn_fuzz.py", line 245 in t_learn
+  File "/home/claude/lnn/lnn_fuzz.py", line 290 in TestOneInput
+  File "/home/claude/lnn/lnn_fuzz.py", line 306 in <module>
+ALARM: working on the last Unit for 29 seconds
+       and the timeout value is 25 (use -timeout=N to change)
+MS: 4 ChangeByte-CMP-ChangeBit-CopyPart- DE: "\001\000"-; base unit: b96ee47d6a4acdf101a14fa38167cdfd26b65673
+0x1,0x0,0xa6,0x67,0xbf,0xff,0xff,0xff,0xff,0xff,0xa,0x25,0x4,0xa,0x25,0x4,0x66,
+\001\000\246g\277\377\377\377\377\377\012%\004\012%\004f
+artifact_prefix='./'; Test unit written to ./timeout-3f1013c82ac00ea415ffc32eabd7f2744c34beed
+Base64: AQCmZ7///////wolBAolBGY=
+==731== ERROR: libFuzzer: timeout after 29 seconds
+SUMMARY: libFuzzer: timeout
+stat::number_of_executed_units: 612
+stat::average_exec_per_sec:     9
+stat::new_units_added:          11
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              855

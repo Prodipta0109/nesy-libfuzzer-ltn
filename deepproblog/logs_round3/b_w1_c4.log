@@ -1,0 +1,103 @@
+INFO: Instrumenting problog
+INFO: Instrumenting problog.setup
+INFO: Instrumenting problog.cnf_formula
+INFO: Instrumenting problog.core
+INFO: Instrumenting problog.errors
+INFO: Instrumenting problog.evaluator
+INFO: Instrumenting problog.formula
+INFO: Instrumenting problog.constraint
+INFO: Instrumenting problog.logic
+INFO: Instrumenting problog.util
+INFO: Instrumenting problog.engine
+INFO: Instrumenting problog.engine_unify
+INFO: Instrumenting problog.program
+INFO: Instrumenting problog.parser
+INFO: Instrumenting problog.engine_stack
+INFO: Instrumenting problog.eval_nodes
+INFO: Instrumenting problog.engine_builtin
+INFO: Instrumenting problog.clausedb
+INFO: Instrumenting problog.ddnnf_formula
+INFO: Instrumenting problog.sdd_formula
+INFO: Instrumenting problog.dd_formula
+INFO: Instrumenting problog.sdd_formula_explicit
+INFO: Instrumenting problog.forward
+INFO: Instrumenting problog.bdd_formula
+INFO: Instrumenting problog.cycles
+INFO: Instrumenting problog.kbest
+INFO: Instrumenting problog.maxsat
+INFO: Instrumenting problog.tasks
+INFO: Instrumenting problog.version
+INFO: Instrumenting problog.debug
+INFO: Instrumenting deepproblog
+INFO: Instrumenting deepproblog.model
+INFO: Instrumenting deepproblog.engines
+INFO: Instrumenting deepproblog.engines.approximate_engine
+INFO: Instrumenting deepproblog.engines.engine
+INFO: Instrumenting deepproblog.query
+INFO: Instrumenting deepproblog.tensor
+INFO: Instrumenting deepproblog.engines.exact_engine
+INFO: Instrumenting problog.extern
+INFO: Instrumenting deepproblog.network
+INFO: Instrumenting deepproblog.engines.builtins
+INFO: Instrumenting deepproblog.dataset
+INFO: Instrumenting deepproblog.embeddings
+INFO: Instrumenting deepproblog.optimizer
+INFO: Instrumenting deepproblog.semiring
+INFO: Instrumenting deepproblog.solver
+INFO: Instrumenting deepproblog.arithmetic_circuit
+INFO: Instrumenting deepproblog.semiring.graph_semiring
+INFO: Instrumenting deepproblog.utils
+INFO: Instrumenting deepproblog.utils.cache
+INFO: Instrumenting deepproblog.train
+INFO: Instrumenting deepproblog.utils.logger
+INFO: Instrumenting deepproblog.utils.stop_condition
+INFO: Instrumenting deepproblog.evaluate
+INFO: Instrumenting deepproblog.utils.confusion_matrix
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1004
+INFO:      542 files found in campaign3b/corpus1
+INFO: seed corpus: files: 542 min: 1b max: 200b total: 41478b rss: 528Mb
+#32	pulse  cov: 2145 ft: 6239 corp: 17/40b exec/s: 16 rss: 541Mb
+#64	pulse  cov: 2146 ft: 6510 corp: 29/163b exec/s: 16 rss: 548Mb
+#128	pulse  cov: 2167 ft: 7438 corp: 59/977b exec/s: 16 rss: 550Mb
+#256	pulse  cov: 2193 ft: 8439 corp: 112/3677b exec/s: 15 rss: 551Mb
+#512	pulse  cov: 2193 ft: 9497 corp: 227/15323b exec/s: 13 rss: 553Mb
+#543	INITED cov: 2193 ft: 9546 corp: 238/16Kb exec/s: 13 rss: 553Mb
+#563	NEW    cov: 2193 ft: 9560 corp: 239/17Kb lim: 200 exec/s: 13 rss: 553Mb L: 142/198 MS: 5 ChangeByte-ChangeBinInt-CMP-CopyPart-ShuffleBytes- DE: "=>"-
+#580	NEW    cov: 2193 ft: 9561 corp: 240/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 96/198 MS: 2 CopyPart-EraseBytes-
+#591	NEW    cov: 2193 ft: 9562 corp: 241/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 129/198 MS: 1 ChangeBinInt-
+#592	NEW    cov: 2193 ft: 9563 corp: 242/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 50/198 MS: 1 ChangeBit-
+#605	REDUCE cov: 2193 ft: 9563 corp: 242/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 61/198 MS: 3 CrossOver-CopyPart-EraseBytes-
+#685	REDUCE cov: 2193 ft: 9563 corp: 242/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 15/198 MS: 5 ChangeBit-ChangeBinInt-ShuffleBytes-CopyPart-EraseBytes-
+#686	NEW    cov: 2193 ft: 9564 corp: 243/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 48/198 MS: 1 EraseBytes-
+#698	NEW    cov: 2193 ft: 9566 corp: 244/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 123/198 MS: 2 CopyPart-CMP- DE: "\377\377\377\377"-
+#710	NEW    cov: 2193 ft: 9569 corp: 245/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 82/198 MS: 2 EraseBytes-CopyPart-
+#741	REDUCE cov: 2193 ft: 9569 corp: 245/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 81/198 MS: 1 EraseBytes-
+#747	NEW    cov: 2193 ft: 9571 corp: 246/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 117/198 MS: 1 ChangeByte-
+#796	NEW    cov: 2193 ft: 9572 corp: 247/17Kb lim: 200 exec/s: 13 rss: 555Mb L: 36/198 MS: 4 EraseBytes-ShuffleBytes-InsertByte-ChangeBinInt-
+#932	NEW    cov: 2193 ft: 9574 corp: 248/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 36/198 MS: 1 ChangeBinInt-
+#954	REDUCE cov: 2193 ft: 9574 corp: 248/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 89/198 MS: 2 ShuffleBytes-EraseBytes-
+#1024	pulse  cov: 2193 ft: 9574 corp: 248/17Kb lim: 200 exec/s: 13 rss: 556Mb
+#1094	NEW    cov: 2193 ft: 9578 corp: 249/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 172/198 MS: 5 ChangeASCIIInt-CopyPart-CopyPart-CopyPart-EraseBytes-
+#1187	REDUCE cov: 2193 ft: 9578 corp: 249/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 127/198 MS: 3 CMP-ChangeByte-EraseBytes- DE: "\271\001\000\000\000\000\000\000"-
+#1198	REDUCE cov: 2193 ft: 9578 corp: 249/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 92/198 MS: 1 EraseBytes-
+#1212	REDUCE cov: 2193 ft: 9578 corp: 249/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 30/198 MS: 4 ChangeByte-ShuffleBytes-PersAutoDict-EraseBytes- DE: "\377\377\377\377"-
+#1268	REDUCE cov: 2193 ft: 9578 corp: 249/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 127/198 MS: 1 EraseBytes-
+#1276	NEW    cov: 2193 ft: 9580 corp: 250/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 101/198 MS: 3 PersAutoDict-PersAutoDict-ChangeBinInt- DE: "=>"-"\377\377\377\377"-
+#1313	REDUCE cov: 2193 ft: 9580 corp: 250/17Kb lim: 200 exec/s: 13 rss: 556Mb L: 32/198 MS: 2 ShuffleBytes-EraseBytes-
+#1388	DONE   cov: 2193 ft: 9580 corp: 250/17Kb lim: 200 exec/s: 13 rss: 556Mb
+###### Recommended dictionary. ######
+"=>" # Uses: 34
+"\377\377\377\377" # Uses: 31
+"\271\001\000\000\000\000\000\000" # Uses: 11
+###### End of recommended dictionary. ######
+Done 1388 runs in 101 second(s)
+stat::number_of_executed_units: 1388
+stat::average_exec_per_sec:     13
+stat::new_units_added:          21
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              556

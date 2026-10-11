@@ -1,0 +1,67 @@
+{
+ "id": "A2",
+ "title": "instrument ONLY the library under test",
+ "why": "Instrumenting torch as well floods libFuzzer with counters from code we do not test: slower, and 'new coverage' from torch fills the corpus.",
+ "on": {
+  "label": "full harness",
+  "seconds": 184.4,
+  "execs": 5000,
+  "cov": 673,
+  "ft": 2643,
+  "corpus": 139,
+  "exec_s": 27,
+  "rss_mb": 844,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 9,
+  "finding_kinds": [
+   "nonconvergence/t_weights @ ",
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "classical_mismatch/t_classical @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "stray_files": 1,
+  "raw_calls": 670
+ },
+ "off": {
+  "label": "A2 off: instrument lnn+torch",
+  "seconds": 215.1,
+  "execs": 5000,
+  "cov": 1924,
+  "ft": 5101,
+  "corpus": 147,
+  "exec_s": 26,
+  "rss_mb": 862,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 7,
+  "finding_kinds": [
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "stray_files": 1,
+  "raw_calls": 672
+ },
+ "note": ""
+}

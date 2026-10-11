@@ -5,3 +5,9 @@ __pycache__/
 *:Zone.Identifier
 crash-*
 ltn_dimensions.csv
+venv/
+lnn/src/
+__pycache__/
+*.pyc
+*:Zone.Identifier
+corpus*/

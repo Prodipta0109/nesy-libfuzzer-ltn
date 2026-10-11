@@ -1,0 +1,7 @@
+{
+ "kind": "exception:t_api:FileNotFoundError",
+ "detail": "[Errno 2] No such file or directory: ''",
+ "loc": "__init__.py:28",
+ "context": "T5 save_state complete=False\nt(0.0)::f.\nnn(net,[X],Y,[0,1]) :: d(X,Y).\nq(X) :- f, d(X,1).\n\npath form = {}",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 529, in t_api\n    m.save_state(path, complete=complete)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/model.py\", line 144, in save_state\n    check_path(filename)\n    ~~~~~~~~~~^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/utils/__init__.py\", line 28, in check_path\n    os.makedirs(path_dir)\n    ~~~~~~~~~~~^^^^^^^^^^\n  File \"<frozen os>\", line 228, in makedirs\nFileNotFoundError: [Errno 2] No such file or directory: ''\n"
+}

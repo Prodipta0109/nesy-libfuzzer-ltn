@@ -1,0 +1,63 @@
+{
+ "id": "A7",
+ "short": {
+  "label": "A7 short run",
+  "seconds": 13.5,
+  "execs": 500,
+  "cov": 631,
+  "ft": 2038,
+  "corpus": 64,
+  "exec_s": 50,
+  "rss_mb": 747,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 6,
+  "finding_kinds": [
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "stray_files": 1,
+  "raw_calls": 53
+ },
+ "long": {
+  "label": "A7 long run",
+  "seconds": 102.8,
+  "execs": 3000,
+  "cov": 666,
+  "ft": 2568,
+  "corpus": 128,
+  "exec_s": 30,
+  "rss_mb": 804,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 8,
+  "finding_kinds": [
+   "nonconvergence/t_weights @ ",
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "stray_files": 1,
+  "raw_calls": 392
+ },
+ "kb_per_exec": 23.3472
+}

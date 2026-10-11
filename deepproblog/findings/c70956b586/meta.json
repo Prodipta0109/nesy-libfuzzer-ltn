@@ -1,0 +1,7 @@
+{
+ "kind": "exception:t_data:AttributeError",
+ "detail": "'ArithmeticCircuit' object has no attribute 'from_cache'",
+ "loc": "model.py:127",
+ "context": "T7 ground_dataset cache=False\n0.3::f(1).\n0.4::f(2).\n",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 634, in t_data\n    out = m.ground_dataset(QueryDataset([Query(Term(\"f\", Constant(1))), Query(Term(\"f\", Constant(2)))]))\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/model.py\", line 127, in ground_dataset\n    if not result.from_cache:\n           ^^^^^^^^^^^^^^^^^\nAttributeError: 'ArithmeticCircuit' object has no attribute 'from_cache'\n"
+}

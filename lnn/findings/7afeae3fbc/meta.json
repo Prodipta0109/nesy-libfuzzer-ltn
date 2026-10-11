@@ -1,0 +1,6 @@
+{
+ "kind": "exception/t_learn",
+ "msg": "UnboundLocalError: cannot access local variable 'true_hinge' where it is not associated with a value",
+ "where": "connective_neuron.py:_logical_loss",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/lnn/lnn_fuzz.py\", line 326, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/lnn/lnn_fuzz.py\", line 254, in t_learn\n    m.train(losses=[L], epochs=epochs, pbar=False, max_steps=MAXSTEPS)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/claude/lnn/src/lnn/model.py\", line 620, in train\n    loss_fn = self.loss_fn(losses)\n  File \"/home/claude/lnn/src/lnn/model.py\", line 698, in loss_fn\n    self._traverse_execute(f\"_{loss.value.lower()}_loss\", **kwds)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/claude/lnn/src/lnn/model.py\", line 438, in _traverse_execute\n    val = getattr(node, func)(**kwds) if hasattr(node, func) else None\n          ~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/claude/lnn/src/lnn/symbolic/logic/connective_neuron.py\", line 220, in _logical_loss\n    result = (true_hinge.square() + false_hinge.square()).sum()\n              ^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'true_hinge' where it is not associated with a value\n"
+}

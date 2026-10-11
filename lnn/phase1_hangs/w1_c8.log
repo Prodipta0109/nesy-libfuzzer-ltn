@@ -1,0 +1,84 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 108
+INFO:      209 files found in camp/corpus1
+INFO: seed corpus: files: 209 min: 4b max: 200b total: 10020b rss: 583Mb
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#64	pulse  cov: 654 ft: 2103 corp: 48/330b exec/s: 21 rss: 744Mb
+#128	pulse  cov: 665 ft: 2552 corp: 81/1102b exec/s: 12 rss: 777Mb
+#210	INITED cov: 666 ft: 2658 corp: 110/3798b exec/s: 14 rss: 782Mb
+
+ === Timeout: 36s elapsed, timeout=25s ===
+Thread 0x00007f4cd00a96c0 (most recent call first):
+  File "/usr/lib/python3.13/threading.py", line 363 in wait
+  File "/usr/lib/python3.13/threading.py", line 660 in wait
+  File "/usr/local/lib/python3.13/dist-packages/tqdm/_monitor.py", line 69 in run
+  File "/usr/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  File "/usr/lib/python3.13/threading.py", line 1015 in _bootstrap
+
+Current thread 0x00007f4da4b34080 (most recent call first):
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 121 in output_regions
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 135 in _get_state_vars
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 159 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 289 in contradicting_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 281 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/_gm.py", line 42 in upward_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/connective_neuron.py", line 67 in upward
+  File "/home/claude/lnn/src/lnn/symbolic/logic/binary_neuron.py", line 139 in upward
+  File "/home/claude/lnn/src/lnn/model.py", line 438 in _traverse_execute
+  File "/home/claude/lnn/src/lnn/model.py", line 501 in _infer
+  File "/home/claude/lnn/src/lnn/model.py", line 468 in infer
+  File "/home/claude/lnn/src/lnn/model.py", line 619 in train
+  File "/home/claude/lnn/lnn_fuzz.py", line 251 in t_learn
+  File "/home/claude/lnn/lnn_fuzz.py", line 296 in TestOneInput
+  File "/home/claude/lnn/lnn_fuzz.py", line 312 in <module>
+ALARM: working on the last Unit for 36 seconds
+       and the timeout value is 25 (use -timeout=N to change)
+MS: 3 ShuffleBytes-EraseBytes-ChangeBinInt-; base unit: 8ad9ab71224dc1c254c0e168e75fa0bc55d8ad79
+0x2b,0xba,0xba,0xba,0xba,0x5a,0xff,0xff,0xba,0x41,0xfe,0xff,0xff,0xff,0xce,0xfb,0x6e,
++\272\272\272\272Z\377\377\272A\376\377\377\377\316\373n
+artifact_prefix='./'; Test unit written to ./timeout-602ec9cee40956e314b749d443c75b46699d1e0c
+Base64: K7q6urpa//+6Qf7////O+24=
+==830== ERROR: libFuzzer: timeout after 36 seconds
+SUMMARY: libFuzzer: timeout
+stat::number_of_executed_units: 213
+stat::average_exec_per_sec:     4
+stat::new_units_added:          0
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              986

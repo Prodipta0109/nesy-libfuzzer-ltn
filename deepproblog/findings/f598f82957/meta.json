@@ -1,0 +1,7 @@
+{
+ "kind": "exception:t_api:TypeError",
+ "detail": "unhashable type: 'dict'",
+ "loc": "query.py:94",
+ "context": "T5 query args=[0] output_ind=(-1,) p=0.0 substitution=None",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 506, in t_api\n    hash(q)                    # queries must be usable in sets / dict keys\n    ~~~~^^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/query.py\", line 94, in __hash__\n    ^ hash(self.substitution)\n      ~~~~^^^^^^^^^^^^^^^^^^^\nTypeError: unhashable type: 'dict'\n"
+}

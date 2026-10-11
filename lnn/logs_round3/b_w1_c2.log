@@ -1,0 +1,51 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1002
+INFO:      130 files found in campaign3b/corpus1
+INFO: seed corpus: files: 130 min: 4b max: 160b total: 3457b rss: 582Mb
+#32	pulse  cov: 683 ft: 1839 corp: 19/102b exec/s: 16 rss: 741Mb
+#64	pulse  cov: 696 ft: 2414 corp: 34/279b exec/s: 10 rss: 755Mb
+#128	pulse  cov: 700 ft: 2674 corp: 54/944b exec/s: 4 rss: 797Mb
+#131	INITED cov: 700 ft: 2674 corp: 54/944b exec/s: 3 rss: 806Mb
+#159	REDUCE cov: 700 ft: 2674 corp: 54/943b lim: 200 exec/s: 4 rss: 806Mb L: 4/89 MS: 3 ChangeByte-ChangeBit-EraseBytes-
+#189	REDUCE cov: 700 ft: 2674 corp: 54/942b lim: 200 exec/s: 4 rss: 806Mb L: 18/89 MS: 5 ShuffleBytes-EraseBytes-InsertByte-InsertByte-CrossOver-
+#223	REDUCE cov: 700 ft: 2674 corp: 54/935b lim: 200 exec/s: 3 rss: 807Mb L: 8/89 MS: 4 ChangeByte-ShuffleBytes-ChangeBit-EraseBytes-
+#234	REDUCE cov: 700 ft: 2674 corp: 54/924b lim: 200 exec/s: 2 rss: 814Mb L: 12/89 MS: 1 EraseBytes-
+#256	pulse  cov: 700 ft: 2674 corp: 54/924b lim: 200 exec/s: 3 rss: 814Mb
+#295	REDUCE cov: 700 ft: 2674 corp: 54/912b lim: 200 exec/s: 3 rss: 814Mb L: 24/89 MS: 1 EraseBytes-
+#328	REDUCE cov: 700 ft: 2674 corp: 54/910b lim: 200 exec/s: 3 rss: 814Mb L: 19/89 MS: 3 ShuffleBytes-ChangeBinInt-EraseBytes-
+#360	REDUCE cov: 700 ft: 2674 corp: 54/907b lim: 200 exec/s: 4 rss: 814Mb L: 18/89 MS: 2 CopyPart-EraseBytes-
+#364	NEW    cov: 700 ft: 2678 corp: 55/922b lim: 200 exec/s: 4 rss: 814Mb L: 15/89 MS: 4 InsertByte-ChangeByte-ShuffleBytes-InsertByte-
+#409	DONE   cov: 700 ft: 2678 corp: 55/922b lim: 200 exec/s: 3 rss: 822Mb
+Done 409 runs in 106 second(s)
+stat::number_of_executed_units: 409
+stat::average_exec_per_sec:     3
+stat::new_units_added:          8
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              822

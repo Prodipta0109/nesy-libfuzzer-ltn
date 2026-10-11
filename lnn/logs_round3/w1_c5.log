@@ -1,0 +1,76 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1005
+INFO:      104 files found in campaign3/corpus1
+INFO: seed corpus: files: 104 min: 4b max: 160b total: 2769b rss: 582Mb
+#32	pulse  cov: 680 ft: 1903 corp: 23/145b exec/s: 16 rss: 741Mb
+#64	pulse  cov: 696 ft: 2312 corp: 39/370b exec/s: 9 rss: 751Mb
+#105	INITED cov: 700 ft: 2577 corp: 55/1092b exec/s: 4 rss: 805Mb
+#128	pulse  cov: 700 ft: 2577 corp: 55/1092b lim: 200 exec/s: 4 rss: 805Mb
+#151	NEW    cov: 700 ft: 2581 corp: 56/1115b lim: 200 exec/s: 5 rss: 805Mb L: 23/129 MS: 1 InsertByte-
+#199	REDUCE cov: 700 ft: 2581 corp: 56/1101b lim: 200 exec/s: 6 rss: 805Mb L: 29/129 MS: 3 ShuffleBytes-ShuffleBytes-EraseBytes-
+#230	REDUCE cov: 700 ft: 2581 corp: 56/1100b lim: 200 exec/s: 6 rss: 805Mb L: 8/129 MS: 1 EraseBytes-
+#240	NEW    cov: 700 ft: 2669 corp: 57/1135b lim: 200 exec/s: 7 rss: 805Mb L: 35/129 MS: 5 CopyPart-EraseBytes-ChangeByte-InsertByte-InsertRepeatedBytes-
+#250	NEW    cov: 700 ft: 2670 corp: 58/1255b lim: 200 exec/s: 6 rss: 805Mb L: 120/129 MS: 5 ChangeByte-InsertByte-InsertByte-ChangeBinInt-InsertRepeatedBytes-
+#256	pulse  cov: 700 ft: 2670 corp: 58/1255b lim: 200 exec/s: 7 rss: 805Mb
+#274	REDUCE cov: 700 ft: 2670 corp: 58/1251b lim: 200 exec/s: 6 rss: 805Mb L: 18/129 MS: 4 CopyPart-InsertByte-ChangeByte-EraseBytes-
+#296	REDUCE cov: 700 ft: 2670 corp: 58/1218b lim: 200 exec/s: 5 rss: 805Mb L: 89/129 MS: 2 ChangeBit-EraseBytes-
+#359	REDUCE cov: 700 ft: 2670 corp: 58/1216b lim: 200 exec/s: 6 rss: 805Mb L: 23/129 MS: 3 EraseBytes-ShuffleBytes-InsertByte-
+#391	REDUCE cov: 700 ft: 2670 corp: 58/1207b lim: 200 exec/s: 6 rss: 806Mb L: 20/129 MS: 2 CrossOver-EraseBytes-
+#392	REDUCE cov: 700 ft: 2670 corp: 58/1203b lim: 200 exec/s: 6 rss: 806Mb L: 4/129 MS: 1 EraseBytes-
+#412	REDUCE cov: 700 ft: 2670 corp: 58/1170b lim: 200 exec/s: 5 rss: 806Mb L: 87/129 MS: 5 CopyPart-ShuffleBytes-ChangeByte-ChangeASCIIInt-EraseBytes-
+#449	REDUCE cov: 700 ft: 2670 corp: 58/1167b lim: 200 exec/s: 5 rss: 806Mb L: 13/129 MS: 2 CrossOver-EraseBytes-
+#471	REDUCE cov: 700 ft: 2670 corp: 58/1166b lim: 200 exec/s: 6 rss: 806Mb L: 4/129 MS: 2 EraseBytes-InsertByte-
+#495	REDUCE cov: 700 ft: 2670 corp: 58/1164b lim: 200 exec/s: 6 rss: 806Mb L: 20/129 MS: 4 CopyPart-ChangeBinInt-ChangeBinInt-EraseBytes-
+#512	pulse  cov: 700 ft: 2670 corp: 58/1164b lim: 200 exec/s: 6 rss: 806Mb
+#526	NEW    cov: 700 ft: 2671 corp: 59/1174b lim: 200 exec/s: 6 rss: 806Mb L: 10/129 MS: 1 InsertByte-
+#582	REDUCE cov: 700 ft: 2671 corp: 59/1171b lim: 200 exec/s: 6 rss: 818Mb L: 6/129 MS: 1 EraseBytes-
+#678	NEW    cov: 700 ft: 2674 corp: 60/1230b lim: 200 exec/s: 6 rss: 818Mb L: 59/129 MS: 1 CrossOver-
+#680	REDUCE cov: 700 ft: 2674 corp: 60/1225b lim: 200 exec/s: 5 rss: 818Mb L: 18/129 MS: 2 ChangeBinInt-EraseBytes-
+#720	REDUCE cov: 700 ft: 2674 corp: 60/1200b lim: 200 exec/s: 6 rss: 818Mb L: 34/129 MS: 5 CrossOver-CMP-ChangeBit-CMP-EraseBytes- DE: "\000\000\000\000"-"\001\000\000\000\000\000\0002"-
+#751	REDUCE cov: 700 ft: 2674 corp: 60/1198b lim: 200 exec/s: 6 rss: 818Mb L: 19/129 MS: 1 EraseBytes-
+#777	REDUCE cov: 700 ft: 2674 corp: 60/1193b lim: 200 exec/s: 6 rss: 818Mb L: 8/129 MS: 1 EraseBytes-
+#821	REDUCE cov: 700 ft: 2674 corp: 60/1188b lim: 200 exec/s: 6 rss: 818Mb L: 16/129 MS: 4 PersAutoDict-CMP-ChangeByte-EraseBytes- DE: "\000\000\000\000"-"\377\377\377\377"-
+#832	REDUCE cov: 700 ft: 2674 corp: 60/1186b lim: 200 exec/s: 6 rss: 819Mb L: 4/129 MS: 1 EraseBytes-
+#835	REDUCE cov: 700 ft: 2674 corp: 60/1175b lim: 200 exec/s: 6 rss: 819Mb L: 89/129 MS: 3 ChangeByte-ShuffleBytes-EraseBytes-
+#839	REDUCE cov: 700 ft: 2674 corp: 60/1172b lim: 200 exec/s: 6 rss: 819Mb L: 15/129 MS: 4 EraseBytes-InsertByte-InsertByte-CrossOver-
+#842	REDUCE cov: 700 ft: 2674 corp: 60/1166b lim: 200 exec/s: 6 rss: 819Mb L: 10/129 MS: 3 InsertByte-CrossOver-EraseBytes-
+#848	REDUCE cov: 700 ft: 2674 corp: 60/1149b lim: 200 exec/s: 6 rss: 819Mb L: 70/129 MS: 1 EraseBytes-
+#923	DONE   cov: 700 ft: 2674 corp: 60/1149b lim: 200 exec/s: 6 rss: 819Mb
+###### Recommended dictionary. ######
+"\000\000\000\000" # Uses: 6
+"\001\000\000\000\000\000\0002" # Uses: 9
+"\377\377\377\377" # Uses: 1
+###### End of recommended dictionary. ######
+Done 923 runs in 152 second(s)
+stat::number_of_executed_units: 923
+stat::average_exec_per_sec:     6
+stat::new_units_added:          27
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              819

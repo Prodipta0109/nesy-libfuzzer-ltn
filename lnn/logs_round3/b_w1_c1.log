@@ -1,0 +1,49 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1001
+INFO:      128 files found in campaign3b/corpus1
+INFO: seed corpus: files: 128 min: 4b max: 160b total: 3354b rss: 573Mb
+[FINDING e8a171202b] exception/t_fol_shapes: ValueError: Length mismatch: Expected axis has 2 elements, new values have 1 elements
+[FINDING c0faf71d86] exception/t_fol_shapes: ValueError: tuple.index(x): x not in tuple
+#32	pulse  cov: 684 ft: 1888 corp: 20/108b exec/s: 16 rss: 731Mb
+#64	pulse  cov: 696 ft: 2413 corp: 36/296b exec/s: 10 rss: 744Mb
+[FINDING a43a34cab0] fol_contradiction/t_fol2: Forall x Forall y R->S dom=['a', 'b', 'c'] R={('a', 'a'): True, ('a', 'b'): True, ('a', 'c'): True, ('b', 'a'): False, ('b', 'b'): False, ('b', 'c'): False, ('c
+[FINDING bb734fa1cd] fol_contradiction/t_fol2: Exists x Exists y R&S dom=['a', 'b', 'c'] R={('a', 'a'): True, ('a', 'b'): True, ('a', 'c'): False, ('b', 'a'): False, ('b', 'b'): False, ('b', 'c'): False, ('c
+#128	pulse  cov: 700 ft: 2674 corp: 56/982b exec/s: 3 rss: 800Mb
+#129	INITED cov: 700 ft: 2674 corp: 56/982b exec/s: 3 rss: 808Mb
+#227	REDUCE cov: 700 ft: 2674 corp: 56/975b lim: 200 exec/s: 4 rss: 808Mb L: 82/89 MS: 3 ChangeByte-ChangeBit-EraseBytes-
+#248	REDUCE cov: 700 ft: 2674 corp: 56/961b lim: 200 exec/s: 4 rss: 808Mb L: 21/89 MS: 1 EraseBytes-
+#256	pulse  cov: 700 ft: 2674 corp: 56/961b lim: 200 exec/s: 4 rss: 808Mb
+#377	DONE   cov: 700 ft: 2674 corp: 56/961b lim: 200 exec/s: 3 rss: 850Mb
+Done 377 runs in 103 second(s)
+stat::number_of_executed_units: 377
+stat::average_exec_per_sec:     3
+stat::new_units_added:          2
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              850

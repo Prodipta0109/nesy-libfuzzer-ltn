@@ -1,0 +1,95 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 103
+INFO:      134 files found in camp/corpus1
+INFO: seed corpus: files: 134 min: 4b max: 200b total: 5332b rss: 582Mb
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#32	pulse  cov: 635 ft: 1895 corp: 29/167b exec/s: 16 rss: 741Mb
+#64	pulse  cov: 654 ft: 2204 corp: 57/504b exec/s: 21 rss: 745Mb
+#128	pulse  cov: 665 ft: 2547 corp: 94/2522b exec/s: 14 rss: 765Mb
+#135	INITED cov: 666 ft: 2560 corp: 99/3241b exec/s: 13 rss: 765Mb
+#153	REDUCE cov: 666 ft: 2560 corp: 99/3200b lim: 200 exec/s: 13 rss: 765Mb L: 69/200 MS: 3 InsertRepeatedBytes-ChangeBinInt-EraseBytes-
+#185	NEW    cov: 666 ft: 2605 corp: 100/3211b lim: 200 exec/s: 16 rss: 765Mb L: 11/200 MS: 2 CMP-CMP- DE: "\001\000\000\000"-"\377\377"-
+#197	REDUCE cov: 666 ft: 2605 corp: 100/3209b lim: 200 exec/s: 16 rss: 765Mb L: 4/200 MS: 2 ChangeByte-EraseBytes-
+#224	REDUCE cov: 666 ft: 2605 corp: 100/3203b lim: 200 exec/s: 17 rss: 765Mb L: 63/200 MS: 2 InsertByte-EraseBytes-
+#256	pulse  cov: 666 ft: 2605 corp: 100/3203b lim: 200 exec/s: 18 rss: 765Mb
+#276	REDUCE cov: 666 ft: 2605 corp: 100/3194b lim: 200 exec/s: 19 rss: 765Mb L: 80/200 MS: 2 CopyPart-EraseBytes-
+#308	NEW    cov: 666 ft: 2607 corp: 101/3287b lim: 200 exec/s: 18 rss: 765Mb L: 93/200 MS: 2 InsertByte-InsertRepeatedBytes-
+#335	REDUCE cov: 666 ft: 2607 corp: 101/3269b lim: 200 exec/s: 18 rss: 765Mb L: 182/182 MS: 2 ShuffleBytes-EraseBytes-
+#340	NEW    cov: 666 ft: 2609 corp: 102/3456b lim: 200 exec/s: 17 rss: 765Mb L: 187/187 MS: 5 ChangeBinInt-ChangeByte-InsertRepeatedBytes-ShuffleBytes-InsertRepeatedBytes-
+#405	REDUCE cov: 666 ft: 2609 corp: 102/3454b lim: 200 exec/s: 19 rss: 765Mb L: 17/187 MS: 5 CopyPart-CrossOver-EraseBytes-ChangeBinInt-EraseBytes-
+#438	NEW    cov: 666 ft: 2610 corp: 103/3482b lim: 200 exec/s: 19 rss: 766Mb L: 28/187 MS: 3 InsertByte-CrossOver-EraseBytes-
+#443	NEW    cov: 666 ft: 2612 corp: 104/3672b lim: 200 exec/s: 19 rss: 766Mb L: 190/190 MS: 5 ChangeByte-ShuffleBytes-InsertRepeatedBytes-ChangeBit-CopyPart-
+
+ === Timeout: 28s elapsed, timeout=25s ===
+Thread 0x00007f3a80fa96c0 (most recent call first):
+  File "/usr/lib/python3.13/threading.py", line 363 in wait
+  File "/usr/lib/python3.13/threading.py", line 660 in wait
+  File "/usr/local/lib/python3.13/dist-packages/tqdm/_monitor.py", line 69 in run
+  File "/usr/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  File "/usr/lib/python3.13/threading.py", line 1015 in _bootstrap
+
+Current thread 0x00007f3b55a70080 (most recent call first):
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 162 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 294 in contradicting_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 281 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/_gm.py", line 189 in _is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/_gm.py", line 34 in upward_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/connective_neuron.py", line 67 in upward
+  File "/home/claude/lnn/src/lnn/model.py", line 438 in _traverse_execute
+  File "/home/claude/lnn/src/lnn/model.py", line 501 in _infer
+  File "/home/claude/lnn/src/lnn/model.py", line 468 in infer
+  File "/home/claude/lnn/src/lnn/model.py", line 619 in train
+  File "/home/claude/lnn/lnn_fuzz.py", line 245 in t_learn
+  File "/home/claude/lnn/lnn_fuzz.py", line 290 in TestOneInput
+  File "/home/claude/lnn/lnn_fuzz.py", line 306 in <module>
+ALARM: working on the last Unit for 27 seconds
+       and the timeout value is 25 (use -timeout=N to change)
+MS: 1 InsertRepeatedBytes-; base unit: b96ee47d6a4acdf101a14fa38167cdfd26b65673
+0x7f,0x0,0x0,0x67,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x3b,0x28,0xa,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x25,0x4,0x66,
+\177\000\000g\377\377\377\377\377\377\377;(\012\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377%\004f
+artifact_prefix='./'; Test unit written to ./timeout-bcc25240e7e41438afa5d20c8583a621690fe4c4
+Base64: fwAAZ/////////87KAr/////////////////////////////////JQRm
+==694== ERROR: libFuzzer: timeout after 27 seconds
+SUMMARY: libFuzzer: timeout
+stat::number_of_executed_units: 454
+stat::average_exec_per_sec:     8
+stat::new_units_added:          11
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              871

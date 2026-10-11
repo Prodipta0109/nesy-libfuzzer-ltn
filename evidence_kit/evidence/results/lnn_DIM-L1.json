@@ -1,0 +1,66 @@
+{
+ "id": "DIM-L1",
+ "title": "dimension formula structure (which connectives, how deep)",
+ "why": "Without it the fuzzer never builds the connective trees where the wrong-value (Implies/Iff) and missing-module bugs live.",
+ "on": {
+  "label": "full harness",
+  "seconds": 192.0,
+  "execs": 5000,
+  "cov": 673,
+  "ft": 2643,
+  "corpus": 139,
+  "exec_s": 26,
+  "rss_mb": 844,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 9,
+  "finding_kinds": [
+   "nonconvergence/t_weights @ ",
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "classical_mismatch/t_classical @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "raw_calls": 670
+ },
+ "off": {
+  "label": "without: formula structure (which connectives, how deep)",
+  "seconds": 243.7,
+  "execs": 4517,
+  "cov": 654,
+  "ft": 2235,
+  "corpus": 86,
+  "exec_s": 18,
+  "rss_mb": 889,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 8,
+  "finding_kinds": [
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_weights @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_weights @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L4"
+  ],
+  "raw_calls": 1254
+ },
+ "note": "bugs lost without this dimension: ['L3']"
+}

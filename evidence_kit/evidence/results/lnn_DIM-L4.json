@@ -1,0 +1,68 @@
+{
+ "id": "DIM-L4",
+ "title": "dimension neuron configuration: weights and bias",
+ "why": "Bug L1 needs UNEQUAL weights. With every weight fixed to 1.0 it cannot appear.",
+ "on": {
+  "label": "full harness",
+  "seconds": 192.0,
+  "execs": 5000,
+  "cov": 673,
+  "ft": 2643,
+  "corpus": 139,
+  "exec_s": 26,
+  "rss_mb": 844,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 9,
+  "finding_kinds": [
+   "nonconvergence/t_weights @ ",
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "classical_mismatch/t_classical @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "raw_calls": 670
+ },
+ "off": {
+  "label": "without: neuron configuration",
+  "seconds": 211.2,
+  "execs": 5000,
+  "cov": 672,
+  "ft": 2666,
+  "corpus": 137,
+  "exec_s": 24,
+  "rss_mb": 866,
+  "timeout": false,
+  "oom": false,
+  "unique_findings": 9,
+  "finding_kinds": [
+   "nonconvergence/t_conv @ ",
+   "exception/t_upward @ <frozen importlib._bootstrap>:_find_and_load_unlocked",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_weights @ ",
+   "exception/t_learn @ connective_neuron.py:_logical_loss",
+   "wrong_bounds/t_upward @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ ",
+   "nonconvergence/t_conv @ "
+  ],
+  "bugs": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "raw_calls": 613
+ },
+ "note": "bugs lost without this dimension: none in this budget"
+}

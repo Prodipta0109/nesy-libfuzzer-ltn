@@ -1,0 +1,6 @@
+{
+ "kind": "exception/t_fol_shapes",
+ "msg": "ValueError: tuple.index(x): x not in tuple",
+ "where": "unary_operator.py:__init__",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/lnn/lnn_round3.py\", line 151, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/lnn/lnn_round3.py\", line 120, in t_fol_shapes\n    elif k == 1: f = Forall(x, Implies(S(x), Exists(y, R(x, y))))\n                                             ~~~~~~^^^^^^^^^^^^\n  File \"/home/claude/lnn/src/lnn/symbolic/logic/unary_operator.py\", line 483, in __init__\n    super().__init__(*args, **kwds)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/home/claude/lnn/src/lnn/symbolic/logic/unary_operator.py\", line 83, in __init__\n    self.operands[0].unique_vars.index(v) for v in self.unique_vars\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^\nValueError: tuple.index(x): x not in tuple\n"
+}

@@ -1,0 +1,7 @@
+{
+ "kind": "exception:t_learn:ZeroDivisionError",
+ "detail": "float division by zero",
+ "loc": "optimizer.py:95",
+ "context": "T4 lr=0.0 target=7.62939453125e-06 loss=mse steps=1 mode=3\nt(0.25)::f.\n3.0517577215533e-05::g1; t(0.0)::g2.\nq :- f, g1.\n",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 426, in t_learn\n    m.optimizer.step()\n    ~~~~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/optimizer.py\", line 95, in step\n    self.model.parameters[param] /= p_sum\nZeroDivisionError: float division by zero\n"
+}

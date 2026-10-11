@@ -1,0 +1,7 @@
+{
+ "kind": "exception:t_data:FileNotFoundError",
+ "detail": "[Errno 2] No such file or directory: ''",
+ "loc": "__init__.py:28",
+ "context": "T7 Logger data={} comments=[]\npath form = {}",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 667, in t_data\n    lg.write_to_file(form.format(\"x\"))\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/utils/logger.py\", line 82, in write_to_file\n    check_path(filename)\n    ~~~~~~~~~~^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/utils/__init__.py\", line 28, in check_path\n    os.makedirs(path_dir)\n    ~~~~~~~~~~~^^^^^^^^^^\n  File \"<frozen os>\", line 228, in makedirs\nFileNotFoundError: [Errno 2] No such file or directory: ''\n"
+}

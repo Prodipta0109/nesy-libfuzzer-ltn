@@ -1,0 +1,301 @@
+INFO: Instrumenting lnn
+INFO: Instrumenting lnn.utils
+INFO: Instrumenting lnn._utils
+INFO: Instrumenting lnn._exceptions
+INFO: Instrumenting lnn.constants
+INFO: Instrumenting lnn.symbolic
+INFO: Instrumenting lnn.symbolic.logic
+INFO: Instrumenting lnn.symbolic.logic.binary_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_neuron
+INFO: Instrumenting lnn.symbolic.logic.connective_formula
+INFO: Instrumenting lnn.symbolic.logic.formula
+INFO: Instrumenting lnn.symbolic.logic.variable
+INFO: Instrumenting lnn.symbolic._trace
+INFO: Instrumenting lnn.symbolic.logic.neural_activation
+INFO: Instrumenting lnn.symbolic._gm
+INFO: Instrumenting lnn.symbolic._bindings
+INFO: Instrumenting lnn.symbolic.logic.leaf_formula
+INFO: Instrumenting lnn.symbolic.logic.node_activation
+INFO: Instrumenting lnn.symbolic.logic.n_ary_neuron
+INFO: Instrumenting lnn.symbolic.logic.unary_operator
+INFO: Instrumenting lnn.symbolic.logic.n_ary_operator
+INFO: Instrumenting lnn.model
+INFO: Instrumenting lnn.viz
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 204
+INFO:      141 files found in camp/corpus2
+INFO: seed corpus: files: 141 min: 4b max: 174b total: 8257b rss: 583Mb
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#64	pulse  cov: 647 ft: 1892 corp: 42/1173b exec/s: 32 rss: 743Mb
+#128	pulse  cov: 660 ft: 2321 corp: 69/3129b exec/s: 25 rss: 744Mb
+#142	INITED cov: 660 ft: 2384 corp: 73/3708b exec/s: 28 rss: 744Mb
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#179	REDUCE cov: 660 ft: 2384 corp: 73/3678b lim: 200 exec/s: 25 rss: 749Mb L: 60/165 MS: 2 CopyPart-EraseBytes-
+#191	REDUCE cov: 660 ft: 2384 corp: 73/3674b lim: 200 exec/s: 27 rss: 749Mb L: 32/165 MS: 2 ChangeByte-EraseBytes-
+#199	NEW    cov: 666 ft: 2390 corp: 74/3764b lim: 200 exec/s: 28 rss: 749Mb L: 90/165 MS: 3 CrossOver-EraseBytes-ChangeByte-
+#209	NEW    cov: 668 ft: 2393 corp: 75/3772b lim: 200 exec/s: 26 rss: 749Mb L: 8/165 MS: 5 InsertByte-ShuffleBytes-CopyPart-EraseBytes-EraseBytes-
+#231	REDUCE cov: 668 ft: 2393 corp: 75/3738b lim: 200 exec/s: 28 rss: 749Mb L: 131/150 MS: 2 ChangeBit-EraseBytes-
+#256	pulse  cov: 668 ft: 2393 corp: 75/3738b lim: 200 exec/s: 28 rss: 749Mb
+#259	NEW    cov: 668 ft: 2396 corp: 76/3778b lim: 200 exec/s: 28 rss: 749Mb L: 40/150 MS: 3 InsertByte-ShuffleBytes-InsertByte-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#261	REDUCE cov: 668 ft: 2396 corp: 76/3776b lim: 200 exec/s: 29 rss: 749Mb L: 10/150 MS: 2 InsertByte-EraseBytes-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#280	NEW    cov: 668 ft: 2397 corp: 77/3793b lim: 200 exec/s: 31 rss: 749Mb L: 17/150 MS: 4 ShuffleBytes-ChangeBit-ShuffleBytes-CrossOver-
+#281	NEW    cov: 668 ft: 2402 corp: 78/3897b lim: 200 exec/s: 31 rss: 749Mb L: 104/150 MS: 1 ChangeBinInt-
+#282	REDUCE cov: 668 ft: 2402 corp: 78/3894b lim: 200 exec/s: 31 rss: 749Mb L: 29/150 MS: 1 EraseBytes-
+#286	NEW    cov: 668 ft: 2404 corp: 79/4090b lim: 200 exec/s: 31 rss: 749Mb L: 196/196 MS: 4 InsertRepeatedBytes-InsertRepeatedBytes-CopyPart-CrossOver-
+#307	NEW    cov: 668 ft: 2408 corp: 80/4135b lim: 200 exec/s: 30 rss: 749Mb L: 45/196 MS: 1 EraseBytes-
+#353	REDUCE cov: 668 ft: 2408 corp: 80/4133b lim: 200 exec/s: 32 rss: 749Mb L: 30/196 MS: 1 EraseBytes-
+#355	NEW    cov: 669 ft: 2410 corp: 81/4205b lim: 200 exec/s: 32 rss: 749Mb L: 72/196 MS: 2 CMP-CrossOver- DE: "*\000\000\000\000\000\000\000"-
+#356	REDUCE cov: 669 ft: 2410 corp: 81/4202b lim: 200 exec/s: 32 rss: 749Mb L: 6/196 MS: 1 EraseBytes-
+#366	REDUCE cov: 669 ft: 2410 corp: 81/4176b lim: 200 exec/s: 33 rss: 749Mb L: 40/196 MS: 5 PersAutoDict-ChangeBit-ShuffleBytes-InsertRepeatedBytes-EraseBytes- DE: "*\000\000\000\000\000\000\000"-
+#378	NEW    cov: 669 ft: 2411 corp: 82/4273b lim: 200 exec/s: 31 rss: 749Mb L: 97/196 MS: 2 CopyPart-InsertRepeatedBytes-
+#389	REDUCE cov: 669 ft: 2411 corp: 82/4250b lim: 200 exec/s: 32 rss: 749Mb L: 32/196 MS: 1 EraseBytes-
+#406	REDUCE cov: 669 ft: 2411 corp: 82/4234b lim: 200 exec/s: 31 rss: 749Mb L: 24/196 MS: 2 ChangeBit-EraseBytes-
+#409	NEW    cov: 669 ft: 2417 corp: 83/4296b lim: 200 exec/s: 31 rss: 749Mb L: 62/196 MS: 2 CopyPart-InsertByte-
+#461	NEW    cov: 669 ft: 2419 corp: 84/4318b lim: 200 exec/s: 35 rss: 749Mb L: 22/196 MS: 2 PersAutoDict-ChangeBit- DE: "*\000\000\000\000\000\000\000"-
+#507	NEW    cov: 669 ft: 2420 corp: 85/4408b lim: 200 exec/s: 31 rss: 752Mb L: 90/196 MS: 1 InsertRepeatedBytes-
+#512	pulse  cov: 669 ft: 2420 corp: 85/4408b lim: 200 exec/s: 32 rss: 752Mb
+#563	NEW    cov: 669 ft: 2423 corp: 86/4604b lim: 200 exec/s: 33 rss: 753Mb L: 196/196 MS: 1 ChangeBinInt-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#594	REDUCE cov: 669 ft: 2423 corp: 86/4589b lim: 200 exec/s: 34 rss: 753Mb L: 16/196 MS: 1 EraseBytes-
+#615	REDUCE cov: 669 ft: 2423 corp: 86/4588b lim: 200 exec/s: 34 rss: 753Mb L: 24/196 MS: 1 EraseBytes-
+#666	REDUCE cov: 669 ft: 2423 corp: 86/4578b lim: 200 exec/s: 35 rss: 753Mb L: 34/196 MS: 1 EraseBytes-
+#667	REDUCE cov: 669 ft: 2423 corp: 86/4565b lim: 200 exec/s: 35 rss: 753Mb L: 29/196 MS: 1 EraseBytes-
+#685	REDUCE cov: 669 ft: 2423 corp: 86/4530b lim: 200 exec/s: 36 rss: 753Mb L: 55/196 MS: 3 ShuffleBytes-CrossOver-EraseBytes-
+#686	REDUCE cov: 669 ft: 2423 corp: 86/4522b lim: 200 exec/s: 36 rss: 753Mb L: 18/196 MS: 1 EraseBytes-
+#707	REDUCE cov: 669 ft: 2423 corp: 86/4515b lim: 200 exec/s: 37 rss: 753Mb L: 77/196 MS: 1 EraseBytes-
+#738	REDUCE cov: 669 ft: 2423 corp: 86/4500b lim: 200 exec/s: 35 rss: 754Mb L: 75/196 MS: 1 EraseBytes-
+#745	REDUCE cov: 669 ft: 2423 corp: 86/4490b lim: 200 exec/s: 35 rss: 754Mb L: 40/196 MS: 2 PersAutoDict-EraseBytes- DE: "*\000\000\000\000\000\000\000"-
+#798	NEW    cov: 669 ft: 2425 corp: 87/4682b lim: 200 exec/s: 36 rss: 754Mb L: 192/196 MS: 3 ChangeBinInt-ChangeBinInt-InsertRepeatedBytes-
+#801	REDUCE cov: 669 ft: 2425 corp: 87/4673b lim: 200 exec/s: 34 rss: 754Mb L: 9/196 MS: 3 EraseBytes-CMP-CopyPart- DE: "=\000\000\000\000\000\000\000"-
+#838	REDUCE cov: 669 ft: 2425 corp: 87/4672b lim: 200 exec/s: 34 rss: 754Mb L: 18/196 MS: 2 ChangeBit-EraseBytes-
+#849	NEW    cov: 670 ft: 2426 corp: 88/4693b lim: 200 exec/s: 35 rss: 754Mb L: 21/196 MS: 1 ShuffleBytes-
+#938	NEW    cov: 670 ft: 2432 corp: 89/4846b lim: 200 exec/s: 33 rss: 763Mb L: 153/196 MS: 4 PersAutoDict-CopyPart-EraseBytes-CopyPart- DE: "*\000\000\000\000\000\000\000"-
+
+***************************************************************************
+                                LNN Model
+
+OPEN And: (A ∧ B)                                        UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: B                                      UNKNOWN (0.0, 1.0)
+
+OPEN Proposition: A                                      UNKNOWN (0.0, 1.0)
+
+***************************************************************************
+#1020	NEW    cov: 670 ft: 2436 corp: 90/4928b lim: 200 exec/s: 34 rss: 764Mb L: 82/196 MS: 2 ShuffleBytes-CrossOver-
+#1024	pulse  cov: 670 ft: 2436 corp: 90/4928b lim: 200 exec/s: 34 rss: 764Mb
+
+ === Timeout: 34s elapsed, timeout=25s ===
+Thread 0x00007f40819a96c0 (most recent call first):
+  File "/usr/lib/python3.13/threading.py", line 363 in wait
+  File "/usr/lib/python3.13/threading.py", line 660 in wait
+  File "/usr/local/lib/python3.13/dist-packages/tqdm/_monitor.py", line 69 in run
+  File "/usr/lib/python3.13/threading.py", line 1044 in _bootstrap_inner
+  File "/usr/lib/python3.13/threading.py", line 1015 in _bootstrap
+
+Current thread 0x00007f41564f0080 (most recent call first):
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 122 in output_regions
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 135 in _get_state_vars
+  File "/home/claude/lnn/src/lnn/neural/activations/node.py", line 159 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 294 in contradicting_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/formula.py", line 281 in is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/_gm.py", line 189 in _is_contradiction
+  File "/home/claude/lnn/src/lnn/symbolic/_gm.py", line 74 in downward_bounds
+  File "/home/claude/lnn/src/lnn/symbolic/logic/connective_neuron.py", line 117 in downward
+  File "/home/claude/lnn/src/lnn/model.py", line 438 in _traverse_execute
+  File "/home/claude/lnn/src/lnn/model.py", line 501 in _infer
+  File "/home/claude/lnn/src/lnn/model.py", line 468 in infer
+  File "/home/claude/lnn/src/lnn/model.py", line 619 in train
+  File "/home/claude/lnn/lnn_fuzz.py", line 245 in t_learn
+  File "/home/claude/lnn/lnn_fuzz.py", line 290 in TestOneInput
+  File "/home/claude/lnn/lnn_fuzz.py", line 306 in <module>
+ALARM: working on the last Unit for 33 seconds
+       and the timeout value is 25 (use -timeout=N to change)
+MS: 5 ShuffleBytes-PersAutoDict-ChangeBinInt-ChangeBinInt-ChangeBit- DE: "=\000\000\000\000\000\000\000"-; base unit: 8a931f0d247eef6780a63456ceea9bc9db283ba2
+0x3d,0x0,0x26,0x0,0x0,0x0,0x0,0x0,0xff,0x0,0x0,0x0,0x0,0x0,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x13,0x33,0x13,0x13,0x13,0xdb,0x26,
+=\000&\000\000\000\000\000\377\000\000\000\000\000\023\023\023\023\023\023\023\023\023\023\023\023\023\023\023\023\023\0233\023\023\023\333&
+artifact_prefix='./'; Test unit written to ./timeout-c223c6d360dc0eb5e004dea3797b7db579e34870
+Base64: PQAmAAAAAAD/AAAAAAATExMTExMTExMTExMTExMTExMzExMT2yY=
+==688== ERROR: libFuzzer: timeout after 33 seconds
+SUMMARY: libFuzzer: timeout
+stat::number_of_executed_units: 1065
+stat::average_exec_per_sec:     16
+stat::new_units_added:          38
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              979

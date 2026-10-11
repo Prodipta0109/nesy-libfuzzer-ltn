@@ -1,0 +1,6 @@
+{
+ "kind": "fol_contradiction/t_fol2",
+ "msg": "Forall x Forall y R->S dom=['a', 'b', 'c'] R={('a', 'a'): True, ('a', 'b'): True, ('a', 'c'): True, ('b', 'a'): False, ('b', 'b'): False, ('b', 'c'): False, ('c', 'a'): False, ('c', 'b'): False, ('c', 'c'): True} S={'a': False, 'b': False, 'c': False}",
+ "where": "",
+ "trace": ""
+}

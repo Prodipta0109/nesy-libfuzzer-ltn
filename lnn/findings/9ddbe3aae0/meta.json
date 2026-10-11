@@ -1,0 +1,6 @@
+{
+ "kind": "classical_mismatch/t_classical",
+ "msg": "ops=Iff+Implies tree ('Iff', [('Iff', [('leaf', 2), ('leaf', 1)]), ('Implies', [('leaf', 1), ('leaf', 2)])]) vals [True, True, True, True] want True got (0.0, 1.0)",
+ "where": "",
+ "trace": ""
+}

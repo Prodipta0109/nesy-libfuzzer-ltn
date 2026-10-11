@@ -1,0 +1,61 @@
+{
+ "id": "PAIRS_dpl",
+ "rows": [
+  {
+   "dimension": "P1 program / term names",
+   "bug": "D11",
+   "only change": "fact name foo -> max (a torch built-in)",
+   "control": "OK (P=[0.5])",
+   "fuzzer value": "BUG: TypeError: stack(): argument 'tensors' (position 1) must be tuple of Tensors, not float"
+  },
+  {
+   "dimension": "P2 probability values",
+   "bug": "D12",
+   "only change": "1e-10::a -> 1e-20::a",
+   "control": "OK",
+   "fuzzer value": "BUG: P(a)=[0.0] but the program says 1e-20"
+  },
+  {
+   "dimension": "P3 neural predicate outputs",
+   "bug": "D7",
+   "only change": "softmax [0.9,0.1] -> [1.0,0.0]",
+   "control": "OK",
+   "fuzzer value": "BUG: ValueError: Fewer non-zero entries in p than size"
+  },
+  {
+   "dimension": "P4 queries",
+   "bug": "D1",
+   "only change": "hash(Term) -> hash(Query)",
+   "control": "OK",
+   "fuzzer value": "BUG: TypeError: unhashable type: 'dict'"
+  },
+  {
+   "dimension": "P5 solver settings",
+   "bug": "D3",
+   "only change": "ground_dataset cache=True -> default cache=False",
+   "control": "OK",
+   "fuzzer value": "BUG: AttributeError: 'ArithmeticCircuit' object has no attribute 'from_cache'"
+  },
+  {
+   "dimension": "P6 learning",
+   "bug": "D6",
+   "only change": "SGD learning rate 0.01 -> 10",
+   "control": "OK",
+   "fuzzer value": "BUG: ZeroDivisionError: division by zero"
+  },
+  {
+   "dimension": "P7a API: file name form",
+   "bug": "D4",
+   "only change": "save_state('./state.zip') -> 'state.zip'",
+   "control": "OK",
+   "fuzzer value": "BUG: FileNotFoundError: [Errno 2] No such file or directory: ''"
+  },
+  {
+   "dimension": "P7b API: loader arguments",
+   "bug": "D2",
+   "only change": "DataLoader batch_size 1 -> 0",
+   "control": "OK",
+   "fuzzer value": "BUG: still yielding after 101 batches"
+  }
+ ]
+}

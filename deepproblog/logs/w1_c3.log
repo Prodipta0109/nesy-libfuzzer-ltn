@@ -1,0 +1,244 @@
+INFO: Instrumenting problog
+INFO: Instrumenting problog.setup
+INFO: Instrumenting problog.cnf_formula
+INFO: Instrumenting problog.core
+INFO: Instrumenting problog.errors
+INFO: Instrumenting problog.evaluator
+INFO: Instrumenting problog.formula
+INFO: Instrumenting problog.constraint
+INFO: Instrumenting problog.logic
+INFO: Instrumenting problog.util
+INFO: Instrumenting problog.engine
+INFO: Instrumenting problog.engine_unify
+INFO: Instrumenting problog.program
+INFO: Instrumenting problog.parser
+INFO: Instrumenting problog.engine_stack
+INFO: Instrumenting problog.eval_nodes
+INFO: Instrumenting problog.engine_builtin
+INFO: Instrumenting problog.clausedb
+INFO: Instrumenting problog.ddnnf_formula
+INFO: Instrumenting problog.sdd_formula
+INFO: Instrumenting problog.dd_formula
+INFO: Instrumenting problog.sdd_formula_explicit
+INFO: Instrumenting problog.forward
+INFO: Instrumenting problog.bdd_formula
+INFO: Instrumenting problog.cycles
+INFO: Instrumenting problog.kbest
+INFO: Instrumenting problog.maxsat
+INFO: Instrumenting problog.tasks
+INFO: Instrumenting problog.version
+INFO: Instrumenting problog.debug
+INFO: Instrumenting deepproblog
+INFO: Instrumenting deepproblog.model
+INFO: Instrumenting deepproblog.engines
+INFO: Instrumenting deepproblog.engines.approximate_engine
+INFO: Instrumenting deepproblog.engines.engine
+INFO: Instrumenting deepproblog.query
+INFO: Instrumenting deepproblog.tensor
+INFO: Instrumenting deepproblog.engines.exact_engine
+INFO: Instrumenting problog.extern
+INFO: Instrumenting deepproblog.network
+INFO: Instrumenting deepproblog.engines.builtins
+INFO: Instrumenting deepproblog.dataset
+INFO: Instrumenting deepproblog.embeddings
+INFO: Instrumenting deepproblog.optimizer
+INFO: Instrumenting deepproblog.semiring
+INFO: Instrumenting deepproblog.solver
+INFO: Instrumenting deepproblog.arithmetic_circuit
+INFO: Instrumenting deepproblog.semiring.graph_semiring
+INFO: Instrumenting deepproblog.utils
+INFO: Instrumenting deepproblog.utils.cache
+INFO: Instrumenting deepproblog.train
+INFO: Instrumenting deepproblog.utils.logger
+INFO: Instrumenting deepproblog.utils.stop_condition
+INFO: Instrumenting deepproblog.evaluate
+INFO: Instrumenting deepproblog.utils.confusion_matrix
+INFO: Using built-in libfuzzer
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 103
+INFO:      337 files found in camp/corpus1
+INFO: seed corpus: files: 337 min: 1b max: 195b total: 16171b rss: 530Mb
+
+[FINDING 6feb8cda82] exception:t_names:AttributeError @ model.py:73: 'NoneType' object has no attribute 'get_embedding'
+
+[FINDING f598f82957] exception:t_api:TypeError @ query.py:94: unhashable type: 'dict'
+
+[FINDING d1df764a30] exception:t_names:TypeError @ builtins.py:73: stack(): argument 'tensors' (position 1) must be tuple of Tensors, not float
+
+[FINDING fff83fd56d] oracle:t_data @ dataset.py:326: NumericIncorrectOutputMutator keeps drawing without ever finding a different value (infinite loop)
+
+[FINDING 710edbaf79] exception:t_names:AttributeError @ builtins.py:47: 'float' object has no attribute 'layout'
+
+[FINDING 8e62c574b1] exception:t_names:TypeError @ builtins.py:63: sigmoid(): argument 'input' (position 1) must be Tensor, not float
+
+[FINDING dd2850a4fd] exception:t_data:FileNotFoundError @ __init__.py:28: [Errno 2] No such file or directory: ''
+
+[FINDING c70956b586] exception:t_data:AttributeError @ model.py:127: 'ArithmeticCircuit' object has no attribute 'from_cache'
+
+[FINDING 61ec4ea58c] exception:t_names:TypeError @ builtins.py:97: 'float' object is not iterable
+
+[FINDING 09fbc15897] oracle:t_api @ : DataLoader(batch_size=0) over 5 items never stops iterating (yields 11 batches, last=[])
+
+[FINDING 94cecbfc21] exception:t_names:TypeError @ builtins.py:85: cat(): argument 'tensors' (position 1) must be tuple of Tensors, not float
+#32	pulse  cov: 2383 ft: 5922 corp: 29/65b exec/s: 16 rss: 683Mb
+
+[FINDING 47747747b4] exception:t_names:IndexError @ builtins.py:80: index 0 is out of bounds for dimension 0 with size 0
+
+[FINDING 0454654c42] exception:t_names:TypeError @ builtins.py:67: stack(): argument 'tensors' (position 1) must be tuple of Tensors, not float
+
+[FINDING ef52a8b968] oracle:t_data @ : ConfusionMatrix modified the caller's class list: ['a', 'b', 'd']
+
+[FINDING 1e8c33b899] exception:t_api:FileNotFoundError @ __init__.py:28: [Errno 2] No such file or directory: ''
+#64	pulse  cov: 2463 ft: 6716 corp: 56/176b exec/s: 21 rss: 684Mb
+
+[FINDING 932ce5340d] exception:t_names:TypeError @ builtins.py:59: dot(): argument 'input' (position 1) must be Tensor, not float
+
+[FINDING 65f5eca211] exception:t_names:TypeError @ builtins.py:89: stack(): argument 'tensors' (position 1) must be tuple of Tensors, not float
+
+[FINDING 91a4734339] oracle:t_data @ : QueryDataset round trip changed ('f(X)', 5.421010862427522e-20, {X: 0}) -> ('f(X)', 0.0, {X: 0})
+
+[FINDING c4bd5e485c] oracle:t_data @ : QueryDataset round trip changed ('f(X,2)', 8.882326298087495e-16, {X: 2}) -> ('f(X,2)', 1e-15, {X: 2})
+#128	pulse  cov: 2558 ft: 7919 corp: 100/526b exec/s: 32 rss: 688Mb
+
+[FINDING 08dceea02b] oracle:t_data @ : QueryDataset round trip changed ('f(X,5,0)', 3.552713678800501e-15, {X: 0}) -> ('f(X,5,0)', 4e-15, {X: 0})
+
+[FINDING cdef0d09fb] oracle:t_data @ : QueryDataset round trip changed ('f(0)', 0.000781024904771499, {}) -> ('f(0)', 0.000781024904771, {})
+
+[FINDING 8796e33ae2] oracle:t_data @ : QueryDataset round trip changed ('f(4,5,0)', 0.17638101016773897, {}) -> ('f(4,5,0)', 0.176381010167739, {})
+
+[FINDING ece78a03d0] exception:t_learn:ZeroDivisionError @ optimizer.py:95: float division by zero
+
+[FINDING 9a1f7efbe7] exception:t_train:FileNotFoundError @ __init__.py:28: [Errno 2] No such file or directory: ''
+#256	pulse  cov: 2842 ft: 11157 corp: 188/4162b exec/s: 25 rss: 694Mb
+
+[FINDING 5330d004a6] exception:t_data:IndexError @ stop_condition.py:132: list index out of range
+
+[FINDING d483dac29c] oracle:t_learn @ : annotated disjunction mass 1.25 > 1 after step (fixed 0.25, learned 1.0)
+#338	INITED cov: 2875 ft: 11642 corp: 239/10461b exec/s: 24 rss: 697Mb
+#340	REDUCE cov: 2875 ft: 11642 corp: 239/10445b lim: 200 exec/s: 24 rss: 697Mb L: 26/195 MS: 2 ChangeBinInt-EraseBytes-
+#395	NEW    cov: 2880 ft: 11647 corp: 240/10572b lim: 200 exec/s: 24 rss: 697Mb L: 127/195 MS: 5 CrossOver-ChangeBinInt-ChangeByte-InsertRepeatedBytes-InsertRepeatedBytes-
+#448	REDUCE cov: 2880 ft: 11647 corp: 240/10571b lim: 200 exec/s: 24 rss: 698Mb L: 3/195 MS: 3 ChangeASCIIInt-CopyPart-EraseBytes-
+#512	pulse  cov: 2880 ft: 11647 corp: 240/10571b lim: 200 exec/s: 24 rss: 698Mb
+#521	REDUCE cov: 2880 ft: 11647 corp: 240/10556b lim: 200 exec/s: 24 rss: 698Mb L: 112/195 MS: 3 CMP-CrossOver-EraseBytes- DE: "\\= "-
+#700	REDUCE cov: 2880 ft: 11647 corp: 240/10554b lim: 200 exec/s: 25 rss: 698Mb L: 6/195 MS: 4 EraseBytes-CopyPart-CopyPart-ChangeByte-
+#703	REDUCE cov: 2880 ft: 11647 corp: 240/10540b lim: 200 exec/s: 25 rss: 698Mb L: 86/195 MS: 3 ChangeBit-CMP-EraseBytes- DE: "\377\377\377\377\377\377\377\377"-
+#707	REDUCE cov: 2880 ft: 11647 corp: 240/10539b lim: 200 exec/s: 24 rss: 698Mb L: 5/195 MS: 4 ShuffleBytes-InsertByte-EraseBytes-PersAutoDict- DE: "\\= "-
+#789	REDUCE cov: 2880 ft: 11647 corp: 240/10503b lim: 200 exec/s: 24 rss: 698Mb L: 65/195 MS: 2 ChangeBit-EraseBytes-
+#791	REDUCE cov: 2880 ft: 11647 corp: 240/10498b lim: 200 exec/s: 24 rss: 698Mb L: 8/195 MS: 2 CopyPart-EraseBytes-
+#932	REDUCE cov: 2880 ft: 11647 corp: 240/10497b lim: 200 exec/s: 24 rss: 698Mb L: 7/195 MS: 1 EraseBytes-
+#933	NEW    cov: 2880 ft: 11648 corp: 241/10587b lim: 200 exec/s: 24 rss: 698Mb L: 90/195 MS: 1 CrossOver-
+#947	REDUCE cov: 2880 ft: 11648 corp: 241/10583b lim: 200 exec/s: 24 rss: 698Mb L: 180/195 MS: 4 InsertRepeatedBytes-PersAutoDict-ChangeBinInt-EraseBytes- DE: "\\= "-
+#970	REDUCE cov: 2880 ft: 11648 corp: 241/10545b lim: 200 exec/s: 24 rss: 698Mb L: 46/195 MS: 3 ShuffleBytes-EraseBytes-ChangeBit-
+#1000	NEW    cov: 2880 ft: 11649 corp: 242/10623b lim: 200 exec/s: 24 rss: 698Mb L: 78/195 MS: 5 ShuffleBytes-ShuffleBytes-CrossOver-ChangeBinInt-CrossOver-
+#1024	pulse  cov: 2880 ft: 11649 corp: 242/10623b lim: 200 exec/s: 24 rss: 699Mb
+#1028	REDUCE cov: 2880 ft: 11649 corp: 242/10606b lim: 200 exec/s: 24 rss: 699Mb L: 99/195 MS: 3 PersAutoDict-CrossOver-EraseBytes- DE: "\\= "-
+#1038	REDUCE cov: 2880 ft: 11649 corp: 242/10599b lim: 200 exec/s: 24 rss: 699Mb L: 10/195 MS: 5 EraseBytes-ChangeBit-ChangeBit-ChangeByte-CMP- DE: "conj"-
+#1131	NEW    cov: 2880 ft: 11650 corp: 243/10614b lim: 200 exec/s: 24 rss: 699Mb L: 15/195 MS: 3 InsertByte-ChangeByte-InsertByte-
+#1157	REDUCE cov: 2880 ft: 11650 corp: 243/10609b lim: 200 exec/s: 24 rss: 699Mb L: 7/195 MS: 1 EraseBytes-
+#1173	REDUCE cov: 2880 ft: 11650 corp: 243/10600b lim: 200 exec/s: 24 rss: 699Mb L: 86/195 MS: 1 EraseBytes-
+#1234	REDUCE cov: 2880 ft: 11650 corp: 243/10564b lim: 200 exec/s: 24 rss: 699Mb L: 50/195 MS: 1 EraseBytes-
+#1282	REDUCE cov: 2880 ft: 11650 corp: 243/10552b lim: 200 exec/s: 24 rss: 700Mb L: 85/195 MS: 2 InsertRepeatedBytes-EraseBytes-
+#1321	NEW    cov: 2880 ft: 11653 corp: 244/10568b lim: 200 exec/s: 24 rss: 700Mb L: 16/195 MS: 4 ChangeBit-InsertByte-ChangeBinInt-CopyPart-
+#1322	REDUCE cov: 2880 ft: 11653 corp: 244/10553b lim: 200 exec/s: 24 rss: 700Mb L: 44/195 MS: 1 EraseBytes-
+#1343	NEW    cov: 2887 ft: 11662 corp: 245/10603b lim: 200 exec/s: 24 rss: 700Mb L: 50/195 MS: 1 PersAutoDict- DE: "\\= "-
+#1353	NEW    cov: 2893 ft: 11691 corp: 246/10727b lim: 200 exec/s: 24 rss: 700Mb L: 124/195 MS: 5 ChangeASCIIInt-InsertByte-PersAutoDict-CopyPart-ChangeBinInt- DE: "\\= "-
+#1355	REDUCE cov: 2893 ft: 11691 corp: 246/10697b lim: 200 exec/s: 24 rss: 700Mb L: 132/195 MS: 2 ChangeBinInt-EraseBytes-
+#1366	REDUCE cov: 2893 ft: 11691 corp: 246/10696b lim: 200 exec/s: 24 rss: 700Mb L: 9/195 MS: 1 EraseBytes-
+#1367	REDUCE cov: 2893 ft: 11691 corp: 246/10691b lim: 200 exec/s: 24 rss: 700Mb L: 10/195 MS: 1 EraseBytes-
+#1379	REDUCE cov: 2893 ft: 11691 corp: 246/10654b lim: 200 exec/s: 24 rss: 700Mb L: 60/195 MS: 2 CMP-EraseBytes- DE: "\377\377\377\377"-
+#1448	REDUCE cov: 2893 ft: 11691 corp: 246/10635b lim: 200 exec/s: 24 rss: 700Mb L: 129/195 MS: 4 ChangeBinInt-CopyPart-CopyPart-EraseBytes-
+#1450	REDUCE cov: 2893 ft: 11691 corp: 246/10632b lim: 200 exec/s: 24 rss: 700Mb L: 62/195 MS: 2 ChangeByte-EraseBytes-
+#1487	REDUCE cov: 2893 ft: 11691 corp: 246/10630b lim: 200 exec/s: 24 rss: 700Mb L: 12/195 MS: 2 ChangeBit-EraseBytes-
+#1588	REDUCE cov: 2893 ft: 11691 corp: 246/10626b lim: 200 exec/s: 24 rss: 701Mb L: 32/195 MS: 1 EraseBytes-
+#1657	NEW    cov: 2893 ft: 11703 corp: 247/10754b lim: 200 exec/s: 24 rss: 701Mb L: 128/195 MS: 4 PersAutoDict-ChangeByte-ChangeBinInt-ChangeBit- DE: "\\= "-
+#1664	REDUCE cov: 2893 ft: 11703 corp: 247/10739b lim: 200 exec/s: 24 rss: 701Mb L: 70/195 MS: 2 ChangeBit-EraseBytes-
+#1806	REDUCE cov: 2893 ft: 11703 corp: 247/10725b lim: 200 exec/s: 24 rss: 701Mb L: 181/191 MS: 2 ChangeBinInt-EraseBytes-
+#1912	REDUCE cov: 2893 ft: 11703 corp: 247/10673b lim: 200 exec/s: 24 rss: 701Mb L: 116/191 MS: 1 EraseBytes-
+#1941	NEW    cov: 2897 ft: 11710 corp: 248/10827b lim: 200 exec/s: 24 rss: 701Mb L: 154/191 MS: 4 ChangeBit-CrossOver-CopyPart-ChangeBit-
+#1942	NEW    cov: 2897 ft: 11711 corp: 249/10931b lim: 200 exec/s: 24 rss: 701Mb L: 104/191 MS: 1 ChangeByte-
+#1952	NEW    cov: 2897 ft: 11727 corp: 250/11128b lim: 200 exec/s: 24 rss: 702Mb L: 197/197 MS: 5 InsertRepeatedBytes-PersAutoDict-CMP-ChangeBinInt-InsertRepeatedBytes- DE: "\377\377\377\377"-"\001\000\000\000"-
+#1996	REDUCE cov: 2897 ft: 11729 corp: 251/11234b lim: 200 exec/s: 24 rss: 702Mb L: 106/197 MS: 4 ShuffleBytes-InsertRepeatedBytes-PersAutoDict-CopyPart- DE: "\377\377\377\377"-
+#2012	REDUCE cov: 2897 ft: 11732 corp: 252/11366b lim: 200 exec/s: 24 rss: 702Mb L: 132/197 MS: 1 CMP- DE: "\000\000\000\000\000\000\000\376"-
+#2047	NEW    cov: 2897 ft: 11733 corp: 253/11461b lim: 200 exec/s: 24 rss: 702Mb L: 95/197 MS: 5 CMP-ChangeByte-CopyPart-ShuffleBytes-CrossOver- DE: "/L"-
+#2048	pulse  cov: 2897 ft: 11733 corp: 253/11461b lim: 200 exec/s: 24 rss: 702Mb
+#2203	REDUCE cov: 2897 ft: 11733 corp: 253/11454b lim: 200 exec/s: 24 rss: 702Mb L: 11/197 MS: 1 EraseBytes-
+#2269	REDUCE cov: 2897 ft: 11733 corp: 253/11447b lim: 200 exec/s: 24 rss: 702Mb L: 23/197 MS: 1 EraseBytes-
+#2291	REDUCE cov: 2897 ft: 11733 corp: 253/11444b lim: 200 exec/s: 24 rss: 702Mb L: 181/197 MS: 2 PersAutoDict-EraseBytes- DE: "/L"-
+#2327	REDUCE cov: 2897 ft: 11733 corp: 253/11403b lim: 200 exec/s: 24 rss: 702Mb L: 113/197 MS: 1 EraseBytes-
+#2331	NEW    cov: 2897 ft: 11735 corp: 254/11433b lim: 200 exec/s: 24 rss: 702Mb L: 30/197 MS: 4 InsertByte-InsertRepeatedBytes-CopyPart-CMP- DE: "/1"-
+#2355	NEW    cov: 2897 ft: 11737 corp: 255/11486b lim: 200 exec/s: 24 rss: 702Mb L: 53/197 MS: 4 CMP-InsertByte-InsertByte-ChangeBinInt- DE: "\000\000\000\000\000\000\000\001"-
+#2423	REDUCE cov: 2897 ft: 11741 corp: 256/11546b lim: 200 exec/s: 24 rss: 702Mb L: 60/197 MS: 3 ChangeBinInt-ChangeBinInt-PersAutoDict- DE: "/L"-
+#2436	NEW    cov: 2897 ft: 11756 corp: 257/11611b lim: 200 exec/s: 24 rss: 702Mb L: 65/197 MS: 3 ChangeBinInt-CrossOver-ShuffleBytes-
+#2437	REDUCE cov: 2897 ft: 11756 corp: 257/11602b lim: 200 exec/s: 24 rss: 702Mb L: 51/197 MS: 1 EraseBytes-
+#2440	NEW    cov: 2897 ft: 11763 corp: 258/11659b lim: 200 exec/s: 24 rss: 702Mb L: 57/197 MS: 3 InsertByte-ShuffleBytes-PersAutoDict- DE: "\\= "-
+#2502	REDUCE cov: 2897 ft: 11763 corp: 258/11658b lim: 200 exec/s: 24 rss: 702Mb L: 61/197 MS: 2 ChangeBit-EraseBytes-
+#2534	NEW    cov: 2897 ft: 11764 corp: 259/11711b lim: 200 exec/s: 24 rss: 702Mb L: 53/197 MS: 2 ChangeBinInt-PersAutoDict- DE: "/1"-
+#2566	NEW    cov: 2897 ft: 11766 corp: 260/11834b lim: 200 exec/s: 24 rss: 702Mb L: 123/197 MS: 2 CopyPart-EraseBytes-
+#2568	NEW    cov: 2897 ft: 11768 corp: 261/11994b lim: 200 exec/s: 24 rss: 702Mb L: 160/197 MS: 2 InsertRepeatedBytes-CMP- DE: "_lists_me"-
+#2684	NEW    cov: 2897 ft: 11770 corp: 262/12044b lim: 200 exec/s: 24 rss: 702Mb L: 50/197 MS: 1 ChangeBit-
+#2767	REDUCE cov: 2897 ft: 11771 corp: 263/12154b lim: 200 exec/s: 24 rss: 702Mb L: 110/197 MS: 3 InsertByte-InsertRepeatedBytes-CrossOver-
+#2768	REDUCE cov: 2897 ft: 11771 corp: 263/12105b lim: 200 exec/s: 24 rss: 702Mb L: 72/197 MS: 1 EraseBytes-
+#2799	REDUCE cov: 2897 ft: 11771 corp: 263/12081b lim: 200 exec/s: 24 rss: 702Mb L: 27/197 MS: 1 EraseBytes-
+#2859	REDUCE cov: 2897 ft: 11771 corp: 263/12073b lim: 200 exec/s: 24 rss: 703Mb L: 105/197 MS: 5 ChangeBinInt-ChangeASCIIInt-PersAutoDict-ChangeBit-EraseBytes- DE: "\377\377\377\377"-
+#2866	REDUCE cov: 2897 ft: 11771 corp: 263/12060b lim: 200 exec/s: 24 rss: 703Mb L: 47/197 MS: 2 ChangeBit-EraseBytes-
+#2867	NEW    cov: 2897 ft: 11772 corp: 264/12110b lim: 200 exec/s: 24 rss: 703Mb L: 50/197 MS: 1 ChangeByte-
+#2869	NEW    cov: 2897 ft: 11773 corp: 265/12231b lim: 200 exec/s: 24 rss: 703Mb L: 121/197 MS: 2 ChangeBit-InsertRepeatedBytes-
+#2870	NEW    cov: 2897 ft: 11779 corp: 266/12260b lim: 200 exec/s: 24 rss: 703Mb L: 29/197 MS: 1 ChangeBit-
+#2899	REDUCE cov: 2897 ft: 11779 corp: 266/12258b lim: 200 exec/s: 24 rss: 703Mb L: 10/197 MS: 4 InsertByte-CopyPart-EraseBytes-EraseBytes-
+
+[FINDING d090dde694] oracle:t_data @ : QueryDataset round trip changed ('f(2,0)', 3.026798367500305e-09, {}) -> ('f(2,0)', 3.026798e-09, {})
+#2944	NEW    cov: 2897 ft: 11780 corp: 267/12312b lim: 200 exec/s: 24 rss: 703Mb L: 54/197 MS: 5 PersAutoDict-ChangeBinInt-PersAutoDict-CopyPart-CopyPart- DE: "\\= "-"\001\000\000\000"-
+#2945	NEW    cov: 2897 ft: 11782 corp: 268/12434b lim: 200 exec/s: 24 rss: 703Mb L: 122/197 MS: 1 InsertRepeatedBytes-
+#2996	NEW    cov: 2897 ft: 11792 corp: 269/12493b lim: 200 exec/s: 24 rss: 703Mb L: 59/197 MS: 1 ChangeBinInt-
+#3039	REDUCE cov: 2897 ft: 11792 corp: 269/12482b lim: 200 exec/s: 24 rss: 703Mb L: 48/197 MS: 3 ChangeByte-PersAutoDict-EraseBytes- DE: "conj"-
+#3047	REDUCE cov: 2897 ft: 11792 corp: 269/12462b lim: 200 exec/s: 24 rss: 703Mb L: 39/197 MS: 3 InsertByte-InsertByte-EraseBytes-
+#3105	REDUCE cov: 2897 ft: 11792 corp: 269/12450b lim: 200 exec/s: 24 rss: 703Mb L: 63/197 MS: 3 ShuffleBytes-ChangeByte-EraseBytes-
+#3116	NEW    cov: 2897 ft: 11794 corp: 270/12526b lim: 200 exec/s: 24 rss: 703Mb L: 76/197 MS: 1 CopyPart-
+#3139	NEW    cov: 2897 ft: 11797 corp: 271/12710b lim: 200 exec/s: 24 rss: 703Mb L: 184/197 MS: 3 InsertByte-ChangeByte-InsertRepeatedBytes-
+#3177	REDUCE cov: 2897 ft: 11797 corp: 271/12690b lim: 200 exec/s: 24 rss: 704Mb L: 100/197 MS: 3 ShuffleBytes-ChangeBit-EraseBytes-
+#3214	REDUCE cov: 2897 ft: 11797 corp: 271/12650b lim: 200 exec/s: 24 rss: 704Mb L: 60/197 MS: 2 ChangeBit-EraseBytes-
+#3225	NEW    cov: 2897 ft: 11798 corp: 272/12700b lim: 200 exec/s: 24 rss: 704Mb L: 50/197 MS: 1 PersAutoDict- DE: "/L"-
+#3232	REDUCE cov: 2897 ft: 11798 corp: 272/12681b lim: 200 exec/s: 24 rss: 704Mb L: 21/197 MS: 2 CrossOver-EraseBytes-
+#3287	REDUCE cov: 2897 ft: 11798 corp: 272/12618b lim: 200 exec/s: 24 rss: 704Mb L: 117/197 MS: 4 InsertByte-CrossOver-CMP-EraseBytes- DE: "_directive"-
+#3300	NEW    cov: 2897 ft: 11799 corp: 273/12744b lim: 200 exec/s: 24 rss: 704Mb L: 126/197 MS: 3 InsertRepeatedBytes-CopyPart-EraseBytes-
+#3476	REDUCE cov: 2897 ft: 11799 corp: 273/12743b lim: 200 exec/s: 24 rss: 704Mb L: 4/197 MS: 1 EraseBytes-
+#3507	REDUCE cov: 2897 ft: 11799 corp: 273/12741b lim: 200 exec/s: 24 rss: 704Mb L: 5/197 MS: 1 EraseBytes-
+#3527	REDUCE cov: 2897 ft: 11799 corp: 273/12657b lim: 200 exec/s: 24 rss: 704Mb L: 100/197 MS: 5 ChangeBit-InsertByte-ShuffleBytes-ChangeByte-EraseBytes-
+#3535	REDUCE cov: 2897 ft: 11799 corp: 273/12646b lim: 200 exec/s: 24 rss: 704Mb L: 101/197 MS: 3 InsertByte-ChangeBit-EraseBytes-
+#3539	REDUCE cov: 2897 ft: 11799 corp: 273/12633b lim: 200 exec/s: 24 rss: 704Mb L: 14/197 MS: 4 CopyPart-ChangeBinInt-InsertByte-EraseBytes-
+#3568	REDUCE cov: 2897 ft: 11799 corp: 273/12632b lim: 200 exec/s: 24 rss: 704Mb L: 47/197 MS: 4 ChangeBinInt-InsertByte-ChangeByte-EraseBytes-
+#3639	REDUCE cov: 2897 ft: 11799 corp: 273/12620b lim: 200 exec/s: 24 rss: 704Mb L: 148/197 MS: 1 EraseBytes-
+#3790	NEW    cov: 2901 ft: 11803 corp: 274/12681b lim: 200 exec/s: 24 rss: 704Mb L: 61/197 MS: 1 InsertByte-
+#3836	NEW    cov: 2901 ft: 11804 corp: 275/12855b lim: 200 exec/s: 24 rss: 704Mb L: 174/197 MS: 1 InsertRepeatedBytes-
+#3942	REDUCE cov: 2901 ft: 11804 corp: 275/12828b lim: 200 exec/s: 24 rss: 704Mb L: 129/197 MS: 1 EraseBytes-
+#3981	REDUCE cov: 2901 ft: 11804 corp: 275/12824b lim: 200 exec/s: 24 rss: 704Mb L: 96/197 MS: 4 InsertByte-InsertByte-InsertByte-EraseBytes-
+#3983	NEW    cov: 2901 ft: 11805 corp: 276/12903b lim: 200 exec/s: 24 rss: 704Mb L: 79/197 MS: 2 ChangeBit-ChangeBinInt-
+#3986	REDUCE cov: 2901 ft: 11805 corp: 276/12887b lim: 200 exec/s: 24 rss: 704Mb L: 88/197 MS: 3 InsertRepeatedBytes-EraseBytes-EraseBytes-
+#4002	REDUCE cov: 2901 ft: 11805 corp: 276/12881b lim: 200 exec/s: 24 rss: 704Mb L: 100/197 MS: 1 EraseBytes-
+#4040	REDUCE cov: 2901 ft: 11805 corp: 276/12879b lim: 200 exec/s: 24 rss: 704Mb L: 11/197 MS: 3 CopyPart-ChangeBinInt-EraseBytes-
+#4096	pulse  cov: 2901 ft: 11805 corp: 276/12879b lim: 200 exec/s: 24 rss: 704Mb
+#4144	NEW    cov: 2901 ft: 11812 corp: 277/12927b lim: 200 exec/s: 24 rss: 704Mb L: 48/197 MS: 4 CMP-PersAutoDict-EraseBytes-InsertByte- DE: "atom"-"/L"-
+#4204	DONE   cov: 2901 ft: 11812 corp: 277/12927b lim: 200 exec/s: 24 rss: 704Mb
+###### Recommended dictionary. ######
+"\\= " # Uses: 81
+"\377\377\377\377\377\377\377\377" # Uses: 45
+"conj" # Uses: 55
+"\377\377\377\377" # Uses: 42
+"\001\000\000\000" # Uses: 17
+"\000\000\000\000\000\000\000\376" # Uses: 16
+"/L" # Uses: 21
+"/1" # Uses: 13
+"\000\000\000\000\000\000\000\001" # Uses: 12
+"_lists_me" # Uses: 6
+"_directive" # Uses: 9
+"atom" # Uses: 0
+###### End of recommended dictionary. ######
+Done 4204 runs in 171 second(s)
+stat::number_of_executed_units: 4204
+stat::average_exec_per_sec:     24
+stat::new_units_added:          97
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              704

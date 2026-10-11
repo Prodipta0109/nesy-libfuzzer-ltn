@@ -1,0 +1,7 @@
+{
+ "kind": "oracle:t_api",
+ "detail": "DataLoader(batch_size=0) over 5 items never stops iterating (yields 11 batches, last=[])",
+ "loc": "",
+ "context": "T5 loader n=5 batch_size=0 shuffle=False",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 488, in t_api\n    raise Bug(f\"DataLoader(batch_size={bs}) over {n} items never stops iterating (yields {count} batches, last={batch})\")\nBug: DataLoader(batch_size=0) over 5 items never stops iterating (yields 11 batches, last=[])\n"
+}

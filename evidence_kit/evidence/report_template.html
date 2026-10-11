@@ -1,0 +1,135 @@
+<title>Fuzzing Design Evidence</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* layout: one reading column, library tabs, each claim = a measured comparison with its command */
+:root{--bg:#f5f6f8;--panel:#fff;--ink:#17202b;--mute:#5b6675;--line:#d9dee6;--on:#0e6b63;--on-bg:#dff2ee;--off:#b0432b;--off-bg:#f8e4de;--code:#eef1f5;
+--serif:"Source Serif 4",Georgia,serif;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151c;--panel:#18202a;--ink:#e6ebf1;--mute:#97a3b3;--line:#2a3441;--on:#4fc3b4;--on-bg:#12342f;--off:#f08a70;--off-bg:#3a1f18;--code:#202a36;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10151c;--panel:#18202a;--ink:#e6ebf1;--mute:#97a3b3;--line:#2a3441;--on:#4fc3b4;--on-bg:#12342f;--off:#f08a70;--off-bg:#3a1f18;--code:#202a36;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);padding-inline:16px;padding-block:24px}
+main{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{font:600 clamp(1.7rem,4vw,2.4rem)/1.15 var(--serif);margin:0;text-wrap:balance}
+h2{font:600 1.35rem/1.2 var(--serif);margin:0 0 4px}
+h3{font:600 1rem/1.3 var(--sans);margin:0}
+p{margin:0;max-width:68ch}.mute{color:var(--mute)}
+code,.cmd{font:400 .85rem/1.5 var(--mono)}
+.cmd{background:var(--code);padding:8px 12px;border-radius:6px;overflow-x:auto;white-space:pre;display:block}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button{font:600 .95rem var(--sans);padding:8px 18px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;cursor:pointer}
+nav button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--on);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:14px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+tr:last-child td{border-bottom:0}
+.ok{color:var(--on);font-weight:600}.bad{color:var(--off);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.tag{font:600 .75rem var(--mono);background:var(--code);padding:2px 8px;border-radius:4px;margin-right:8px}
+.bars{display:grid;grid-template-columns:minmax(90px,150px) 1fr 64px;gap:6px 12px;align-items:center;font-size:.85rem}
+.bar{height:16px;border-radius:3px;min-width:2px}.bar.on{background:var(--on)}.bar.off{background:var(--off)}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.read{border-left:3px solid var(--line);padding-left:12px;color:var(--mute)}
+.pill{display:inline-block;font:600 .75rem var(--sans);padding:1px 8px;border-radius:99px;margin:0 4px 4px 0}
+.pill.on{background:var(--on-bg);color:var(--on)}.pill.off{background:var(--off-bg);color:var(--off)}
+.legend{display:flex;gap:16px;font-size:.85rem}.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:10px">
+<h1>Fuzzing Design Evidence</h1>
+<p class="mute">Every design choice is tested by running the real fuzzer twice, once with the choice and once without it. Same seed, same number of executions. Each block shows the command that reproduces it.</p>
+</header>
+<nav id="tabs"></nav>
+<div id="view" style="display:flex;flex-direction:column;gap:28px"></div>
+</main>
+<script>
+const D=/*DATA*/null;
+const SCRIPT={lnn:"evidence_lnn.py",ltn:"evidence_ltn.py",dpl:"evidence_dpl.py"},PAIRS={lnn:"pairs_lnn.py",ltn:"pairs_ltn.py",dpl:"pairs_dpl.py"};
+const NOTES={
+lnn_A1:"Blind random testing still hits the easy bugs, but it never grows the corpus and misses the ones that need a specific combination (L1, L4 here).",
+lnn_A2:"Instrumenting torch inflates the coverage number with torch branches, so the two numbers are not comparable. Speed is similar. The point of the choice is that coverage then measures only the library under test, and feedback is not spent on torch internals.",
+ltn_A2:"Instrumenting torch inflates the coverage number with torch branches, so the two numbers are not comparable. Speed and bugs found are about equal in this budget. The point of the choice is that coverage measures only LTN.",
+dpl_A1:"The structured harness alone already finds most bugs by random choice. Coverage feedback adds a growing corpus (211 inputs against 1) and a few extra findings; its value grows with longer runs.",
+dpl_A9:"Instrumenting only deepproblog is faster per run, but the fuzzer cannot see what the ProbLog solver does, so coverage is far lower and a few findings are missed.",
+ltn_A8:"The round-3 harness is a different program with other dimensions, so it reports different findings. It is not meant to beat round 1 on a single number."};
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function bars(rows){ // rows: [label,on,off]
+  const g=el("div","bars");
+  rows.forEach(([l,a,b])=>{const m=Math.max(a||0,b||0,1);
+    [["on",a],["off",b]].forEach(([k,v],i)=>{
+      g.appendChild(el("div","mute",i?"":esc(l)));
+      const w=el("div");w.innerHTML=`<div class="bar ${k}" style="width:${v==null?0:Math.max(1,v/m*100)}%"></div>`;g.appendChild(w);
+      g.appendChild(el("div","num",v==null?"n/a":v));});});
+  return g}
+function legend(a,b){return el("div","legend",`<span><i style="background:var(--on)"></i>${esc(a)}</span><span><i style="background:var(--off)"></i>${esc(b)}</span>`)}
+function cmpCard(x,lib){
+  const c=el("div","card"),on=x.on,off=x.off;
+  c.appendChild(el("h3","",`<span class="tag">${esc(x.id)}</span>${esc(x.title)}`));
+  c.appendChild(el("p","mute","<b>Why:</b> "+esc(x.why)));
+  c.appendChild(el("div","cmd",`python3 ${SCRIPT[lib]} ${x.id}`));
+  c.appendChild(legend("with the feature","without it"));
+  const rows=[];
+  if(on.cov!=null||off.cov!=null)rows.push(["code reached (cov)",on.cov,off.cov]);
+  if(on.corpus!=null)rows.push(["corpus size",on.corpus,off.corpus]);
+  if(on.exec_s!=null&&x.id!=="A1")rows.push(["executions / s",on.exec_s,off.exec_s]);
+  if(on.stray_files!=null&&/A12/.test(x.id))rows.push(["stray files left",on.stray_files,off.stray_files]);
+  rows.push(["unique findings",on.unique_findings,off.unique_findings]);
+  rows.push(["bug groups found",(on.bugs||[]).length,(off.bugs||[]).length]);
+  if(off.execs!=null&&off.execs<on.execs)rows.push(["executions finished",on.execs,off.execs]);
+  c.appendChild(bars(rows));
+  const lost=(on.bugs||[]).filter(b=>!(off.bugs||[]).includes(b)),gain=(off.bugs||[]).filter(b=>!(on.bugs||[]).includes(b));
+  if(lost.length)c.appendChild(el("div","",'<span class="mute">Missed without it: </span>'+lost.map(b=>`<span class="pill off">${esc(b)}</span>`).join("")));
+  if(off.timeout)c.appendChild(el("div","",'<span class="pill off">campaign froze: libFuzzer timeout</span>'));
+  const nn=NOTES[lib+"_"+x.id]||x.note;if(nn)c.appendChild(el("p","read",esc(nn)));
+  return c}
+function rowsCard(x,lib,cols){
+  const c=el("div","card");
+  c.appendChild(el("h3","",`<span class="tag">${esc(x.id)}</span>${esc(x.title||"")}`));
+  c.appendChild(el("div","cmd",`python3 ${SCRIPT[lib]} ${x.id}`));
+  return c}
+function special(x,lib){
+  const id=x.id,c=el("div","card");
+  const T={A4:["An independent oracle is needed","A wrong value does not crash. Compare how many wrong results a crash-only fuzzer and an oracle notice."],
+   A5:["Keep going and de-duplicate","The same bug is hit again and again. Keep every distinct kind, show each once."],
+   A6:["Check the harness itself","A false alarm from our own test code would be reported as a library bug."],
+   A7:["Restart in chunks","Atheris keeps memory it never gives back, so long runs must be restarted."],
+   A13:["Every inference call has a step cap","One input that never converges would freeze the whole campaign."]}[id]||[id,""];
+  c.appendChild(el("h3","",`<span class="tag">${esc(id)}</span>${esc(T[0])}`));
+  if(T[1])c.appendChild(el("p","mute","<b>Why:</b> "+esc(T[1])));
+  c.appendChild(el("div","cmd",`python3 ${SCRIPT[lib]} ${id}`));
+  if(id==="A4"&&x.rows){const w=el("div","tablewrap");w.innerHTML="<table><tr><th>case</th><th>inputs</th><th>crash-only sees</th><th>oracle sees</th></tr>"+x.rows.map(r=>`<tr><td>${esc(r.label)}</td><td class="num">${r.inputs}</td><td class="num bad">${r.crash_only_detects}</td><td class="num ok">${r.oracle_detects}</td></tr>`).join("")+"</table>";c.appendChild(w)}
+  else if(id==="A4"&&x.oracle_only){c.appendChild(el("p","","Findings in the full run: <b>"+(x.exceptions.length+x.oracle_only.length)+"</b>. A crash-only fuzzer would see <b>"+x.exceptions.length+"</b>. The other <b>"+x.oracle_only.length+"</b> never raise an exception, only the oracle sees them (wrong round trip, probability above 1, endless loop)."))}
+  else if(id==="A5"){c.appendChild(legend("distinct findings kept","raw hits"));c.appendChild(bars([["findings",x.unique,x.raw]]))}
+  else if(id==="A6"&&x.rows){const w=el("div","tablewrap");w.innerHTML="<table><tr><th>case</th><th>result</th></tr>"+x.rows.map(r=>`<tr><td>${esc(r.label)}</td><td><code>${esc(JSON.stringify(r.result))}</code></td></tr>`).join("")+"</table>";c.appendChild(w)}
+  else if(id==="A6"){c.appendChild(el("p","","Naive oracle reads the object it built: <code>"+esc(JSON.stringify(x.naive))+"</code> (false alarm). Fixed oracle reads the stored node: <code>"+esc(JSON.stringify(x.fixed))+"</code> (correct)."))}
+  else if(id==="A7"){c.appendChild(el("p","","Memory after "+x.short.execs+" runs: <b>"+x.short.rss_mb+" MB</b>, after "+x.long.execs+" runs: <b>"+x.long.rss_mb+" MB</b>. About <b>"+x.kb_per_exec.toFixed(1)+" KB</b> per execution, so the process is restarted in chunks and the corpus is kept."))}
+  else if(id==="A13"&&x.rows){const w=el("div","tablewrap");w.innerHTML="<table><tr><th>call</th><th>result</th></tr>"+x.rows.map(r=>`<tr><td>${esc(r.label)}</td><td class="${/HANG/.test(r.result)?'bad':'ok'}">${esc(r.result)}</td></tr>`).join("")+"</table>";c.appendChild(w)}
+  return c}
+function render(lib){
+  const d=D[lib],v=document.getElementById("view");v.innerHTML="";
+  const s1=el("section");s1.appendChild(el("h2","","Why each dimension"));
+  s1.appendChild(el("p","mute","A dimension is one kind of choice the fuzzer makes. For each one: the same library call with a normal value (control) and with the value the fuzzer picks. Only that one thing changes."));
+  s1.appendChild(el("div","cmd",`python3 ${PAIRS[lib]}`));
+  if(d.pairs.length){const w=el("div","tablewrap");w.innerHTML="<table><tr><th>dimension</th><th>bug</th><th>only change</th><th>control</th><th>fuzzer value</th></tr>"+d.pairs.map(r=>`<tr><td>${esc(r.dimension)}</td><td><code>${esc(r.bug)}</code></td><td>${esc(r["only change"])}</td><td class="${r.control.startsWith("OK")?"ok":"bad"}">${esc(r.control)}</td><td class="${r["fuzzer value"].startsWith("BUG")?"bad":"ok"}">${esc(r["fuzzer value"])}</td></tr>`).join("")+"</table>";s1.appendChild(w)}
+  if(d.dims.length){s1.appendChild(el("h3","","Remove a dimension and run the fuzzer: which bugs disappear?"));
+    s1.appendChild(el("div","cmd",`python3 ${SCRIPT[lib]} dim`));
+    s1.appendChild(legend("full harness","one dimension removed"));
+    const wrap=el("div","card");
+    d.dims.forEach(x=>{const lost=(x.on.bugs||[]).filter(b=>!(x.off.bugs||[]).includes(b));
+      wrap.appendChild(el("div","",`<b>${esc(x.title.replace(/^dimension /,""))}</b>`));
+      wrap.appendChild(bars([["bug groups found",x.on.bugs.length,x.off.bugs.length],["code reached",x.on.cov,x.off.cov]]));
+      wrap.appendChild(el("div","",(lost.length?'<span class="mute">Missed: </span>'+lost.map(b=>`<span class="pill off">${esc(b)}</span>`).join(""):'<span class="mute">No bug group lost in this budget (the dimension still adds coverage).</span>')+`<p class="read" style="margin-top:6px">${esc(x.why)}</p>`))});
+    s1.appendChild(wrap)}
+  v.appendChild(s1);
+  const s2=el("section");s2.appendChild(el("h2","","Why each adaptation"));
+  s2.appendChild(el("p","mute","libFuzzer was designed for C and C++. These changes make it work on a Python library. Each card runs the fuzzer with and without the change."));
+  s2.appendChild(el("div","cmd",`python3 ${SCRIPT[lib]} adapt`));
+  d.adapt.forEach(x=>s2.appendChild(x.on&&x.off?cmpCard(x,lib):special(x,lib)));
+  v.appendChild(s2)}
+const tabs=document.getElementById("tabs");
+Object.keys(D).forEach((k,i)=>{const b=el("button","",D[k].name);b.setAttribute("aria-pressed",i==0);b.onclick=()=>{[...tabs.children].forEach(x=>x.setAttribute("aria-pressed",x===b));render(k);try{history.replaceState(null,"","#"+k)}catch(e){}};tabs.appendChild(b)});
+const start=(location.hash||"").slice(1);const first=D[start]?start:Object.keys(D)[0];
+[...tabs.children].forEach((b,i)=>b.setAttribute("aria-pressed",Object.keys(D)[i]===first));render(first);
+</script>

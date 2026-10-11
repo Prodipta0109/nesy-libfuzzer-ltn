@@ -1,0 +1,6 @@
+{
+ "kind": "wrong_bounds/t_upward",
+ "msg": "ops=And+Implies luk ('And', [('Implies', [('leaf', 2), ('leaf', 1)]), ('leaf', 1)]) expected (0.3999999999999999, 0.3999999999999999) got (0.0, 0.3999999761581421) data=[(0.4, 0.4), (0.4, 0.4), (0.0, 0.0)]",
+ "where": "",
+ "trace": ""
+}

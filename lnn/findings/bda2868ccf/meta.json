@@ -1,0 +1,6 @@
+{
+ "kind": "nonconvergence/t_conv",
+ "msg": "Exists_wrap1 Exists ['a'] wrap=1 data={('a',): (0.0, 0.5)} steps=60 upd=tensor(30.5000)",
+ "where": "",
+ "trace": ""
+}

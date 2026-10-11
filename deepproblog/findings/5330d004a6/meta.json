@@ -1,0 +1,7 @@
+{
+ "kind": "exception:t_data:IndexError",
+ "detail": "list index out of range",
+ "loc": "stop_condition.py:132",
+ "context": "T7 stop condition Threshold {'attribute': 'loss', 'max': 1.6705882352929478, 'no_data': 0, 'duration': 3}",
+ "trace": "Traceback (most recent call last):\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 734, in TestOneInput\n    t(fdp)\n    ~^^^^^\n  File \"/home/claude/dpl/dpl_fuzz.py\", line 703, in t_data\n    cond.is_stop(tobj)\n    ~~~~~~~~~~~~^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/deepproblog/utils/stop_condition.py\", line 132, in is_stop\n    if data[-i - 1] < self.max:\n       ~~~~^^^^^^^^\nIndexError: list index out of range\n"
+}
