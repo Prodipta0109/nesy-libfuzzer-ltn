@@ -1,0 +1,7 @@
+{
+ "kind": "oracle",
+ "detail": "mask changes dtype torch.float32 -> torch.float64",
+ "loc": "",
+ "extra": "test10",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 391, in t_mask\n    raise Bug(f\"mask changes dtype {plain.value.dtype} -> {allt.value.dtype}\")\nBug: mask changes dtype torch.float32 -> torch.float64\n"
+}

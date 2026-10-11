@@ -3,24 +3,24 @@
 **Target:** LTNtorch 1.0.2 (Logic Tensor Networks, PyTorch implementation), commit `d1bd981`
 **Engine:** libFuzzer via Atheris 3.1.0
 **Guidance:** code coverage only
-**Date:** 10 October 2026
+**Date:** 11 October 2026
 
 ---
 
 ## Summary
 
-The study applies libFuzzer's coverage-guided fuzzing to neurosymbolic AI libraries (LTN, DeepProbLog, NeurASP and LNN), starting with LTN. libFuzzer could not be applied to LTN unchanged: it relies on compile-time instrumentation of C/C++ and on sanitizers, while LTN is a Python library whose defects are mostly incorrect values rather than crashes. Seven adaptations were made around the unchanged libFuzzer engine, and seven fuzzing dimensions (D1–D7) were defined from LTN's API. The dimensions and test oracles of existing manual fuzzers were then integrated into the libFuzzer harness.
+The study applies libFuzzer's coverage-guided fuzzing to neurosymbolic AI libraries (LTN, DeepProbLog, NeurASP and LNN), starting with LTN. libFuzzer could not be applied to LTN unchanged: it relies on compile-time instrumentation of C/C++ and on sanitizers, while LTN is a Python library whose defects are mostly incorrect values rather than crashes. Eight adaptations were made around the unchanged libFuzzer engine, and seven fuzzing dimensions (D1–D7) were defined from LTN's API. The dimensions and test oracles of existing manual fuzzers were then integrated into the libFuzzer harness. A third round (Round 3) then added the dimension choices that the first two rounds could not generate, together with new oracles.
 
-About one million executions found **three new bugs** (F1–F3) and re-found **four bugs** first reported by the manual fuzzers (F24–F27). An eighth bug (F28) was found by code inspection. All eight reproduce without the fuzzer.
+About one million executions in Rounds 1–2 found **three new bugs** (F1–F3) and re-found **four bugs** first reported by the manual fuzzers (F24–F27). An eighth bug (F28) was found by code inspection. Round 3 (about 0.7 million further executions) found **four more new bugs** (F29, F30, F31, F33), the most serious being that connectives modify their operands in place (F29). All twelve reproduce without the fuzzer.
 
 | Objective | Status |
 |---|---|
 | Use libFuzzer, starting with LTN | Done |
 | Coverage-guided fuzzing only | Done |
-| Adapt libFuzzer where needed | Done: 7 adaptations |
+| Adapt libFuzzer where needed | Done: 8 adaptations |
 | Fix the fuzzing dimensions; observe libFuzzer's behaviour | Done: D1–D7, derived automatically from LTN's code |
 | Adapt the dimensions of the existing manual fuzzers | Done; 3 oracle ideas not yet ported |
-| Identify adaptations and errors found | Done: 7 adaptations, 8 bugs |
+| Identify adaptations and errors found | Done: 8 adaptations, 12 bugs |
 | DeepProbLog, NeurASP, LNN | Not started |
 
 ---
@@ -41,7 +41,8 @@ source venv/bin/activate
 | `ltn_combined/` | Round 2 harness: Round 1 plus the manual fuzzers' oracles and seeds |
 | `ltn_combined/logs/` | libFuzzer output of every campaign |
 | `ltn_combined/findings_valid/`, `findings_misuse/` | one folder per failure signature: `input.bin`, `program.txt`, `meta.json` |
-| `check_all_bugs.py` | standalone reproduction of all eight bugs |
+| `check_all_bugs.py` | standalone reproduction of every bug (F1–F3, F24–F31, F33) |
+| `round3/ltn_round3.py` | Round 3 harness: new dimension choices and oracles (A8) |
 | `classify_dims.py` | static extraction of fuzzing dimensions from LTN's source |
 
 Source of the manual fuzzers: `github.com/PromaChow/neys_fuzz`, branch `fuzz-ltn-lnn-probfuzz-adaptation`, commit `9512567`.
@@ -76,6 +77,7 @@ The libFuzzer engine (mutation, corpus management, coverage feedback) is unchang
 | A5 | Keep-going mode | libFuzzer stops at the first crash, and the empty-domain crash appears at input 1 | failures de-duplicated by signature, saved, fuzzing continues (`LTNFUZZ_COLLECT=1`) |
 | A6 | Harness-bug control | a failure in the harness itself looks like an LTN bug | two early harness false alarms fixed; every reported bug reproduced without the fuzzer |
 | A7 | Chunked campaigns | Atheris grows memory by about 7–10 KB per execution, producing fake slow inputs | short chunks that restart the process and resume from the saved corpus (`run_chunks.sh`) |
+| A8 | Extended dimensions and oracles (Round 3) | the first harness could not generate several API choices, and some defects need new checks | `ltn_round3.py`: eleven byte-driven tests covering per-call `p`/`stable`, `diag`/`undiag`, `add_batch_dim=False`, odd dtypes and shapes, `Predicate(model=/func=)`, vector-valued `Function`, trainable `Constant`, multi-variable and nested quantifiers, raw tensors to `SatAgg`, same-label variables and reuse of a sub-formula; oracles for caller-object mutation, shape vs free variables, Forall/Exists duality, all-true mask, quantifier variable order, `diag` vs paired mean and dtype |
 
 ### Verification
 
@@ -88,7 +90,8 @@ The libFuzzer engine (mutation, corpus management, coverage feedback) is unchang
 | `sed -n 80,95p ltn_combined/ltn_fuzz_combined.py` | A4: LTN's own validation messages are not counted as bugs | prefixes such as `Expected inputs of connectives and quantifiers`, `Expected parameter` |
 | `cat ltn_combined/findings_valid/5e774fb287/meta.json` | A4: a silent bug caught only by an oracle | `OracleViolation … nan … aggs=['Mean']` (F1) |
 | `ls ltn_combined/findings_valid \| wc -l` | A5: many distinct failures from one campaign | 23 signatures; the first one (F1) was hit 134,864 times and saved once |
-| `PYTHONPATH=ltn_torch python3 check_all_bugs.py` | A6: bugs belong to LTN, not the harness | all eight reproduce with plain LTN calls (Section 8) |
+| `PYTHONPATH=ltn_torch python3 check_all_bugs.py` | A6: bugs belong to LTN, not the harness | all twelve reproduce as plain LTN code (Section 8.2) |
+| `cd ltn_combined && PYTHONPATH=../ltn_torch python3 ltn_round3.py -max_total_time=240 -rss_limit_mb=3000` | A8: Round 3 harness runs under libFuzzer | about 1,800 executions/s alone (about 740/s with four parallel chunks), `cov` 268, `[FINDING …]` lines; results in `findings_r3/<signature>/meta.json` |
 | `cat ltn_combined/run_chunks.sh`; `rss` in `logs/valid.log` | A7: chunking and memory growth | chunks resume from the corpus; memory 314 → 461 MB within one minute |
 
 ### Contrast: plain libFuzzer on C++
@@ -179,7 +182,7 @@ python3 -W ignore classify_dims.py ltn_torch/ltn --csv ltn_dimensions.csv | tail
 
 The bugs lie exactly at these validation gaps: F2 at `p`, F1 at empty `individuals`, F3 and F25 in `Quantifier.__call__`. Only the rule tables are LTN-specific, so the same script applies to DeepProbLog, NeurASP and LNN.
 
-### 5.4 Gaps in the current dimensions
+### 5.4 Gaps in the Round 1–2 dimensions (addressed in Round 3, Section 7.2)
 
 | Missing choice | Dimension | Relevance |
 |---|---|---|
@@ -189,6 +192,8 @@ The bugs lie exactly at these validation gaps: F2 at `p`, F1 at empty `individua
 | `Predicate(func=…)` | D3 | different constructor branch |
 | `Constant(trainable=True)` | D6 | gradient flow into constants |
 | raw non-scalar tensor passed to `SatAgg` | D7 | required for the fuzzer to reach F28 |
+
+Round 3 implements all six choices. F28 was still not found by the fuzzer in Round 3; the reason has not been investigated.
 
 ### 5.5 Observed libFuzzer behaviour
 
@@ -254,6 +259,8 @@ These are oracle extensions, not missing input dimensions.
 
 ## 7. Results
 
+### 7.1 Rounds 1–2
+
 | Measure | Value |
 |---|---|
 | executions | ≈ 1.0 million (valid ≈ 443k, misuse ≈ 573k) |
@@ -263,6 +270,21 @@ These are oracle extensions, not missing input dimensions.
 | bugs | 3 new (F1–F3), 4 re-found (F24–F27), 1 by code inspection (F28) |
 
 The signature count over-states the number of bugs, because signatures include the aggregators present in the program. Root causes are the meaningful count.
+
+### 7.2 Round 3
+
+| Measure | Value |
+|---|---|
+| harness | `ltn_round3.py`, eleven byte-driven tests (A8) |
+| executions | ≈ 712,000 in four parallel 4-minute chunks (seeds 101–104), after two tuning runs of about 110,000 and 287,000 |
+| throughput | about 1,800/s single process; about 740/s per process with four in parallel |
+| coverage of `ltn` | `cov` 268 (Atheris counter value for this harness, not comparable to the 339 of Rounds 1–2) |
+| distinct signatures after de-duplication | 19 across the chunks |
+| new bugs | 4 (F29, F30, F31, F33) |
+| re-found | F1 (empty domain), F2 (p ≤ 0), F26 (mask changes dtype) |
+| harness artefact, not an LTN bug | `IndexError` at `core.py:616`, caused by the harness's own model receiving 1-D input |
+
+Known causes were filtered in the harness: NaN outputs on empty variables (F1) and on p ≤ 0 (F2) are not reported again, so every remaining signature is either new or a different failure. Coverage did not rise in Round 3 (268 at every chunk end); the new bugs came from new choices and new checks, as in Round 2.
 
 ---
 
@@ -280,18 +302,26 @@ The signature count over-states the number of bugs, because signatures include t
 | F26 | dtype changes: `NotGodel` float64 → float32; masked `AggregMin` and guarded quantifier float32 → float64 | `NotGodel`, `AggregMin`, `Quantifier` | D4/D5 → dtype oracle | re-found | low |
 | F27 | NaN gradient with unstable operators, e.g. `AggregPMean(p=2, stable=False)` at inputs 0 | unstable aggregators / connectives | D4/D5 + D6 → gradient oracle | re-found | low: stable variants are the documented fix |
 | F28 | `SatAgg` given a non-scalar plain tensor raises `TypeError: 'torch.Size' object is not callable` inside its own error message instead of the intended `ValueError` | `fuzzy_ops.py` ~1669 | found by code inspection; the current D7 cannot generate this input | **new** | low |
+| **F29** | A `Connective` or a `Predicate` **modifies its operand in place** when the operand carries a gradient, such as the output of a model predicate or a `Function`. After `AndProd(px, qy)`, `px.free_vars` changes from `['x']` to `['x','y']` and its shape from (3,) to (12,). Reusing the sub-formula in a second formula then gives wrong shapes. A `Predicate` call on a `Function` output changes it from `['x']`, shape (3, 2) to `['x','y']`, shape (12, 2). Operands without a gradient are copied correctly, so behaviour is inconsistent. LTN's own comment states that reuse must be possible | `core.py` `process_ltn_objects` (copy only when `grad_fn is None` or the object is a `Variable` / `Constant`) | Round 3: reuse and mutation oracles | **new** | high: silent wrong shapes and values in training |
+| **F30** | Two variables with one label but different sizes. 1 vs 2 individuals is accepted silently (result shape (2,)); 3 vs 4 gives a raw torch `RuntimeError` instead of an LTN message | `core.py` 307, 359 (`process_ltn_objects`) | D2 same-label → oracle | **new** | medium |
+| **F31** | `SatAgg()` called with no formulas raises `RuntimeError: stack expects a non-empty TensorList` | `fuzzy_ops.py:1669` | D6/D7 → exception oracle | **new** | low |
+| **F33** | `Variable(torch.tensor(0.5))` (0-d) is accepted by the constructor; every later use raises `IndexError: tuple index out of range` | `core.py:307` | D2 → exception oracle | **new** | low |
 
-"New" means not found by the manual fuzzers. Before reporting F1–F3 and F28 as previously unreported, the LTNtorch issue tracker should be searched (open and closed issues).
+"New" means not found by the manual fuzzers. The upstream issue tracker of LTNtorch was checked on 11 October 2026: it contains two issues, both closed. Issue #1 (AggregPMean not compatible with GPU optimization) concerns a `torch.BoolTensor` mask check on CUDA. Issue #2 (a question about `process_ltn_objects`) asks why tensors of the same shape are repeated, and suspects that broadcasting follows variable labels instead of shapes; the reporter answered himself that pairing is chosen later with `diag`, and closed it with no maintainer reply. Neither issue reports any bug in this catalogue. Issue #2 concerns the same function as F29 and F30, but it asks about label-based broadcasting; it does not describe modification of the caller's objects (F29) or acceptance of same-label variables of different sizes (F30). Since a label identifies a variable in LTN, F30 is best read as a missing validation (two variables sharing a label with different sizes are not rejected), not as a fault in broadcasting. No match was found for the other bugs, so all twelve are new relative to the manual fuzzers and the tracker.
 
 The manual fuzzers also tested p = 0, but counted any exception as a pass. The libFuzzer oracle accepts only LTN's documented validation messages, which is why it reported F2.
 
 ### 8.2 Reproduction without the fuzzer
 
+Every bug is a short function of plain LTN code in `check_all_bugs.py`, written the way a bug report is: it uses LTN as documented and states what should happen. When the bug is present the function fails, either with LTN's own exception or with an assertion that names the wrong value.
+
 ```bash
-PYTHONPATH=ltn_torch python3 check_all_bugs.py
+PYTHONPATH=ltn_torch python3 check_all_bugs.py list      # the 14 demonstrations
+PYTHONPATH=ltn_torch python3 check_all_bugs.py F29       # show the code of one bug and run it raw
+PYTHONPATH=ltn_torch python3 check_all_bugs.py           # run all, then print a summary table
 ```
 
-Each section runs a minimal LTN call and prints the actual result next to the expected one.
+Running one bug by its identifier prints its source code and then runs it with nothing caught, so the output is LTN's own traceback or the failed assertion. Running without an argument prints each bug's code and failure, then a table. The exit code is 0 only if all 14 demonstrations fail as described (expected last line: `14 of 14 bug demonstrations fail exactly as described`). Bugs with two variants have two identifiers: F1 (Min raises `IndexError`) and F1b (Mean, pMean and pMeanError return `nan`), and F30 (sizes 3 and 4 raise a raw torch error) and F30b (sizes 1 and 2 are accepted silently).
 
 | Bug | Expected (correct behaviour) | Observed (d1bd981) |
 |---|---|---|
@@ -303,6 +333,10 @@ Each section runs a minimal LTN call and prints the actual result next to the ex
 | F26 | output dtype = input dtype | `float32` (NotGodel on float64); `float64` (masked AggregMin, guarded Forall on float32) |
 | F27 | finite gradient | `[nan, nan, nan]` (stable=False); finite (stable=True) |
 | F28 | LTN's `ValueError` about scalar formulas | `TypeError: 'torch.Size' object is not callable` |
+| F29 | operand unchanged after the call | `px.free_vars ['x'] → ['x','y']`, shape `(3,) → (12,)`; a detached predicate stays `['x']` |
+| F30 | LTN's `ValueError` about inconsistent labels | `RuntimeError: The size of tensor a (3) must match the size of tensor b (4)` (sizes 3 and 4); shape `(2,)` accepted (sizes 1 and 2) |
+| F31 | LTN's `ValueError`, or 1.0 | `RuntimeError: stack expects a non-empty TensorList` |
+| F33 | `ValueError` from the constructor | constructor accepts shape `()`; `IndexError: tuple index out of range` on use |
 
 ### 8.3 Replay of saved fuzzer inputs
 
@@ -320,6 +354,7 @@ Each replay runs libFuzzer's exact input with instrumentation off, confirming th
 
 - Invalid escape sequences in docstrings cause `SyntaxWarning` on Python 3.12 and later. This is cosmetic.
 - Connective operators called directly do not range-check their inputs; only `Connective(...)` does. This is a design choice.
+- The empty-domain failures that Round 3 also meets with `diag` and with two empty variables are F1, not new bugs.
 - Negative results: no reference-formula mismatch beyond F24, no NaN on non-empty domains, and no NaN gradients with stable operators.
 
 ---
@@ -328,9 +363,10 @@ Each replay runs libFuzzer's exact input with instrumentation off, confirming th
 
 1. **libFuzzer's engine transfers to a neurosymbolic Python library.** It requires an instrumentation front-end, a byte-to-program decoder, and oracles.
 2. **Oracle strength dominates.** Coverage plateaus early because most of LTN is branch-free tensor arithmetic: branch coverage cannot distinguish p = 2 from p = 0.001. Stronger oracles found four more bugs with no change in coverage.
-3. **Dimensions bound what can be found.** The three new bugs come from choices the manual fuzzers did not make (empty domains, misuse) or judged too leniently (p = 0).
+3. **Dimensions bound what can be found.** The three new bugs of Rounds 1–2 come from choices the manual fuzzers did not make (empty domains, misuse) or judged too leniently (p = 0).
 4. **Bugs cluster at validation gaps.** Static extraction of unvalidated parameters points to the locations of F1, F2, F3 and F25.
-5. **The combination is complementary.** libFuzzer's dimensions found new bugs, and the manual fuzzers' oracles let libFuzzer re-find the known ones.
+5. **Adding dimensions and oracles found more.** Round 3 added choices and checks and found four further bugs with no gain in coverage. F29 needs two things at once: a model-based predicate (a result carrying a gradient) and a second use of that result; neither Round 1 nor Round 2 could generate that combination, and a value-only oracle could not have detected it. This confirms that the dimensions and the oracles, not the coverage, set what libFuzzer can find.
+6. **The combination is complementary.** libFuzzer's dimensions found new bugs, and the manual fuzzers' oracles let libFuzzer re-find the known ones.
 
 ---
 
@@ -339,15 +375,17 @@ Each replay runs libFuzzer's exact input with instrumentation off, confirming th
 - PyTorch is not instrumented, so branches inside its C++ core are invisible to coverage.
 - Coverage counts depend on the Python version and are comparable only within one environment.
 - Failure signatures are finer than root causes (23 signatures for 5 causes in the valid campaign).
-- F28 was not found by the fuzzer; the current D7 cannot generate its input.
-- Six dimension choices (Section 5.4) and three manual oracles (Section 6.3) are not yet implemented.
-- Novelty of F1–F3 and F28 is relative to the manual fuzzers; the upstream issue tracker still has to be checked.
+- F28 was not found by the fuzzer in Rounds 1–3. Round 3 does generate non-scalar raw tensors for `SatAgg`, so the remaining cause has not been investigated.
+- The three manual oracles in Section 6.3 are not yet implemented.
+- Round 3 filters known causes (F1, F2) in its NaN check, so it cannot report a second, different NaN cause on empty variables or p ≤ 0.
+- The Round 3 harness is a separate file from the Round 2 harness and does not share its seed corpus.
+- Novelty of F1–F3, F28–F31 and F33 is relative to the manual fuzzers and to the two issues in the LTNtorch tracker on 11 October 2026 (no match); the tracker is small, so the absence of a match shows only that nobody reported these in the tracker, and does not show that the maintainers are unaware of them.
 
 ---
 
 ## 11. Next steps
 
-1. Round 3 on LTN: add the six missing choices, with the target that the fuzzer finds F28 itself and coverage rises.
+1. Find out why Round 3 does not reach F28, and merge the Round 3 tests into the Round 2 harness so they share seeds and corpus.
 2. Port brute-force quantifier evaluation, the LTN–LNN differential and finite-difference gradient checks.
-3. Search the LTNtorch issue tracker, then report the new bugs upstream with the reproduction lines from `check_all_bugs.py`.
+3. Report the new bugs upstream, one issue per bug, each with its `check_all_bugs.py <ID>` demonstration. Start with F29 and F1/F1b.
 4. Apply the same method to DeepProbLog, then NeurASP and LNN. DeepProbLog and NeurASP contain native components (PySDD, clingo), where clang instrumentation (`-fsanitize=fuzzer-no-link`) can be combined with Atheris.

@@ -49,3 +49,37 @@ LTNFUZZ_NO_INSTRUMENT=1 python repro.py findings_valid/<id>/input.bin
 
 Campaigns run in chunks because Atheris' instrumentation grows memory by about 10 KB per execution; libFuzzer resumes
 from the corpus at every chunk.
+
+## Round 3: `ltn_round3.py`
+
+A separate Atheris harness (it does not use the seed corpus of this folder) that adds the choices the program builder
+above cannot generate. Bytes choose one of eleven tests:
+
+| Test | Dimension added |
+|---|---|
+| quantifier | per-call `p` / `stable`, two-variable quantification in both orders, guard on another variable |
+| duality | Forall(φ) = 1 − Exists(¬φ) for pMean / pMeanError |
+| diag | `diag` / `undiag`, round trip leaves the caller's variables unchanged, result = mean over pairs |
+| variable | `add_batch_dim=False`, 0-d / 3-d tensors, float16 / float64 / int / bool, trainable `Constant` |
+| connective | broadcasting of formulas over different variables, unary Not, caller's operands unchanged |
+| SatAgg | raw tensors, empty and non-scalar inputs, backward pass |
+| function | vector-valued `Function`, constants inside formulas, gradient into a trainable constant |
+| same label | two variables with one label but different sizes |
+| nested | ∀x ∃y φ with every operator family |
+| mask | all-true guard must equal no guard; dtype must be preserved |
+| reuse | one intermediate result used in two formulas must not be changed by the first use |
+
+Known causes are filtered in the NaN check (empty variables, p ≤ 0), so the findings are new or different failures.
+
+```bash
+PYTHONPATH=../ltn_torch python3 ltn_round3.py -max_total_time=240 -rss_limit_mb=3000
+python3 - <<'PY'            # list the findings
+import json, glob
+for f in sorted(glob.glob("findings_r3/*/meta.json")):
+    m = json.load(open(f)); print(f.split("/")[1], m["kind"], m["loc"], m["detail"][:90])
+PY
+```
+
+New bugs found this way: F29 (operands modified in place), F30 (same label, different sizes), F31 (`SatAgg()` with no
+formulas), F33 (scalar `Variable`). See `../docs/step7_round3_new_bugs.md`. Standalone reproduction:
+`PYTHONPATH=../ltn_torch python3 ../check_all_bugs.py F29   # or any bug id; "list" shows them all`.

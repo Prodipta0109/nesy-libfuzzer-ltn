@@ -1,0 +1,7 @@
+{
+ "kind": "exception:IndexError",
+ "detail": "tuple index out of range",
+ "loc": "core.py:307",
+ "extra": "test4",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 272, in t_var\n    r = P(o)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/venv/lib/python3.14/site-packages/torch/nn/modules/module.py\", line 1783, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/venv/lib/python3.14/site-packages/torch/nn/modules/module.py\", line 1794, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/core.py\", line 613, in forward\n    proc_objs, output_vars, output_shape = process_ltn_objects(inputs)\n                                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/core.py\", line 307, in process_ltn_objects\n    vars_to_n[v] = o.shape()[v_idx]\n                   ~~~~~~~~~^^^^^^^\nIndexError: tuple index out of range\n"
+}

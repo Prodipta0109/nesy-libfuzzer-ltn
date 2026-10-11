@@ -1,0 +1,7 @@
+{
+ "kind": "exception:RuntimeError",
+ "detail": "stack expects a non-empty TensorList",
+ "loc": "fuzzy_ops.py:1669",
+ "extra": "test6",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 323, in t_sat\n    r = agg(*forms)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/fuzzy_ops.py\", line 1669, in __call__\n    truth_values = torch.stack(truth_values, dim=0)\nRuntimeError: stack expects a non-empty TensorList\n"
+}

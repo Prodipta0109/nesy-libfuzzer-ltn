@@ -1,0 +1,7 @@
+{
+ "kind": "oracle",
+ "detail": "reuse mutated caller free_vars ['x'] -> ['x', 'y']",
+ "loc": "",
+ "extra": "test0",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 413, in t_reuse\n    unchanged([fx, px], snap, \"reuse\")\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 151, in unchanged\n    raise Bug(f\"{what} mutated caller free_vars {fv} -> {o.free_vars}\")\nBug: reuse mutated caller free_vars ['x'] -> ['x', 'y']\n"
+}

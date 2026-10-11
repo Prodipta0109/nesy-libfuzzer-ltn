@@ -1,0 +1,7 @@
+{
+ "kind": "oracle",
+ "detail": "two variables labelled 'x' with 1 and 3 individuals were accepted silently; result shape (3,)",
+ "loc": "",
+ "extra": "test8",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 359, in t_samelabel\n    raise Bug(f\"two variables labelled 'x' with {a.value.shape[0]} and {b.value.shape[0]} individuals were accepted silently; result shape {tuple(r.value.shape)}\")\nBug: two variables labelled 'x' with 1 and 3 individuals were accepted silently; result shape (3,)\n"
+}

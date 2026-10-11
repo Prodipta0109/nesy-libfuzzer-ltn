@@ -1,0 +1,7 @@
+{
+ "kind": "exception:IndexError",
+ "detail": "amin(): Expected reduction dim 0 to have non-zero size.",
+ "loc": "fuzzy_ops.py:1220",
+ "extra": "test10",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 385, in t_mask\n    plain = Qf(x, P(x))\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/core.py\", line 1522, in __call__\n    output = self.agg_op(formula.value, dim=tuple(aggregation_dims), **kwargs)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/fuzzy_ops.py\", line 1220, in __call__\n    out = torch.amin(xs, dim=dim, keepdim=keepdim)\nIndexError: amin(): Expected reduction dim 0 to have non-zero size.\n"
+}

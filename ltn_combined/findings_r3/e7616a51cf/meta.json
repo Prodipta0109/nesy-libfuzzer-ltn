@@ -1,0 +1,7 @@
+{
+ "kind": "exception:RuntimeError",
+ "detail": "shape '[1]' is invalid for input of size 3",
+ "loc": "core.py:623",
+ "extra": "test8",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 356, in t_samelabel\n    r = P(a, b)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/venv/lib/python3.14/site-packages/torch/nn/modules/module.py\", line 1783, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/venv/lib/python3.14/site-packages/torch/nn/modules/module.py\", line 1794, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/core.py\", line 623, in forward\n    output = torch.reshape(output, tuple(output_shape))\nRuntimeError: shape '[1]' is invalid for input of size 3\n"
+}

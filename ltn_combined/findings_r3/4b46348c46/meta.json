@@ -1,0 +1,7 @@
+{
+ "kind": "oracle",
+ "detail": "diag-forall: NaN in output",
+ "loc": "",
+ "extra": "test3",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 250, in t_diag\n    check_truth(r, \"diag-forall\")\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 160, in check_truth\n    raise Bug(f\"{ctx}: NaN in output\")\nBug: diag-forall: NaN in output\n"
+}

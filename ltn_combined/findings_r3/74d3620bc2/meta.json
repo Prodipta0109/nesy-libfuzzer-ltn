@@ -1,0 +1,7 @@
+{
+ "kind": "exception:ZeroDivisionError",
+ "detail": "division by zero",
+ "loc": "fuzzy_ops.py:1514",
+ "extra": "test9",
+ "trace": "Traceback (most recent call last):\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 174, in TestOneInput\n    TESTS[t](fdp)\n    ~~~~~~~~^^^^^\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_combined/ltn_round3.py\", line 373, in t_nested\n    r = Fa(x, Ex(y, inner))\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/core.py\", line 1522, in __call__\n    output = self.agg_op(formula.value, dim=tuple(aggregation_dims), **kwargs)\n  File \"/home/prodipta0109/nesy_libfuzzer_ltn/ltn_torch/ltn/fuzzy_ops.py\", line 1514, in __call__\n    return 1. - torch.pow(torch.mean(xs, dim=dim, keepdim=keepdim), 1 / p)\n                                                                    ~~^~~\nZeroDivisionError: division by zero\n"
+}
