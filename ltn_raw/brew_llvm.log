@@ -1,0 +1,122 @@
+Warning: You are using macOS 14.
+We (and Apple) do not provide support for this old version.
+
+Homebrew no longer builds bottles for this configuration.
+Consider MacPorts, which provides binary packages for this macOS version:
+  https://www.macports.org
+Warning: The following taps are not trusted:
+  adoptopenjdk/openjdk
+
+Homebrew is currently ignoring formulae, casks and commands
+from these taps because tap trust is required.
+Untap them with:
+  brew untap adoptopenjdk/openjdk
+Trust specific formulae, casks and commands with:
+  brew trust --formula <user>/<tap>/<formula>
+  brew trust --cask <user>/<tap>/<cask>
+  brew trust --command <user>/<tap>/<command>
+Whole-tap trust is broader and includes all current and future formulae,
+casks and commands from the listed taps. Trust whole taps with:
+  brew trust adoptopenjdk/openjdk
+For more information, see:
+  https://docs.brew.sh/Tap-Trust
+==> Would install 1 formula:
+llvm 23.1.3_1
+==> Would install 3 dependencies for llvm:
+z3
+ninja
+openssl@4
+==> Would upgrade 7 dependencies for llvm:
+cmake
+ca-certificates
+readline
+sqlite
+pkgconf
+expat
+python@3.14
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/c/cmake.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/08f03f1954ff84a27560feed7efefd985185a7558d54863e031844360ca13ffe--cmake.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/n/ninja.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/738e0d486c001aa3553c3d51d1297c44c2a97071c8cfffe0418d5585342db55e--ninja.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/o/openssl@4.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/2797f6e7ecc99fdf69e1f755b7959db7e9a5f2986eac8839743ba6b60fe4dd09--openssl@4.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/r/readline.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/4f8dad4065966617d6ba08f53bc33ed4165a8bf3046719c2bfb8695c2fd39cee--readline.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/s/sqlite.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/e7e2bfd12c791b741c05d762e14a9b5fc6aeed9d8357b65b64f0b652814b7341--sqlite.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/p/pkgconf.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/3df2741b78ddd839903f36427c4abc229b93b54225d25d7bc88272b88e69fe3e--pkgconf.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/e/expat.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/13954d32f410f351e559ab72d64b422a65e6d958dd7e7b1f60bd22287d68e69c--expat.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Formula/p/python@3.14.rb
+Already downloaded: /Users/promachowdhury/Library/Caches/Homebrew/downloads/e29a92ac9808cda7c1dc4c637739be76374201c77fe5bca23621be0459a33d26--python@3.14.rb
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Patches/python/3.13-sysconfig.diff
+Warning: Cannot verify integrity of 'cc6968f21986e8a45bd10997ac353b762bf661f603da729b7cc59ab6c630fc0c--3.13-sysconfig.diff'.
+No checksum was provided.
+For your reference, the checksum is:
+  sha256 "9f2eae1d08720b06ac3d9ef1999c09388b9db39dfb52687fc261ff820bff20c3"
+==> Downloading https://raw.githubusercontent.com/Homebrew/homebrew-core/603c29bb3c1350e0fafc592b4ed91129695d7a38/Patches/llvm/pull-111397.diff
+Warning: Cannot verify integrity of 'a03f7d98ae88fb848cd8ea1a7a17daf7b76b9d1e441f0bf3a3b246449dd93e0a--pull-111397.diff'.
+No checksum was provided.
+For your reference, the checksum is:
+  sha256 "88357e2d2e355ad1a58f406f046bf3c5985e77bbf4253ba5181adee36869b77a"
+==> Fetching downloads for: llvm
+✔︎ API Source llvm.rb
+✔︎ Bottle Manifest z3 (5.1.0)
+✔︎ Bottle z3 (5.1.0)
+✔︎ API Source cmake.rb
+✔︎ Formula cmake (4.4.4)
+✔︎ API Source ninja.rb
+✔︎ Formula ninja (1.13.2)
+✔︎ Bottle Manifest ca-certificates (2026-09-25)
+✔︎ Bottle ca-certificates (2026-09-25)
+✔︎ API Source openssl@4.rb
+✔︎ Formula openssl@4 (4.0.3)
+✔︎ API Source readline.rb
+✔︎ Patch readline83-001
+✔︎ Patch readline83-002
+✔︎ Patch readline83-003
+✔︎ Patch readline83-004
+✔︎ Patch readline83-005
+✔︎ Patch readline83-006
+✔︎ Formula readline (8.3.6)
+✔︎ API Source sqlite.rb
+✔︎ Formula sqlite (3.54.0)
+✔︎ API Source pkgconf.rb
+✔︎ Formula pkgconf (3.0.8)
+✔︎ API Source expat.rb
+✔︎ Formula expat (2.9.0)
+✔︎ API Source python@3.14.rb
+✔︎ Resource python@3.14--flit-core
+✔︎ Resource python@3.14--packaging
+✔︎ Resource python@3.14--pip
+✔︎ Resource python@3.14--wheel
+✔︎ Patch 3364e7e62fa24d0e19133fb0f90b1c24ef1110c5.patch?full_index=1
+✔︎ Patch c5e4ae03004767104dcf2d2c7b19f663700cc129.patch?full_index=1
+✔︎ Patch 3c2a3014af7d73cc34f2498f60fdf863d9bc7c6c.patch?full_index=1
+✔︎ Patch 1e21cf6fee3830012e458c0fe5dbc6fcd45ace92.patch?full_index=1
+✔︎ Patch 4974d8e8f387df97abd2521067f9b7a31c9c78fe.patch?full_index=1
+✔︎ Formula python@3.14 (3.14.8)
+✔︎ Formula llvm (23.1.3)
+Warning: A newer Command Line Tools release is available.
+Update them from Software Update in System Settings.
+
+If that doesn't show you any updates, run:
+  sudo rm -rf /Library/Developer/CommandLineTools
+  sudo xcode-select --install
+
+Alternatively, manually download them from:
+  https://developer.apple.com/download/all/.
+You should download the Command Line Tools for Xcode 16.2.
+==> Installing dependencies for llvm: cmake, ninja, ca-certificates, openssl@4, readline, sqlite, pkgconf, expat, python@3.14 and z3
+==> Upgrading llvm dependency: cmake (4.4.3 -> 4.4.4)
+Warning: A newer Command Line Tools release is available.
+Update them from Software Update in System Settings.
+
+If that doesn't show you any updates, run:
+  sudo rm -rf /Library/Developer/CommandLineTools
+  sudo xcode-select --install
+
+Alternatively, manually download them from:
+  https://developer.apple.com/download/all/.
+You should download the Command Line Tools for Xcode 16.2.
