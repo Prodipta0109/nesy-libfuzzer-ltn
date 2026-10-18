@@ -81,9 +81,9 @@ def build_calls():
         cls = getattr(fo, name)
         if not (isinstance(cls, type) and cls.__module__ == fo.__name__):
             continue
-        if name.startswith("_") or name in ("ConnectiveOperator", "UnaryConnectiveOperator",
-                                            "BinaryConnectiveOperator", "AggregationOperator"):
-            continue
+        # if name.startswith("_") or name in ("ConnectiveOperator", "UnaryConnectiveOperator",
+        #                                     "BinaryConnectiveOperator", "AggregationOperator"):
+        #     continue
         try:
             op = cls()
         except TypeError:

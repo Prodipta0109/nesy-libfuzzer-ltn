@@ -1,13 +1,4 @@
-#!/usr/bin/env python3
 """
-Coverage-guided fuzzer for LTNtorch (Logic Tensor Networks, PyTorch) built on
-libFuzzer through Atheris.
-
-libFuzzer only mutates raw bytes. This harness turns those bytes into a small,
-valid LTN program (variables, predicates, functions, connectives, quantifiers,
-SatAgg, backward pass) by reading them with FuzzedDataProvider. libFuzzer then
-keeps any byte string that reaches new lines/branches of the `ltn` package.
-
 Fuzzing dimensions (each is a group of choices read from the bytes):
   D1  data values        individuals' feature values incl. 0, 1, eps, NaN, +-inf, huge
   D2  data shape         number of individuals per variable (0 allowed), feature width,
@@ -18,21 +9,15 @@ Fuzzing dimensions (each is a group of choices read from the bytes):
   D5  quantification     Forall / Exists, aggregator (Min, Mean, pMean, pMeanError),
                          p value, stable flag, diag, guarded (masked) quantification
   D6  satisfaction       SatAgg operator, number of closed formulas, backward pass
-  D7  API boundary use   (only with LTNFUZZ_MISUSE=1) vacuous quantification,
-                         SatAgg on a formula that is not closed
 
-Oracle (what counts as a failure):
+
+Oracle:
   - any exception that is NOT one of LTN's own documented input-validation errors
   - value oracle: a closed formula / SatAgg result that is NaN or outside [0, 1]
     while every input value was finite
   - gradient oracle: NaN/inf gradient while every input was finite and only the
     "stable" variants of the operators were used (LTN documents those as the
     fix for gradient problems)
-
-Modes:
-  default            first failure stops libFuzzer and the input is written as crash-*
-  LTNFUZZ_COLLECT=1  failures are de-duplicated by signature, saved under
-                     findings/<signature>/ and fuzzing continues
 """
 import hashlib
 import json
@@ -168,9 +153,9 @@ class Builder:
         n_vars = self.i(1, 3)
         for k in range(n_vars):
             label = "xyz"[k]
-            n = self.i(0, 5)                      # 0 individuals is allowed
+            n = self.i(0, 5)                     
             self.empty_domain |= n == 0
-            one_d = self.i(0, 4) == 0             # 1-D individuals -> batch dim added
+            one_d = self.i(0, 4) == 0             
             feat = 1 if one_d else self.i(1, 3)
             vals = [self.num() for _ in range(n * feat)]
             t = torch.tensor(vals, dtype=torch.float32)
@@ -184,7 +169,7 @@ class Builder:
             self.consts.append(c)
             self.log(f"c{k} = ltn.Constant(torch.tensor({t.tolist()}))")
 
-    # -- D3: predicates and functions --
+
     def make_predicate(self, idx):
         kind = self.i(0, 2)
         arity = self.i(1, 2)
@@ -218,7 +203,7 @@ class Builder:
         self.funcs.append(f)
         self.log(f"f{idx} = Function(lambda x: x * {a.item()})")
 
-    # -- D4: terms and formulas --
+    
     def term(self, depth=0):
         labels = list(self.vars)
         choice = self.i(0, 9)
@@ -351,7 +336,6 @@ class Builder:
             s = f"Forall({[v.latent_var for v in vs]}, {s}, {agg_s})"
         return f, s
 
-    # -- D6: run everything --
     def run(self):
         self.make_domain()
         for k in range(self.i(1, 2)):
@@ -415,7 +399,7 @@ def TestOneInput(data):
     bld = Builder(data)
     try:
         bld.run()
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc: 
         if is_expected(exc):
             return
         if not COLLECT:
