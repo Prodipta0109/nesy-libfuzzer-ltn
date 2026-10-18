@@ -29,7 +29,11 @@ Oracles:
     input float was finite
 
 Run:   python ltn_hybrid_fuzz.py corpus -max_total_time=300 -rss_limit_mb=4000
+Trace: TRACE_CSV=trace.csv python ltn_hybrid_fuzz.py corpus -runs=0     (replays the corpus once, one CSV row per call;
+       also works on a single crash file). Off unless TRACE_CSV is set, because it slows the run down.
 """
+import atexit
+import csv
 import hashlib
 import json
 import os
@@ -50,9 +54,13 @@ import torch  # noqa: E402
 
 torch.set_num_threads(1)
 
-with atheris.instrument_imports(include=["ltn"]):
+if os.environ.get("HYBRID_NO_INSTRUMENT") == "1":      # plain import, used by cov_hybrid.py (coverage.py replay)
     import ltn  # noqa: E402
     import ltn.fuzzy_ops as fo  # noqa: E402
+else:
+    with atheris.instrument_imports(include=["ltn"]):
+        import ltn  # noqa: E402
+        import ltn.fuzzy_ops as fo  # noqa: E402
 
 FINDINGS = os.environ.get("RAW_FINDINGS", os.path.join(HERE, "findings_hybrid"))
 os.makedirs(FINDINGS, exist_ok=True)
@@ -91,13 +99,49 @@ def signature(exc):
 
 def save(sig, data, label):
     if sig in SEEN:
-        return
+        return False
     SEEN.add(sig)
     d = os.path.join(FINDINGS, hashlib.sha1(sig.encode()).hexdigest()[:10])
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, "input.bin"), "wb").write(data)
     json.dump({"signature": sig, "call": label}, open(os.path.join(d, "meta.json"), "w"), indent=1)
     print(f"\n[NEW FINDING] {label}: {sig}", file=sys.stderr, flush=True)
+    return True
+
+
+# ---------------------------------------------------------------- optional CSV trace (TRACE_CSV=path)
+TRACE_PATH = os.environ.get("TRACE_CSV")
+TRACE_FIELDS = ["exec", "input_sha1", "input_hex", "header", "target", "call", "choices", "n_floats",
+                "inputs_finite", "oracle_applied", "output", "verdict", "exception", "new_finding"]
+_trace = {"fh": None, "w": None, "n": 0}
+
+
+def _trace_row(**row):
+    if not TRACE_PATH:
+        return
+    if _trace["w"] is None:
+        new_file = not os.path.exists(TRACE_PATH) or os.path.getsize(TRACE_PATH) == 0
+        _trace["fh"] = open(TRACE_PATH, "a", newline="")
+        _trace["w"] = csv.DictWriter(_trace["fh"], fieldnames=TRACE_FIELDS)
+        if new_file:
+            _trace["w"].writeheader()
+        atexit.register(lambda: _trace["fh"].close())
+    _trace["w"].writerow({k: row.get(k, "") for k in TRACE_FIELDS})
+    _trace["fh"].flush()                  # libFuzzer may _exit() on a crash, so do not rely on atexit
+
+
+def summarize(out):
+    """One short line describing what a call returned."""
+    v = getattr(out, "value", out)
+    if isinstance(v, torch.Tensor):
+        t = v.detach().float()
+        if t.numel() == 0:
+            return f"shape={tuple(t.shape)} (empty)"
+        return (f"shape={tuple(t.shape)} min={t.min().item():.6g} max={t.max().item():.6g} "
+                f"nan={bool(torch.isnan(t).any())} inf={bool(torch.isinf(t).any())}")
+    if isinstance(v, (list, tuple)):
+        return f"{type(v).__name__} of {len(v)}"
+    return type(v).__name__
 
 
 # ---------------------------------------------------------------- the menus the header bytes pick from
@@ -165,6 +209,7 @@ class Ctx:
     def __init__(self, data):
         h = data[:HEADER]
         self.h = h
+        self.info = {}                    # what the target picked, filled in by the target (goes to the CSV)
         raw = data[HEADER:][: MAX_FLOATS * 4]
         self.t = torch.from_numpy(np.frombuffer(raw[: len(raw) // 4 * 4], dtype=np.float32).copy())
         self.feat = 1 + h[5] % 3
@@ -190,6 +235,7 @@ class Ctx:
 # ---------------------------------------------------------------- targets
 def t_ops(c):
     name, op = OPS[c.h[1] % len(OPS)]
+    c.info.update(op=name)
     a, b = c.ta, c.tb
     return [(f"{name}(a)", lambda: op(a)),
             (f"{name}(a, b)", lambda: op(a, b)),
@@ -200,6 +246,7 @@ def t_ops(c):
 def t_connective(c):
     name, op = (BINARY + UNARY)[c.h[1] % len(BINARY + UNARY)]
     C = ltn.Connective(op)
+    c.info.update(connective=name, pred1=c.h[4] % len(PRED1), second_pred=c.h[6] % 4)
     x = c.var("x")
     P, Q = c.pred1(), c.pred1()
     return [(f"Connective({name})(P(x))", lambda: C(P(x))),
@@ -211,6 +258,7 @@ def t_quantifier(c):
     aname, agg = make_agg(c.h[3] if c.h[2] % 2 else c.h[2])
     q = "f" if (c.h[3] >> 7) & 1 else "e"
     Qn = ltn.Quantifier(agg, q)
+    c.info.update(aggregator=aname, quantifier=q, pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2))
     x, y = c.var("x"), c.var("y", c.tb)
     P, R = c.pred1(), c.pred2()
     calls = [(f"Quantifier({aname},{q})(x, P(x))", lambda: Qn(x, P(x))),
@@ -228,6 +276,8 @@ def t_predfunc(c):
     const = ltn.Constant(c.ta[: c.feat] if c.ta.numel() >= c.feat else c.ta, trainable=bool(c.h[3] & 1))
     P, R = c.pred1(), c.pred2()
     F = ltn.Function(func=FUNCS[c.h[4] % len(FUNCS)])
+    c.info.update(pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2), func=c.h[4] % len(FUNCS),
+                  trainable_constant=bool(c.h[3] & 1))
     return [("Predicate(x)", lambda: P(x)),
             ("Predicate(c)", lambda: P(const)),
             ("Predicate2(x, y)", lambda: R(x, y)),
@@ -242,6 +292,7 @@ def t_diag(c):
     x, y, z = c.var("x", c.ta), c.var("y", c.tb), c.var("z")      # x and y same length, z usually different
     R = c.pred2()
     P = c.pred1()
+    c.info.update(pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2))
     return [("diag(x, y)", lambda: ltn.diag(x, y)),
             ("diag(x, z) length mismatch", lambda: ltn.diag(x, z)),
             ("R(diag(x,y))", lambda: R(*ltn.diag(x, y))),
@@ -256,6 +307,9 @@ def t_formula(c):
     imp = ltn.Connective(BINARY[c.h[1] % len(BINARY)][1])
     notc = ltn.Connective(UNARY[c.h[6] % len(UNARY)][1])
     Forall, Exists = ltn.Quantifier(agg, "f"), ltn.Quantifier(bagg, "e")
+    c.info.update(forall_agg=aname, exists_agg=bname, binary_connective=BINARY[c.h[1] % len(BINARY)][0],
+                  unary_connective=UNARY[c.h[6] % len(UNARY)][0], pred1=c.h[4] % len(PRED1),
+                  pred2=(c.h[4] >> 2) % len(PRED2))
     x, y = c.var("x"), c.var("y", c.tb)
     P, R = c.pred1(), c.pred2()
 
@@ -279,19 +333,39 @@ TARGETS = [t_ops, t_connective, t_quantifier, t_predfunc, t_diag, t_formula]
 def TestOneInput(data):
     if len(data) < HEADER + 4:
         return
+    _trace["n"] += 1
+    base = dict(exec=_trace["n"], input_sha1=hashlib.sha1(data).hexdigest()[:12], input_hex=data[:96].hex(),
+                header=list(data[:HEADER]), target=TARGETS[data[0] % len(TARGETS)].__name__)
     try:
         c = Ctx(data)
         attempts = TARGETS[data[0] % len(TARGETS)](c)
     except Exception as exc:  # noqa: BLE001  (building the menu objects failed)
-        if not expected(exc):
-            save(signature(exc), data, "setup")
+        bad = not expected(exc)
+        new = save(signature(exc), data, "setup") if bad else False
+        _trace_row(**base, call="setup", oracle_applied="exception",
+                   verdict="FAIL: unexpected exception" if bad else "expected validation error",
+                   exception=f"{type(exc).__name__}: {str(exc)[:200]}", new_finding=new)
         return
+    choices = dict(c.info, feat=c.feat, one_dim=c.oned)
+    # which oracle can fire: the exception oracle always; the value oracle only for the closed formula on finite input
+    oracle = "exception+value[0,1]" if (base["target"] == "t_formula" and c.finite) else "exception"
+    base.update(choices=json.dumps(choices, default=str), n_floats=c.t.numel(), inputs_finite=c.finite,
+                oracle_applied=oracle)
     for label, fn in attempts:
+        out_s, exc_s, new = "", "", False
         try:
-            fn()
+            out_s, verdict = summarize(fn()), "pass"
         except Exception as exc:  # noqa: BLE001
-            if not expected(exc):
-                save(signature(exc), data, label)
+            exc_s = f"{type(exc).__name__}: {str(exc)[:200]}"
+            if isinstance(exc, OracleViolation):
+                verdict = "FAIL: value outside [0,1] or NaN"
+            elif expected(exc):
+                verdict = "expected validation error"
+            else:
+                verdict = "FAIL: unexpected exception"
+            if verdict.startswith("FAIL"):
+                new = save(signature(exc), data, label)
+        _trace_row(**base, call=label, output=out_s, verdict=verdict, exception=exc_s, new_finding=new)
 
 
 if __name__ == "__main__":
