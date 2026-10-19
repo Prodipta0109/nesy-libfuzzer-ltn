@@ -11,6 +11,9 @@ Writes into --out (default ./cov_out):
     never_called.csv    functions whose body never ran
     cov_lines.csv       every executable line: covered or MISSED, and the function it is in
     covered_lines.txt   covered / missed line ranges per file
+    verdicts.csv        one row per input: the oracles that applied, the verdict, the exception, and for failures the
+                        generated program step by step (the same idea as the hybrid harness's verdicts.csv)
+    failures.csv        the distinct FAIL rows of verdicts.csv, one per failure signature
 
 Run:   LTN_SRC=/path/to/ltn_torch python cov_replay.py corpus_valid --out cov_out
 """
@@ -18,9 +21,11 @@ import argparse
 import ast
 import csv
 import glob
+import hashlib
 import io
 import json
 import os
+import re
 import sys
 import warnings
 
@@ -64,12 +69,61 @@ def covered_lines():
     return n
 
 
-growth = [(0, "", covered_lines())]
-for i, p in enumerate(files, 1):
+VERDICT_STAGES = os.environ.get("VERDICT_STAGES", "fail")   # "fail": program steps only on FAIL rows; "all": every row
+DEFINITION = re.compile(r"^(x|y|z|c\d+) = ")                   # trace lines that define the input data
+
+
+def replay_one(data):
+    """Run one input exactly as ltn_fuzz.TestOneInput does, but classify the outcome instead of raising or saving."""
+    bld = F.Builder(data)
+    verdict, exc_text, sig = "pass", "", ""
     try:
-        F.Builder(open(p, "rb").read()).run()    # findings and rejections both just end the run; only coverage matters here
-    except Exception:  # noqa: BLE001
-        pass
+        bld.run()
+    except Exception as exc:  # noqa: BLE001
+        sig = F.signature(exc)
+        exc_text = f"{type(exc).__name__}: {str(exc)[:200]}"
+        if isinstance(exc, F.OracleViolation):
+            verdict = "FAIL: value outside [0,1] or NaN"
+        elif isinstance(exc, F.GradientViolation):
+            verdict = "FAIL: non-finite gradient"
+        elif F.is_expected(exc):
+            verdict = "expected validation error"
+        else:
+            verdict = "FAIL: unexpected exception"
+    # which oracles could have fired for this program (the flags are the harness's own bookkeeping)
+    oracle = "exception"
+    if bld.all_finite:
+        oracle += "+value[0,1]"
+        if bld.all_stable:
+            oracle += "+gradient"
+    return dict(
+        verdict=verdict, exception=exc_text, signature=sig, oracle_applied=oracle,
+        last_completed_stage=bld.trace[-1] if bld.trace else "none (failed before the first step)",
+        inputs=json.dumps([t for t in bld.trace if DEFINITION.match(t)]),
+        stages=json.dumps(bld.trace),
+        flags=json.dumps(dict(all_finite=bld.all_finite, all_stable=bld.all_stable,
+                              empty_domain=bld.empty_domain, aggregators=sorted(bld.aggs))))
+
+
+growth = [(0, "", covered_lines())]
+verdict_rows, fail_rows, seen_sigs = [], {}, set()
+for i, p in enumerate(files, 1):
+    data = open(p, "rb").read()
+    try:
+        r = replay_one(data)
+    except Exception as exc:  # noqa: BLE001  (the classifier itself must never stop the replay)
+        r = dict(verdict="FAIL: replay error", exception=f"{type(exc).__name__}: {str(exc)[:200]}", signature="",
+                 oracle_applied="", last_completed_stage="", inputs="", stages="", flags="")
+    failed = r["verdict"].startswith("FAIL")
+    r.update(exec=i, input_file=os.path.basename(p), input_sha1=hashlib.sha1(data).hexdigest()[:12],
+             input_hex=data[:96].hex(), n_bytes=len(data),
+             new_finding=bool(failed and r["signature"] not in seen_sigs))
+    if failed:
+        seen_sigs.add(r["signature"])
+        fail_rows.setdefault(r["signature"] or r["exception"], dict(r))
+    if not failed and VERDICT_STAGES != "all":
+        r["inputs"] = r["stages"] = ""              # keep the file small: program steps only for failures
+    verdict_rows.append(r)
     if i % every == 0 or i == len(files):
         growth.append((i, os.path.basename(p), covered_lines()))
 cov.stop()
@@ -149,9 +203,14 @@ with open(os.path.join(args.out, "cov_growth.csv"), "w", newline="") as fh:
         w.writerow([n, name, lines, lines - prev])
         prev = lines
 
+VERDICT_FIELDS = ["exec", "input_file", "input_sha1", "input_hex", "n_bytes", "oracle_applied", "verdict", "exception",
+                  "signature", "new_finding", "last_completed_stage", "inputs", "stages", "flags"]
+write_csv("verdicts.csv", VERDICT_FIELDS, verdict_rows)
+write_csv("failures.csv", VERDICT_FIELDS, list(fail_rows.values()))
+
 called_fn = sum(r["called"] == "yes" for r in rows)
 json.dump({"inputs": len(files), "lines_covered": growth[-1][2], "percent": round(total_percent, 2),
-           "functions_called": called_fn, "functions_total": len(rows)},
+           "functions_called": called_fn, "functions_total": len(rows), "distinct_failures": len(fail_rows)},
           open(os.path.join(args.out, "cov_summary.json"), "w"))
 
 print(f"functions called at least once: {called_fn} / {len(rows)}")
@@ -159,5 +218,10 @@ for rel, names in never.items():
     print(f"\nNEVER CALLED in {rel}  ({len(names)})")
     for n in names:
         print("   ", n)
+from collections import Counter  # noqa: E402
+print("\nverdicts, one per input:")
+for k, v in Counter(r["verdict"] for r in verdict_rows).most_common():
+    print(f"  {v:>7}  {k}")
+print(f"distinct failures: {len(fail_rows)}  (failures.csv)")
 print(f"\ngrowth: {growth[0][2]} lines at start -> {growth[-1][2]} after {len(files)} inputs")
 print(f"wrote results in {args.out}/")
