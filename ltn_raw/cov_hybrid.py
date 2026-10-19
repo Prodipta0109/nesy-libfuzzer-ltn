@@ -194,7 +194,9 @@ print("\nverdicts over every call made during the replay:")
 for k, v in verdicts.most_common():
     print(f"  {v:>7}  {k}")
 with open(os.path.join(args.out, "failures.csv"), "w", newline="") as fh:
-    w = csv.DictWriter(fh, fieldnames=["verdict", "target", "call", "choices", "output", "exception", "input_sha1"],
+    w = csv.DictWriter(fh, fieldnames=["verdict", "target", "call", "header", "choices", "inputs", "stages",
+                                "last_completed_stage", "output", "exception", "oracle_applied", "n_floats",
+                                "inputs_finite", "input_sha1", "input_hex"],
                        extrasaction="ignore")
     w.writeheader()
     for r in fails.values():

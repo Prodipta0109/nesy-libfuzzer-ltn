@@ -36,6 +36,7 @@ import atexit
 import csv
 import hashlib
 import json
+import math
 import os
 import re
 import sys
@@ -111,8 +112,10 @@ def save(sig, data, label):
 
 # ---------------------------------------------------------------- optional CSV trace (TRACE_CSV=path)
 TRACE_PATH = os.environ.get("TRACE_CSV")
+TRACE_STAGES = os.environ.get("TRACE_STAGES", "fail")      # "fail": stage values only on FAIL rows; "all": every row
 TRACE_FIELDS = ["exec", "input_sha1", "input_hex", "header", "target", "call", "choices", "n_floats",
-                "inputs_finite", "oracle_applied", "output", "verdict", "exception", "new_finding"]
+                "inputs_finite", "oracle_applied", "output", "verdict", "exception", "new_finding",
+                "inputs", "stages", "last_completed_stage"]
 _trace = {"fh": None, "w": None, "n": 0}
 
 
@@ -128,6 +131,24 @@ def _trace_row(**row):
         atexit.register(lambda: _trace["fh"].close())
     _trace["w"].writerow({k: row.get(k, "") for k in TRACE_FIELDS})
     _trace["fh"].flush()                  # libFuzzer may _exit() on a crash, so do not rely on atexit
+
+
+def tens(o, limit=12):
+    """The values of one LTN object or tensor, short enough to read in a CSV cell."""
+    try:
+        v = getattr(o, "value", o)
+        if not isinstance(v, torch.Tensor):
+            return dict(value=str(v)[:80])
+        t = v.detach().float().flatten()
+        vals = [float(f"{x:.6g}") if math.isfinite(x) else str(x) for x in t[:limit].tolist()]
+        d = dict(shape=list(v.shape), values=vals)
+        if t.numel() > limit:
+            d["more_values"] = t.numel() - limit
+        if hasattr(o, "free_vars"):
+            d["free_vars"] = list(o.free_vars)
+        return d
+    except Exception as exc:  # noqa: BLE001  (describing an object must never break the run)
+        return dict(value=f"<could not describe: {type(exc).__name__}>")
 
 
 def summarize(out):
@@ -199,6 +220,9 @@ PRED2 = [lambda x, y: torch.sigmoid((x * y).sum(-1)),
          lambda x, y: (x - y).abs().mean(-1).clamp(0, 1),
          lambda x, y: (x.sum(-1) > y.sum(-1)).float(),
          lambda x, y: torch.sigmoid(x).prod(-1) * torch.sigmoid(y).prod(-1)]
+PRED1_NAMES = ["sigmoid(sum(x))", "clamp(mean(x),0,1)", "step(sum(x)>0)", "prod(sigmoid(x))"]
+PRED2_NAMES = ["sigmoid(sum(x*y))", "clamp(mean|x-y|,0,1)", "step(sum(x)>sum(y))", "prod(sigmoid(x))*prod(sigmoid(y))"]
+FUNC_NAMES = ["x*0.5", "tanh(x)", "-x", "flip(x)"]
 FUNCS = [lambda x: x * 0.5, lambda x: torch.tanh(x), lambda x: -x, lambda x: x.flip(-1)]
 
 
@@ -210,6 +234,8 @@ class Ctx:
         h = data[:HEADER]
         self.h = h
         self.info = {}                    # what the target picked, filled in by the target (goes to the CSV)
+        self.stages = []                  # values at each stage of the CURRENT call (cleared before every call)
+        self.inputs = {}                  # the input data, per variable (written once per input)
         raw = data[HEADER:][: MAX_FLOATS * 4]
         self.t = torch.from_numpy(np.frombuffer(raw[: len(raw) // 4 * 4], dtype=np.float32).copy())
         self.feat = 1 + h[5] % 3
@@ -221,22 +247,39 @@ class Ctx:
     def var(self, label, t=None, force2d=False):
         t = self.t if t is None else t
         if self.oned and not force2d:
-            return ltn.Variable(label, t)
-        n = t.numel() // self.feat
-        return ltn.Variable(label, t[: n * self.feat].reshape(n, self.feat))
+            v = ltn.Variable(label, t)
+        else:
+            n = t.numel() // self.feat
+            v = ltn.Variable(label, t[: n * self.feat].reshape(n, self.feat))
+        self.inputs[label] = tens(v, 24)
+        return v
+
+    def rec(self, name, obj):
+        """Record the values of one stage and hand the object back unchanged. Used inline: r("P(x)", P(x))."""
+        if isinstance(obj, (list, tuple)):
+            for i, o in enumerate(obj):
+                self.stages.append(dict(stage=f"{name}[{i}]", **tens(o)))
+        else:
+            self.stages.append(dict(stage=name, **tens(obj)))
+        return obj
 
     def pred1(self):
+        self.info["pred1_fn"] = PRED1_NAMES[self.h[4] % len(PRED1)]
         return ltn.Predicate(func=PRED1[self.h[4] % len(PRED1)])
 
     def pred2(self):
+        self.info["pred2_fn"] = PRED2_NAMES[(self.h[4] >> 2) % len(PRED2)]
         return ltn.Predicate(func=PRED2[(self.h[4] >> 2) % len(PRED2)])
 
 
 # ---------------------------------------------------------------- targets
+# Every target returns a list of (label, call). Inside a call, r(name, value) records the values at that stage
+# and passes the value on, so the CSV can show what each stage received and produced.
 def t_ops(c):
     name, op = OPS[c.h[1] % len(OPS)]
     c.info.update(op=name)
     a, b = c.ta, c.tb
+    c.inputs.update(a=tens(a, 24), b=tens(b, 24))
     return [(f"{name}(a)", lambda: op(a)),
             (f"{name}(a, b)", lambda: op(a, b)),
             (f"{name}(a, dim=0)", lambda: op(a, dim=0)),
@@ -246,12 +289,18 @@ def t_ops(c):
 def t_connective(c):
     name, op = (BINARY + UNARY)[c.h[1] % len(BINARY + UNARY)]
     C = ltn.Connective(op)
-    c.info.update(connective=name, pred1=c.h[4] % len(PRED1), second_pred=c.h[6] % 4)
+    second = c.h[6] % 4
+    c.info.update(connective=name, second_pred_fn=PRED1_NAMES[second])
     x = c.var("x")
-    P, Q = c.pred1(), c.pred1()
-    return [(f"Connective({name})(P(x))", lambda: C(P(x))),
-            (f"Connective({name})(P(x), P(x))", lambda: C(P(x), P(x))),
-            (f"Connective({name})(P(x), Q(x))", lambda: C(P(x), ltn.Predicate(func=PRED1[(c.h[6]) % 4])(x)))]
+    P = c.pred1()
+    Q = ltn.Predicate(func=PRED1[second])
+    r = c.rec
+    return [(f"Connective({name})(P(x))",
+             lambda: r(f"{name}(P(x))", C(r("P(x)", P(x))))),
+            (f"Connective({name})(P(x), P(x))",
+             lambda: r(f"{name}(P(x), P(x))", C(r("P(x) #1", P(x)), r("P(x) #2", P(x))))),
+            (f"Connective({name})(P(x), Q(x))",
+             lambda: r(f"{name}(P(x), Q(x))", C(r("P(x)", P(x)), r("Q(x)", Q(x)))))]
 
 
 def t_quantifier(c):
@@ -261,30 +310,39 @@ def t_quantifier(c):
     c.info.update(aggregator=aname, quantifier=q, pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2))
     x, y = c.var("x"), c.var("y", c.tb)
     P, R = c.pred1(), c.pred2()
-    calls = [(f"Quantifier({aname},{q})(x, P(x))", lambda: Qn(x, P(x))),
-             (f"Quantifier({aname},{q})([x,y], R(x,y))", lambda: Qn([x, y], R(x, y))),
+    r = c.rec
+    qn = f"{'Forall' if q == 'f' else 'Exists'}[{aname}]"
+    calls = [(f"Quantifier({aname},{q})(x, P(x))",
+              lambda: r(f"{qn}(x, P(x))", Qn(x, r("P(x)", P(x))))),
+             (f"Quantifier({aname},{q})([x,y], R(x,y))",
+              lambda: r(f"{qn}([x,y], R(x,y))", Qn([x, y], r("R(x,y)", R(x, y))))),
              (f"Quantifier({aname},{q})(x, P(x), guarded)",
-              lambda: Qn(x, P(x), cond_vars=[x], cond_fn=lambda v: v.value.sum(-1) > 0)),
+              lambda: r(f"{qn}(x, P(x), guard sum(x)>0)",
+                        Qn(x, r("P(x)", P(x)), cond_vars=[x], cond_fn=lambda v: v.value.sum(-1) > 0))),
              (f"Quantifier({aname},{q}) bad quantifier", lambda: ltn.Quantifier(agg, "x"))]
     if isinstance(agg, (fo.AggregPMean, fo.AggregPMeanError)):      # only these accept p / stable per call
-        calls.append((f"Quantifier({aname},{q})(x, P(x), p=2 per call)", lambda: Qn(x, P(x), p=2, stable=True)))
+        calls.append((f"Quantifier({aname},{q})(x, P(x), p=2 per call)",
+                      lambda: r(f"{qn}(x, P(x), p=2)", Qn(x, r("P(x)", P(x)), p=2, stable=True))))
     return calls
 
 
 def t_predfunc(c):
     x, y = c.var("x"), c.var("y", c.tb)
     const = ltn.Constant(c.ta[: c.feat] if c.ta.numel() >= c.feat else c.ta, trainable=bool(c.h[3] & 1))
+    c.inputs["c"] = tens(const, 24)
     P, R = c.pred1(), c.pred2()
-    F = ltn.Function(func=FUNCS[c.h[4] % len(FUNCS)])
-    c.info.update(pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2), func=c.h[4] % len(FUNCS),
+    fi = c.h[4] % len(FUNCS)
+    F = ltn.Function(func=FUNCS[fi])
+    c.info.update(pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2), func=fi, func_fn=FUNC_NAMES[fi],
                   trainable_constant=bool(c.h[3] & 1))
-    return [("Predicate(x)", lambda: P(x)),
-            ("Predicate(c)", lambda: P(const)),
-            ("Predicate2(x, y)", lambda: R(x, y)),
-            ("Predicate2(x, c)", lambda: R(x, const)),
-            ("Function(x)", lambda: F(x)),
-            ("Predicate(Function(x))", lambda: P(F(x))),
-            ("Function(x) chained", lambda: F(F(x))),
+    r = c.rec
+    return [("Predicate(x)", lambda: r("P(x)", P(x))),
+            ("Predicate(c)", lambda: r("P(c)", P(const))),
+            ("Predicate2(x, y)", lambda: r("R(x,y)", R(x, y))),
+            ("Predicate2(x, c)", lambda: r("R(x,c)", R(x, const))),
+            ("Function(x)", lambda: r("F(x)", F(x))),
+            ("Predicate(Function(x))", lambda: r("P(F(x))", P(r("F(x)", F(x))))),
+            ("Function(x) chained", lambda: r("F(F(x))", F(r("F(x)", F(x))))),
             ("Predicate(func and model)", lambda: ltn.Predicate(model=torch.nn.Identity(), func=PRED1[0]))]
 
 
@@ -293,36 +351,43 @@ def t_diag(c):
     R = c.pred2()
     P = c.pred1()
     c.info.update(pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2))
-    return [("diag(x, y)", lambda: ltn.diag(x, y)),
-            ("diag(x, z) length mismatch", lambda: ltn.diag(x, z)),
-            ("R(diag(x,y))", lambda: R(*ltn.diag(x, y))),
-            ("undiag(diag(x,y))", lambda: ltn.undiag(*ltn.diag(x, y))),
-            ("P(x) after diag", lambda: (ltn.diag(x, y), P(x))),
-            ("diag(x)", lambda: ltn.diag(x))]
+    r = c.rec
+    return [("diag(x, y)", lambda: r("diag(x,y)", ltn.diag(x, y))),
+            ("diag(x, z) length mismatch", lambda: r("diag(x,z)", ltn.diag(x, z))),
+            ("R(diag(x,y))", lambda: r("R(diag(x,y))", R(*r("diag(x,y)", ltn.diag(x, y))))),
+            ("undiag(diag(x,y))", lambda: r("undiag(diag(x,y))", ltn.undiag(*r("diag(x,y)", ltn.diag(x, y))))),
+            ("P(x) after diag", lambda: (r("diag(x,y)", ltn.diag(x, y)), r("P(x)", P(x)))),
+            ("diag(x)", lambda: r("diag(x)", ltn.diag(x)))]
 
 
 def t_formula(c):
     aname, agg = make_agg(c.h[2])
     bname, bagg = make_agg(c.h[3])
-    imp = ltn.Connective(BINARY[c.h[1] % len(BINARY)][1])
-    notc = ltn.Connective(UNARY[c.h[6] % len(UNARY)][1])
+    bin_name, bin_op = BINARY[c.h[1] % len(BINARY)]
+    un_name, un_op = UNARY[c.h[6] % len(UNARY)]
+    imp, notc = ltn.Connective(bin_op), ltn.Connective(un_op)
     Forall, Exists = ltn.Quantifier(agg, "f"), ltn.Quantifier(bagg, "e")
-    c.info.update(forall_agg=aname, exists_agg=bname, binary_connective=BINARY[c.h[1] % len(BINARY)][0],
-                  unary_connective=UNARY[c.h[6] % len(UNARY)][0], pred1=c.h[4] % len(PRED1),
-                  pred2=(c.h[4] >> 2) % len(PRED2))
+    c.info.update(forall_agg=aname, exists_agg=bname, binary_connective=bin_name, unary_connective=un_name,
+                  pred1=c.h[4] % len(PRED1), pred2=(c.h[4] >> 2) % len(PRED2))
     x, y = c.var("x"), c.var("y", c.tb)
     P, R = c.pred1(), c.pred2()
+    r = c.rec
 
     def build():
-        f = Forall(x, imp(P(x), Exists(y, R(x, y))))
-        g = Exists(x, notc(P(x)))
-        sat = fo.SatAgg(bagg)(f, g)
+        # the rule: Forall x: ( P(x) -> Exists y: R(x,y) ),  and  Exists x: not P(x),  scored together by SatAgg
+        px = r("P(x)", P(x))
+        rxy = r("R(x,y)", R(x, y))
+        ex = r(f"Exists[{bname}] y: R(x,y)", Exists(y, rxy))
+        im = r(f"{bin_name}(P(x), Exists...)", imp(px, ex))
+        f = r(f"Forall[{aname}] x: {bin_name}(...)", Forall(x, im))
+        npx = r(f"{un_name}(P(x))", notc(P(x)))
+        g = r(f"Exists[{bname}] x: {un_name}(P(x))", Exists(x, npx))
+        sat = r(f"SatAgg[{bname}](f, g)", fo.SatAgg(bagg)(f, g))
         if c.finite:
             for label, v in (("formula", f), ("neg-exists", g), ("SatAgg", sat)):
                 val = v.value if hasattr(v, "value") else v
                 if not torch.isfinite(val).all() or (val < 0).any() or (val > 1).any():
-                    raise OracleViolation(f"{label} = {val.tolist()} outside [0,1] "
-                                          f"({aname}, {bname}, {BINARY[c.h[1] % len(BINARY)][0]})")
+                    raise OracleViolation(f"{label} = {val.tolist()} outside [0,1] ({aname}, {bname}, {bin_name})")
         return sat
     return [("formula+SatAgg", build)]
 
@@ -344,7 +409,8 @@ def TestOneInput(data):
         new = save(signature(exc), data, "setup") if bad else False
         _trace_row(**base, call="setup", oracle_applied="exception",
                    verdict="FAIL: unexpected exception" if bad else "expected validation error",
-                   exception=f"{type(exc).__name__}: {str(exc)[:200]}", new_finding=new)
+                   exception=f"{type(exc).__name__}: {str(exc)[:200]}", new_finding=new,
+                   last_completed_stage="none (failed while building the objects)")
         return
     choices = dict(c.info, feat=c.feat, one_dim=c.oned)
     # which oracle can fire: the exception oracle always; the value oracle only for the closed formula on finite input
@@ -352,6 +418,7 @@ def TestOneInput(data):
     base.update(choices=json.dumps(choices, default=str), n_floats=c.t.numel(), inputs_finite=c.finite,
                 oracle_applied=oracle)
     for label, fn in attempts:
+        c.stages.clear()
         out_s, exc_s, new = "", "", False
         try:
             out_s, verdict = summarize(fn()), "pass"
@@ -365,7 +432,13 @@ def TestOneInput(data):
                 verdict = "FAIL: unexpected exception"
             if verdict.startswith("FAIL"):
                 new = save(signature(exc), data, label)
-        _trace_row(**base, call=label, output=out_s, verdict=verdict, exception=exc_s, new_finding=new)
+        extra = {}
+        if verdict != "pass":
+            extra["last_completed_stage"] = c.stages[-1]["stage"] if c.stages else "none (failed at the first operation)"
+        if verdict.startswith("FAIL") or TRACE_STAGES == "all":
+            extra["inputs"] = json.dumps(c.inputs, default=str)
+            extra["stages"] = json.dumps(c.stages, default=str)
+        _trace_row(**base, call=label, output=out_s, verdict=verdict, exception=exc_s, new_finding=new, **extra)
 
 
 if __name__ == "__main__":
