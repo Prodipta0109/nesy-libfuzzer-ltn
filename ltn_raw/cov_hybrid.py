@@ -7,7 +7,8 @@ What it prints and writes (into --out, default ./cov_out):
   3. never-called functions, grouped by file                             (printed)
   4. cov_growth.csv      cumulative covered lines after each input, in the order the inputs were saved
                          (the fuzzer's learning curve: plot it, or look for where it flattens)
-  5. --html              also writes an HTML report you can open in a browser
+  5. cov_summary.json    the totals (read by run_until_plateau.py)
+  6. --html              also writes an HTML report you can open in a browser
 
 libFuzzer's own `cov:` number counts edges. This reports lines and branches of ltn/*.py, which is what you can read.
 
@@ -79,7 +80,7 @@ print(f"replayed {len(files)} inputs\n")
 
 # ---------------------------------------------------------------- 1. per-file table
 buf = io.StringIO()
-cov.report(file=buf, show_missing=False, skip_empty=True)
+total_percent = cov.report(file=buf, show_missing=False, skip_empty=True)
 print(buf.getvalue())
 
 # ---------------------------------------------------------------- 2/3. per-function
@@ -132,6 +133,11 @@ with open(os.path.join(args.out, "cov_growth.csv"), "w", newline="") as fh:
         prev = lines
 print(f"\ngrowth: {growth[0][2]} lines at start -> {growth[-1][2]} after {len(files)} inputs "
       f"(last point added {growth[-1][2] - growth[-2][2] if len(growth) > 1 else 0})")
+
+import json  # noqa: E402
+json.dump({"inputs": len(files), "lines_covered": growth[-1][2], "percent": round(total_percent, 2),
+           "functions_called": called_fn, "functions_total": total_fn},
+          open(os.path.join(args.out, "cov_summary.json"), "w"))
 
 if args.html:
     cov.html_report(directory=os.path.join(args.out, "html"))
