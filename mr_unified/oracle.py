@@ -72,6 +72,37 @@ def check_rewrite(adapter: Adapter, rule: Rule, node: Node, path: Tuple[int, ...
     return _compare(adapter, rule.id, path, node, env, after, env)
 
 
+def env_rule_gap(adapter: Adapter, rule: EnvRule, node: Node, env: Env) -> Tuple[float, float]:
+    """Gap between phi in env and the rewritten pair, and its tolerance; 0 when the rule changes nothing.
+    An adapter exception other than Unsupported gives an infinite gap; Unsupported propagates.
+    """
+    after, after_env = rule.apply(node, env)
+    if after == node and after_env == env:
+        return 0.0, tol(node, node, adapter.dtype_for(node))
+    bound = tol(node, after, adapter.dtype_for(node))
+    try:
+        got = (adapter.evaluate(node, env), adapter.evaluate(after, after_env))
+    except Unsupported:
+        raise
+    except Exception:
+        return float("inf"), bound
+    return abs(got[0] - got[1]), bound
+
+
+def property_gap(adapter: Adapter, prop: PropertyCheck, node: Node, env: Env, rng: random.Random) -> Tuple[float, float]:
+    """The margin of `prop` on `adapter` and tol(node, node, dtype): the law holds when margin <= tol."""
+    return prop(adapter, node, env, rng), tol(node, node, adapter.dtype_for(node))
+
+
+def cross_gap(adapters: Sequence[Adapter], node: Node, env: Env) -> Tuple[float, float]:
+    """The largest pairwise difference of the adapters' values, and the tolerance of the widest dtype.
+    Every adapter must answer; Unsupported and other exceptions propagate.
+    """
+    values = [adapter.evaluate(node, env) for adapter in adapters]
+    gap = max(abs(a - b) for a, b in itertools.combinations(values, 2))
+    return gap, tol(node, node, _widest_dtype([adapter.dtype_for(node) for adapter in adapters]))
+
+
 def check_env_rule(adapter: Adapter, rule: EnvRule, node: Node, env: Env) -> Optional[Violation]:
     """Law of an env rule (B1, B7): phi in env == rewritten phi in rewritten env.
     None if nothing changed or the law holds. Exceptions and Unsupported are handled as in check_rewrite.

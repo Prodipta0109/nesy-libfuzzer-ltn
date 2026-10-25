@@ -1,6 +1,7 @@
 """Tests for the byte-driven harness (spec Task 8): decoding, byte-backed randomness, STATS, findings and replay.
 Every loop counts the cases it compares and asserts that the count is positive.
 """
+import copy
 import json
 import math
 import os
@@ -11,11 +12,13 @@ from typing import List
 
 import pytest
 
-from mr_unified import harness, replay
+from mr_unified import findings_io, harness, replay
 from mr_unified.adapters.base import Unsupported
 from mr_unified.adapters.ref_adapter import RefAdapter
+from mr_unified.cases import Bytes, ByteRandom, Case, decode, format_node
 from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
-from mr_unified.harness import Bytes, ByteRandom, decode, format_node, guidance_value, run_input
+from mr_unified.guidance import guidance_value
+from mr_unified.harness import run_input
 from mr_unified.oracle import Violation, check_rewrite, rewrite_gap
 from mr_unified.rewrites import PROP_ATOMS, QRULES, RULES, random_formula, valid_for
 
@@ -98,6 +101,25 @@ def _prop_env(rng: random.Random) -> Env:
     return Env(atoms={name: rng.random() for name in PROP_ATOMS}, preds={}, domain=())
 
 
+@pytest.fixture(autouse=True)
+def restore_harness_state():
+    """Each test starts and ends with the harness module state it found: main() and report() change it."""
+    saved = (harness.ACTIVE, harness.SELECTION, set(harness._SEEN), set(harness._CRASH_SEEN), copy.deepcopy(harness.STATS))
+    yield
+    harness.ACTIVE, harness.SELECTION = saved[0], saved[1]
+    harness._SEEN.clear()
+    harness._SEEN.update(saved[2])
+    harness._CRASH_SEEN.clear()
+    harness._CRASH_SEEN.update(saved[3])
+    harness.STATS.clear()
+    harness.STATS.update(saved[4])
+
+
+def _has_quantifier(node: Node) -> bool:
+    """True if some node of `node` is a forall or exists."""
+    return node.op in QUANT_OPS or any(_has_quantifier(kid) for kid in node.kids)
+
+
 def _first_violation(adapters, limit: int = 5000):
     """The first (input, violation) that `adapters` produce on random inputs, or fail the test."""
     for seed in range(limit):
@@ -110,7 +132,7 @@ def _first_violation(adapters, limit: int = 5000):
 
 DECODE_SCRIPT = """
 from mr_unified.adapters.ref_adapter import RefAdapter
-from mr_unified.harness import decode, format_node
+from mr_unified.cases import decode, format_node
 for i in range(30):
     data = bytes((i * 37 + j * 11) % 256 for j in range(64))
     case = decode(data, [RefAdapter()])
@@ -212,10 +234,19 @@ def test_format_node_prints_connectives_readably():
     assert format_node(node) == "and_s(p0, not(p1))"
 
 
-def test_guidance_value_is_scaled_capped_and_nan_is_a_failure():
+def test_guidance_value_scales_a_gap_equal_to_tolerance_to_one_thousandth():
     assert guidance_value(1e-6, 1e-6) == pytest.approx(1e-3)
+
+
+def test_guidance_value_is_zero_for_a_zero_gap():
     assert guidance_value(0.0, 1e-6) == 0.0
+
+
+def test_guidance_value_is_capped_at_one():
     assert guidance_value(1e9, 1e-6) == 1.0
+
+
+def test_guidance_value_counts_nan_as_a_failure():
     assert guidance_value(float("nan"), 1e-6) == 1.0
 
 
@@ -243,8 +274,10 @@ def test_every_input_is_counted_once_when_the_adapter_refuses():
         run_input(data, [Refusing()])
     counted = sum(entry["run"] + entry["skipped"] for entry in harness.STATS.values())
     skipped = sum(entry["skipped"] for entry in harness.STATS.values())
+    violations = sum(entry["violations"] for entry in harness.STATS.values())
     assert counted == len(inputs)
     assert skipped > 0
+    assert violations == 0
 
 
 def test_cross_check_flags_the_shifted_adapter():
@@ -252,7 +285,7 @@ def test_cross_check_flags_the_shifted_adapter():
     found: List[Violation] = []
     for data in _inputs(300):
         found.extend(run_input(data, [REF, ShiftedRef()]))
-    crosses = [v for v in found if v.rule == "cross_check"]
+    crosses = [v for v in found if v.rule == "cross"]
     assert crosses
     assert harness.STATS["cross"]["run"] > 0
 
@@ -331,3 +364,162 @@ def test_random_mode_exits_zero_on_ref_in_a_subprocess():
     )
     assert done.returncode == 0, done.stderr
     assert "rewrite" in done.stdout
+
+
+class FoldSemantics(RefAdapter):
+    """A fake adapter with fold semantics: its values are ref_eval(fold) and it declares fold quantifiers."""
+
+    name = "foldsem"
+
+    def declared_quantifiers(self):
+        """forall and exists are the strong fold."""
+        return {"forall": "fold", "exists": "fold"}
+
+    def evaluate(self, node: Node, env: Env) -> float:
+        """ref_eval with the fold quantifiers."""
+        return float(ref_eval(node, env, "fold"))
+
+
+class Undeclared(RefAdapter):
+    """An adapter that declares no quantifier semantics at all, so B6 and B8 cannot be checked on it."""
+
+    name = "undeclared"
+
+    def declared_quantifiers(self):
+        """No declaration."""
+        return {}
+
+
+def test_split_margin_is_zero_for_fold_declared_adapter():
+    rng = random.Random(5)
+    compared = 0
+    for _ in SEEDS:
+        body = random_formula(rng, 3, PROP_ATOMS)
+        node = Node(op="forall", name="x", kids=(body,))
+        env = _prop_env(rng)
+        env = Env(atoms=env.atoms, preds={}, domain=("o0", "o1", "o2"))
+        assert harness._quant_of(FoldSemantics()) == "fold"
+        assert harness._margin("split", FoldSemantics(), node, env, rng) <= 1e-12
+        compared += 1
+    assert compared == len(SEEDS)
+
+
+def test_quant_of_minmax_adapter_is_minmax():
+    assert harness._quant_of(REF) == "minmax"
+
+
+def test_adapter_without_declared_quantifiers_is_skipped_for_split():
+    harness.reset()
+    node = Node(op="forall", name="x", kids=(Node(op="atom", name="p0"),))
+    env = Env(atoms={"p0": 0.5, "p1": 0.5}, preds={}, domain=("o0",))
+    case = Case("property", node, env, "split", (), tail=bytes(64))
+    assert harness._run_on(case, Undeclared()) == []
+    assert harness.STATS["property"]["skipped"] == 1
+    assert harness.STATS["property"]["run"] == 0
+
+
+def test_cross_kind_on_ltn_and_lnn_generates_no_quantified_formula():
+    from mr_unified.adapters.lnn_adapter import LNNAdapter
+    from mr_unified.adapters.ltn_adapter import LTNAdapter
+
+    cross = [case for case in _decode_all([LTNAdapter(), LNNAdapter()], 600) if case.kind == "cross"]
+    assert cross
+    assert not any(_has_quantifier(case.node) for case in cross)
+
+
+def test_cross_kind_on_equal_quantifiers_generates_quantified_formula():
+    cross = [case for case in _decode_all([REF, ShiftedRef()], 600) if case.kind == "cross"]
+    assert any(_has_quantifier(case.node) for case in cross)
+
+
+def test_bucket_receives_the_guidance_value_of_a_rewrite_gap(monkeypatch):
+    seen = []
+    monkeypatch.setattr(harness, "bucket", seen.append)
+    case = next(c for c in _decode_all([REF]) if c.kind == "rewrite" and c.path is not None)
+    rule = harness.ALL_REWRITES[case.name]
+    expected = guidance_value(*rewrite_gap(REF, rule, case.node, case.path, case.env))
+    harness._check(case, REF)
+    assert seen == [pytest.approx(expected)]
+
+
+def test_bucket_receives_the_guidance_value_of_a_property_margin(monkeypatch):
+    seen = []
+    monkeypatch.setattr(harness, "bucket", seen.append)
+    node = Node(op="and_s", kids=(Node(op="atom", name="p0"), Node(op="atom", name="p1")))
+    env = Env(atoms={"p0": 0.3, "p1": 0.6}, preds={}, domain=())
+    case = Case("property", node, env, "monotone", (), tail=bytes(range(1, 60)))
+    harness._check(case, REF)
+    assert len(seen) == 1
+    assert 0.0 <= seen[0] <= 1.0
+
+
+def test_harness_internal_value_error_propagates(monkeypatch):
+    def broken(name, adapter, node, env, rng):
+        """A harness bug: raises a ValueError that is not an adapter exception."""
+        raise ValueError("harness bug")
+
+    monkeypatch.setattr(harness, "_margin", broken)
+    node = Node(op="and_s", kids=(Node(op="atom", name="p0"), Node(op="atom", name="p1")))
+    env = Env(atoms={"p0": 0.3, "p1": 0.6}, preds={}, domain=())
+    case = Case("property", node, env, "monotone", (), tail=bytes(range(1, 60)))
+    with pytest.raises(ValueError):
+        harness._check(case, REF)
+
+
+class Crashing(RefAdapter):
+    """Raises ValueError (not Unsupported) on every formula, as an adapter that rejects an input would."""
+
+    name = "crashing"
+
+    def evaluate(self, node: Node, env: Env) -> float:
+        """Always raises ValueError."""
+        raise ValueError("adapter crash")
+
+
+def test_adapter_value_error_is_recorded_as_crash_violation():
+    harness.reset()
+    node = Node(op="and_s", kids=(Node(op="atom", name="p0"), Node(op="atom", name="p1")))
+    env = Env(atoms={"p0": 0.3, "p1": 0.6}, preds={}, domain=())
+    case = Case("property", node, env, "monotone", (), tail=bytes(range(1, 60)))
+    found = harness._run_on(case, Crashing())
+    assert len(found) == 1
+    assert found[0].rule == "monotone:crash"
+    assert math.isinf(found[0].margin)
+
+
+def test_crash_and_real_violation_of_same_rule_are_both_written(tmp_path, monkeypatch):
+    monkeypatch.setenv("MR_UNIFIED_FINDINGS", str(tmp_path))
+    harness.reset()
+    env = Env(atoms={"p0": 0.5, "p1": 0.5}, preds={}, domain=())
+    node = Node(op="atom", name="p0")
+    real = Violation("planted", "separating", (), node, node, env, (0.0, 1.0), 1.0)
+    crash = Violation("planted", "separating:crash", (), node, node, env, (float("nan"),) * 2, float("inf"))
+    harness.report(b"\x01", [NoClampAdapter()], [real, crash], "planted")
+    assert os.path.isdir(os.path.join(str(tmp_path), "planted", "separating"))
+    assert os.path.isdir(os.path.join(str(tmp_path), "planted", "separating:crash"))
+
+
+def test_empty_rule_label_is_refused_and_writes_nothing(tmp_path, monkeypatch):
+    monkeypatch.setenv("MR_UNIFIED_FINDINGS", str(tmp_path))
+    with pytest.raises(ValueError):
+        findings_io.write_finding("ltn", "", b"\x00", {})
+    assert not os.path.exists(os.path.join(str(tmp_path), "ltn"))
+
+
+def test_finding_meta_is_strict_json_with_infinity_as_string(tmp_path, monkeypatch):
+    monkeypatch.setenv("MR_UNIFIED_FINDINGS", str(tmp_path))
+    harness.reset()
+    env = Env(atoms={"p0": 0.5, "p1": 0.5}, preds={}, domain=())
+    node = Node(op="atom", name="p0")
+    crash = Violation("planted", "separating:crash", (), node, node, env, (float("nan"),) * 2, float("inf"))
+    harness.report(b"\x01", [NoClampAdapter()], [crash], "planted")
+    path = os.path.join(str(tmp_path), "planted", "separating:crash", "meta.json")
+    with open(path) as handle:
+        meta = json.loads(handle.read(), parse_constant=_reject_constant)
+    assert meta["margin"] == "inf"
+    assert meta["got"] == ["nan", "nan"]
+
+
+def _reject_constant(name: str):
+    """json.loads hook: NaN, Infinity and -Infinity are not strict JSON, so they raise."""
+    raise ValueError("non-strict JSON constant: %s" % name)
