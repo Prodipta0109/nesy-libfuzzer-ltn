@@ -145,3 +145,19 @@ Exit code 0. No violations.
 The cross kind is now generated on quantifier-free formulas only, since the three adapters declare different
 quantifier semantics (ltn and ref min/max, lnn fold). The round 1 cross disagreement (`ltn vs lnn cross_check`,
 `forall y. Q(y)`) is therefore not generated in round 2.
+
+## Round 3: LTN smoke run after the mixed-argument fix (commit 36d8861)
+
+Command: `PYTHONPATH=ltn_torch:lnn/src python -m mr_unified.harness --lib ltn --random 20000` (seed 0), with
+`MR_UNIFIED_FINDINGS` set to a fresh scratch folder. Exit code 0. Output verbatim:
+
+```
+rewrite     run=3410 skipped=1568 violations=0
+qrewrite    run=5067 skipped=9 violations=0
+env_rule    run=4877 skipped=0 violations=0
+property    run=5069 skipped=0 violations=0
+cross       run=0 skipped=0 violations=0
+```
+
+No findings were written. The round 2 crash `ltn instantiation:crash` (`forall x. or_s(exists y. R(x, y), exists y. R(x, x))`)
+no longer occurs, and its saved input replays with no violation.
