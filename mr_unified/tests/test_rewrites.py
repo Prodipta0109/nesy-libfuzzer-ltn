@@ -1,7 +1,7 @@
-"""Tests for mr_unified.rewrites: propositional rewrite rules A1-A10 and random formulas (spec Task 2)."""
+"""Tests for mr_unified.rewrites: rules A1-A10 and random formulas (spec Task 2)."""
 import random
 
-from mr_unified.formula import MAX_NODES, Env, Node, get, paths, ref_eval, size
+from mr_unified.formula import Env, Node, get, paths, ref_eval, size
 from mr_unified.rewrites import RULES, apply_at, random_formula
 
 ATOMS = ("p0", "p1", "p2")
@@ -9,10 +9,6 @@ ATOMS = ("p0", "p1", "p2")
 
 def atom(name):
     return Node("atom", name=name)
-
-
-def const(value):
-    return Node("const", value=value)
 
 
 def binary(op, left, right):
@@ -35,11 +31,12 @@ def random_env(rng):
     return Env(atoms=values, preds={}, domain=())
 
 
-# One hand-built formula per rule that the rule matches at its root. Random sampling almost never
-# produces the repeated-subformula shapes of A7_max_def_bwd and A9_divisible_bwd, so these cover them.
+# One hand-built formula per rule, matching at its root. Gives deterministic preservation checks
+# for every rule, including those that need a repeated subformula.
 WITNESSES = {
     "A1_commute": binary("and_s", atom("p0"), atom("p1")),
-    "A2_assoc": binary("or_s", binary("or_s", atom("p0"), atom("p1")), atom("p2")),
+    "A2_assoc_fwd": binary("or_s", binary("or_s", atom("p0"), atom("p1")), atom("p2")),
+    "A2_assoc_bwd": binary("and_s", atom("p0"), binary("and_s", atom("p1"), atom("p2"))),
     "A3_double_neg": negation(negation(atom("p0"))),
     "A4_demorgan_fwd": binary("and_s", atom("p0"), atom("p1")),
     "A4_demorgan_bwd": negation(binary("or_s", negation(atom("p0")), negation(atom("p1")))),
@@ -48,8 +45,9 @@ WITNESSES = {
     "A6_contrapose": binary("imp", atom("p0"), atom("p1")),
     "A7_max_def_fwd": binary("or_w", atom("p0"), atom("p1")),
     "A7_max_def_bwd": binary("imp", binary("imp", atom("p0"), atom("p1")), atom("p1")),
-    "A8_prelinear_fwd": binary("or_w", binary("imp", atom("p0"), atom("p1")), binary("imp", atom("p1"), atom("p0"))),
-    "A8_prelinear_bwd": const(1.0),
+    "A8_prelinear_fwd": binary(
+        "or_w", binary("imp", atom("p0"), atom("p1")), binary("imp", atom("p1"), atom("p0"))
+    ),
     "A9_divisible_fwd": binary("and_w", atom("p0"), atom("p1")),
     "A9_divisible_bwd": binary("and_s", atom("p0"), binary("imp", atom("p0"), atom("p1"))),
     "A10_distance_fwd": binary("and_s", atom("p0"), negation(atom("p1"))),
@@ -71,24 +69,28 @@ def test_every_rule_has_witness_that_preserves_ref_eval():
 
 def test_every_rule_preserves_ref_eval():
     rng = random.Random(2)
-    for rule in RULES.values():
-        for _ in range(300):
-            formula = random_formula(rng, rng.randint(1, 4), ATOMS)
-            env = random_env(rng)
-            for path in paths(formula):
-                if not rule.match(get(formula, path)):
-                    continue
+    compared = {rule_id: 0 for rule_id in RULES}
+    for _ in range(3000):
+        formula = random_formula(rng, rng.randint(1, 4), ATOMS)
+        for path in paths(formula):
+            for rule_id, rule in RULES.items():
                 rewritten = apply_at(formula, rule, path)
                 if rewritten is None:
                     continue
-                before = ref_eval(formula, env)
-                after = ref_eval(rewritten, env)
-                assert abs(before - after) <= 1e-12, rule.id
+                env = random_env(rng)
+                compared[rule_id] += 1
+                assert abs(ref_eval(formula, env) - ref_eval(rewritten, env)) <= 1e-12, rule_id
+    for rule_id in RULES:
+        assert compared[rule_id] > 0, rule_id
 
 
 def test_noop_rewrite_returns_none():
     formula = binary("and_s", atom("a"), atom("a"))
     assert apply_at(formula, RULES["A1_commute"], ()) is None
+
+
+def test_non_matching_double_negation_returns_none():
+    assert apply_at(negation(atom("p0")), RULES["A3_double_neg"], ()) is None
 
 
 def test_growth_cap_returns_none():
@@ -107,8 +109,7 @@ def test_each_rule_matches_somewhere():
             for rule_id, rule in RULES.items():
                 if rule.match(node):
                     matched.add(rule_id)
-    for rule_id, rule in RULES.items():
-        assert rule_id in matched or rule.match(WITNESSES[rule_id]), rule_id
+    assert matched == set(RULES), sorted(set(RULES) - matched)
 
 
 def test_random_formula_has_no_quantifiers():
@@ -125,23 +126,29 @@ def test_random_formula_at_depth_zero_is_a_leaf():
         assert random_formula(rng, 0, ATOMS).kids == ()
 
 
+def test_random_formula_is_deterministic_for_a_seed():
+    first = random_formula(random.Random(7), 4, ATOMS)
+    second = random_formula(random.Random(7), 4, ATOMS)
+    assert first == second
+
+
 def test_a1_commute_swaps_kids_of_and_s():
     result = apply_at(binary("and_s", atom("p0"), atom("p1")), RULES["A1_commute"], ())
     assert result == binary("and_s", atom("p1"), atom("p0"))
 
 
-def test_a2_assoc_rebrackets_nested_or_s():
+def test_a2_assoc_fwd_rebrackets_left_nested_or_s():
     nested = binary("or_s", binary("or_s", atom("p0"), atom("p1")), atom("p2"))
-    result = apply_at(nested, RULES["A2_assoc"], ())
+    result = apply_at(nested, RULES["A2_assoc_fwd"], ())
     assert result == binary("or_s", atom("p0"), binary("or_s", atom("p1"), atom("p2")))
+
+
+def test_a2_assoc_bwd_rebrackets_right_nested_and_s():
+    nested = binary("and_s", atom("p0"), binary("and_s", atom("p1"), atom("p2")))
+    result = apply_at(nested, RULES["A2_assoc_bwd"], ())
+    assert result == binary("and_s", binary("and_s", atom("p0"), atom("p1")), atom("p2"))
 
 
 def test_a3_double_neg_removes_two_negations():
     result = apply_at(negation(negation(atom("p0"))), RULES["A3_double_neg"], ())
     assert result == atom("p0")
-
-
-def test_a8_backward_rewrites_constant_one_to_prelinear_form():
-    result = apply_at(const(1.0), RULES["A8_prelinear_bwd"], ())
-    assert result.op == "or_w"
-    assert ref_eval(result, Env(atoms={}, preds={}, domain=())) == 1.0
