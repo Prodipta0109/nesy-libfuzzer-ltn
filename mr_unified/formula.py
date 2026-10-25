@@ -3,7 +3,7 @@ Implements the formula core and reference semantics (Lukasiewicz connectives, mi
 """
 import dataclasses
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import numpy as np
 
@@ -86,6 +86,7 @@ def _atom(n: Node, env: Env, bind: Dict[str, str]) -> np.float64:
 
 
 def _connective(op: str, xs: List[np.float64]) -> np.float64:
+    """Laws: not a == 1 - a; a -> b == min(1 - a + b, 1); a /\\w b == min(a, b); a \\/w b == max(a, b)."""
     if op == "not":
         return np.float64(1.0 - xs[0])
     if op == "and_s":
@@ -102,10 +103,12 @@ def _connective(op: str, xs: List[np.float64]) -> np.float64:
 
 
 def _and_s(a: float, b: float) -> np.float64:
+    """a (x) b == max(a + b - 1, 0)"""
     return np.float64(max(a + b - 1.0, 0.0))
 
 
 def _or_s(a: float, b: float) -> np.float64:
+    """a (+) b == min(a + b, 1)"""
     return np.float64(min(a + b, 1.0))
 
 
@@ -132,7 +135,7 @@ def _exists(vals: List[np.float64], quant: str) -> np.float64:
     return _fold(vals, _or_s)
 
 
-def _fold(vals: List[np.float64], op) -> np.float64:
+def _fold(vals: List[np.float64], op: Callable[[float, float], float]) -> np.float64:
     acc = vals[0]
     for val in vals[1:]:
         acc = op(acc, val)
