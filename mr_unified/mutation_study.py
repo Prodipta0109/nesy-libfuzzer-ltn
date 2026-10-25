@@ -13,13 +13,12 @@ from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple
 import torch
 
 from mr_unified.adapters.base import Adapter, Unsupported
+from mr_unified.adapters.guard import AdapterCrash, GuardedAdapter
 from mr_unified.cases import quantifier_rule_ids
 from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.harness import make_adapters
-from mr_unified.oracle import check_env_rule, check_property, check_rewrite, eps_of, tol
-from mr_unified.properties import (
-    boolean_margin, instantiation_margin, monotone_margin, separating_report, slope_margin, split_margin,
-)
+from mr_unified.oracle import check_env_rule, check_property, check_rewrite, property_margin, tol
+from mr_unified.properties import separating_report
 from mr_unified.rewrites import (
     CONNECTIVE_OPS, ENV_RULES, PROP_ATOMS, QRULES, RULES, Rule, random_formula, random_quantified,
 )
@@ -49,36 +48,6 @@ class Mutant:
     lib: str
     description: str
     patch: Callable[[], contextlib.AbstractContextManager]
-
-
-class AdapterCrash(Exception):
-    """A library operator raised an exception other than Unsupported: a wrong-behaviour signal, not a harness error."""
-
-
-class GuardedAdapter:
-    """Forwards to an adapter; any exception from evaluate other than Unsupported becomes AdapterCrash (a firing)."""
-
-    def __init__(self, adapter: Adapter) -> None:
-        self._adapter = adapter
-        self.name = adapter.name
-        self.dtype = adapter.dtype
-
-    def evaluate(self, node: Node, env: Env) -> float:
-        """The adapter's value; a library exception is re-raised as AdapterCrash, Unsupported passes through."""
-        try:
-            return self._adapter.evaluate(node, env)
-        except Unsupported:
-            raise
-        except Exception as err:
-            raise AdapterCrash(err) from err
-
-    def declared_quantifiers(self) -> Dict[str, str]:
-        """The wrapped adapter's declared quantifier semantics."""
-        return self._adapter.declared_quantifiers()
-
-    def dtype_for(self, node: Node) -> str:
-        """The wrapped adapter's dtype for `node`."""
-        return self._adapter.dtype_for(node)
 
 
 @dataclass
@@ -319,43 +288,19 @@ def _quantified_root(node: Node) -> Node:
     return Node(op="forall", name="x", kids=(node,))
 
 
-def _property_margin(name: str, adapter: Adapter, node: Node, env: Env, rng: random.Random) -> float:
-    """How far `adapter` is from the law of property `name` (A11, A12, A13, B6, B8); 0 when the law holds."""
-    if name == "monotone":
-        return monotone_margin(adapter.evaluate, node, env, rng)
-    if name == "boolean":
-        return boolean_margin(adapter.evaluate, node, env, rng)
-    if name == "slope":
-        return slope_margin(adapter.evaluate, node, env, rng, eps_of(adapter.dtype_for(node)))
-    quant = "minmax" if adapter.declared_quantifiers()["forall"] == "min" else "fold"
-    if name == "instantiation":
-        return instantiation_margin(_quant_evaluate(adapter), node, env, quant, rng)
-    return split_margin(_quant_evaluate(adapter), node, env, quant, rng)
-
-
-def _quant_evaluate(adapter: Adapter) -> Callable[[Node, Env, str], float]:
-    """The (node, env, quant) shape of B6 and B8; `quant` is ignored because the adapter fixes its semantics."""
-
-    def evaluate(node: Node, env: Env, quant: str) -> float:
-        """The adapter's own value of `node` in `env`."""
-        return adapter.evaluate(node, env)
-
-    return evaluate
-
-
 def _property_thunks(adapter: Adapter, rng: random.Random, node: Node, env: Env) -> List[Callable[[], object]]:
     """Each property check, on the formula it needs: propositional for A11-A13, quantified for B6 and B8."""
     thunks = []
     for name in PROPOSITIONAL_PROPERTIES:
         body = random_formula(rng, rng.randint(1, MAX_DEPTH), PROP_ATOMS)
-        thunks.append(partial(check_property, adapter, partial(_property_margin, name), body, env, rng, name))
+        thunks.append(partial(check_property, adapter, partial(property_margin, name), body, env, rng, name))
     thunks.append(partial(
-        check_property, adapter, partial(_property_margin, "instantiation"), _quantified_root(node), env, rng,
+        check_property, adapter, partial(property_margin, "instantiation"), _quantified_root(node), env, rng,
         "instantiation",
     ))
     split_node = Node(op=rng.choice(QUANT_OPS), name="x", kids=(random_formula(rng, MAX_DEPTH, PROP_ATOMS),))
     thunks.append(partial(
-        check_property, adapter, partial(_property_margin, "split"), split_node, env, rng, "split",
+        check_property, adapter, partial(property_margin, "split"), split_node, env, rng, "split",
     ))
     return thunks
 

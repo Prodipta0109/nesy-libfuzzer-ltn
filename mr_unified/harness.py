@@ -23,57 +23,20 @@ INSTRUMENT = atheris.instrument_imports(include=["mr_unified"]) if atheris else 
 with INSTRUMENT:
     from mr_unified import findings_io
     from mr_unified.adapters.base import Adapter, Unsupported
+    from mr_unified.adapters.guard import AdapterCrash, GuardedAdapter
     from mr_unified.adapters.ref_adapter import RefAdapter
     from mr_unified.cases import Bytes, ByteRandom, Case, decode, format_env, format_node
-    from mr_unified.formula import Env, Node
     from mr_unified.guidance import bucket, guidance_value
     from mr_unified.oracle import (
-        ALL_REWRITES, Violation, as_quant_evaluate, check_env_rule, check_property, check_rewrite, cross_check,
-        cross_gap, env_rule_gap, eps_of, minimise, property_gap, rewrite_gap,
+        ALL_REWRITES, Violation, check_env_rule, check_property, check_rewrite, cross_check, cross_gap, env_rule_gap,
+        minimise, property_gap, property_margin, rewrite_gap,
     )
-    from mr_unified.properties import (
-        boolean_margin, instantiation_margin, monotone_margin, separating_report, slope_margin, split_margin,
-    )
+    from mr_unified.properties import separating_report
     from mr_unified.rewrites import ENV_RULES
 
 KINDS = ("rewrite", "qrewrite", "env_rule", "property", "cross")
 ALL_LIBS = ("ltn", "lnn", "ref")
 INPUT_BYTES = 1024
-
-
-class AdapterCrash(Exception):
-    """An exception other than Unsupported raised by an adapter's evaluate: a library crash, not a harness error."""
-
-    def __init__(self, original: Exception) -> None:
-        super().__init__(original)
-        self.original = original
-
-
-class GuardedAdapter:
-    """Thin proxy: forwards every call to the adapter; evaluate re-raises any non-Unsupported exception as AdapterCrash.
-    Only exceptions raised inside evaluate are library crashes, so harness exceptions elsewhere still propagate."""
-
-    def __init__(self, adapter: Adapter) -> None:
-        self._adapter = adapter
-        self.name = adapter.name
-        self.dtype = adapter.dtype
-
-    def evaluate(self, node: Node, env: Env) -> float:
-        """The adapter's value; an exception other than Unsupported becomes AdapterCrash(original)."""
-        try:
-            return self._adapter.evaluate(node, env)
-        except Unsupported:
-            raise
-        except Exception as err:
-            raise AdapterCrash(err) from err
-
-    def declared_quantifiers(self) -> Dict[str, str]:
-        """The wrapped adapter's declared quantifiers."""
-        return self._adapter.declared_quantifiers()
-
-    def dtype_for(self, node: Node) -> str:
-        """The wrapped adapter's dtype for `node`."""
-        return self._adapter.dtype_for(node)
 
 
 def _make_ltn() -> Adapter:
@@ -236,39 +199,12 @@ def _check_property_case(case: Case, adapter: Adapter) -> Optional[Violation]:
     """The property law of case.name; its margin over tol(node, node) is the coverage guidance."""
     if case.name == "separating":
         return _check_separating(case, adapter)
-    prop = partial(_margin, case.name)
+    prop = partial(property_margin, case.name)
     margin, bound = property_gap(adapter, prop, case.node, case.env, _tail_rng(case))
     bucket(guidance_value(margin, bound))
     if margin <= bound:
         return None
     return _crash_mark(check_property(adapter, prop, case.node, case.env, _tail_rng(case), case.name))
-
-
-def _quant_of(adapter: Adapter) -> str:
-    """The quant argument of B6 and B8 from the adapter's declared forall: "min" is minmax, "fold" is fold."""
-    forall = adapter.declared_quantifiers().get("forall")
-    if forall == "min":
-        return "minmax"
-    if forall == "fold":
-        return "fold"
-    raise Unsupported("no quantifier semantics declared for forall: %r" % forall)
-
-
-def _margin(name: str, adapter: Adapter, node: Node, env: Env, rng: random.Random) -> float:
-    """How far `adapter` is from the property `name` (laws A11, A12, A13, B6, B8); 0 means the law holds."""
-    evaluate = adapter.evaluate
-    if name == "monotone":
-        return monotone_margin(evaluate, node, env, rng)
-    if name == "boolean":
-        return boolean_margin(evaluate, node, env, rng)
-    if name == "slope":
-        return slope_margin(evaluate, node, env, rng, eps_of(adapter.dtype_for(node)))
-    quant = as_quant_evaluate(adapter)
-    if name == "instantiation":
-        return instantiation_margin(quant, node, env, _quant_of(adapter), rng)
-    if name == "split":
-        return split_margin(quant, node, env, _quant_of(adapter), rng)
-    raise ValueError("unknown property: %s" % name)
 
 
 def _check_separating(case: Case, adapter: Adapter) -> Optional[Violation]:

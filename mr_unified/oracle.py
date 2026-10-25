@@ -10,6 +10,7 @@ import numpy as np
 
 from mr_unified.adapters.base import Adapter, Unsupported
 from mr_unified.formula import Env, Node, get, paths, replace, size
+from mr_unified.properties import boolean_margin, instantiation_margin, monotone_margin, slope_margin, split_margin
 from mr_unified.rewrites import ENV_RULES, QRULES, RULES, EnvRule, Rule, apply_at
 
 # Derivation of TOL_FACTOR = 1. All truth values lie in [0, 1]. One rounding of a value in [0, 1] costs at most eps/2.
@@ -144,6 +145,32 @@ def as_quant_evaluate(adapter: Adapter) -> Callable[[Node, Env, str], float]:
         return adapter.evaluate(node, env)
 
     return evaluate
+
+
+def quant_of(adapter: Adapter) -> str:
+    """The quant argument of B6 and B8 from the adapter's declared forall: "min" is minmax, "fold" is fold."""
+    forall = adapter.declared_quantifiers().get("forall")
+    if forall == "min":
+        return "minmax"
+    if forall == "fold":
+        return "fold"
+    raise Unsupported("no quantifier semantics declared for forall: %r" % forall)
+
+
+def property_margin(name: str, adapter: Adapter, node: Node, env: Env, rng: random.Random) -> float:
+    """How far `adapter` is from the law of property `name` (A11, A12, A13, B6, B8); 0 when the law holds."""
+    if name == "monotone":
+        return monotone_margin(adapter.evaluate, node, env, rng)
+    if name == "boolean":
+        return boolean_margin(adapter.evaluate, node, env, rng)
+    if name == "slope":
+        return slope_margin(adapter.evaluate, node, env, rng, eps_of(adapter.dtype_for(node)))
+    quant_eval = as_quant_evaluate(adapter)
+    if name == "instantiation":
+        return instantiation_margin(quant_eval, node, env, quant_of(adapter), rng)
+    if name == "split":
+        return split_margin(quant_eval, node, env, quant_of(adapter), rng)
+    raise ValueError("unknown property: %s" % name)
 
 
 def cross_check(adapters: Sequence[Adapter], node: Node, env: Env) -> Optional[Violation]:

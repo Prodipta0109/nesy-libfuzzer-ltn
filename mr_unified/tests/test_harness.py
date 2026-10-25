@@ -19,7 +19,7 @@ from mr_unified.cases import Bytes, ByteRandom, Case, decode, format_node
 from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.guidance import guidance_value
 from mr_unified.harness import run_input
-from mr_unified.oracle import Violation, check_rewrite, cross_gap, env_rule_gap, rewrite_gap
+from mr_unified.oracle import Violation, check_rewrite, cross_gap, env_rule_gap, property_margin, quant_of, rewrite_gap
 from mr_unified.rewrites import PROP_ATOMS, QRULES, RULES, random_formula, valid_for
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -398,14 +398,14 @@ def test_split_margin_is_zero_for_fold_declared_adapter():
         node = Node(op="forall", name="x", kids=(body,))
         env = _prop_env(rng)
         env = Env(atoms=env.atoms, preds={}, domain=("o0", "o1", "o2"))
-        assert harness._quant_of(FoldSemantics()) == "fold"
-        assert harness._margin("split", FoldSemantics(), node, env, rng) <= 1e-12
+        assert quant_of(FoldSemantics()) == "fold"
+        assert property_margin("split", FoldSemantics(), node, env, rng) <= 1e-12
         compared += 1
     assert compared == len(SEEDS)
 
 
 def test_quant_of_minmax_adapter_is_minmax():
-    assert harness._quant_of(REF) == "minmax"
+    assert quant_of(REF) == "minmax"
 
 
 def test_adapter_without_declared_quantifiers_is_skipped_for_split():
@@ -480,7 +480,7 @@ def test_harness_internal_value_error_propagates(monkeypatch):
         """A harness bug: raises a ValueError that is not an adapter exception."""
         raise ValueError("harness bug")
 
-    monkeypatch.setattr(harness, "_margin", broken)
+    monkeypatch.setattr(harness, "property_margin", broken)
     node = Node(op="and_s", kids=(Node(op="atom", name="p0"), Node(op="atom", name="p1")))
     env = Env(atoms={"p0": 0.3, "p1": 0.6}, preds={}, domain=())
     case = Case("property", node, env, "monotone", (), tail=bytes(range(1, 60)))
