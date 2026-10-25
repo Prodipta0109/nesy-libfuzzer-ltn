@@ -13,3 +13,4 @@ __pycache__/
 corpus*/
 mr_unified/findings/
 LNN_INFO.log
+venv_psl/
