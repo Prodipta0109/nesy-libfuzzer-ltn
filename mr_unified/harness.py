@@ -272,13 +272,15 @@ STATS: Dict[str, Dict[str, int]] = _blank_stats()
 ACTIVE: List[Adapter] = []
 SELECTION = ""
 _SEEN = set()
+_CRASH_SEEN = set()
 
 
 def reset() -> None:
-    """Clear STATS and the set of (lib, rule) pairs already reported."""
+    """Clear STATS and the sets of (lib, rule) pairs and crashes already reported."""
     STATS.clear()
     STATS.update(_blank_stats())
     _SEEN.clear()
+    _CRASH_SEEN.clear()
 
 
 def make_adapters(lib: str) -> List[Adapter]:
@@ -317,17 +319,30 @@ def _count(kind: str, field_name: str) -> None:
 
 
 def _run_on(case: Case, adapter: Adapter) -> List[Violation]:
-    """Run one case on one adapter: Unsupported is a skip; a failed law comes back as a violation."""
+    """Run one case on one adapter: Unsupported is a skip; a failed law or a crash comes back as a violation."""
     try:
         violation = _check(case, adapter)
     except Unsupported:
         _count(case.kind, "skipped")
         return []
+    except Exception as err:
+        violation = _crash(case, adapter.name, err)
     _count(case.kind, "run")
     if violation is None:
         return []
     _count(case.kind, "violations")
     return [violation]
+
+
+def _crash(case: Case, lib: str, err: Exception) -> Violation:
+    """An adapter exception other than Unsupported that the oracle does not catch: a violation with margin inf."""
+    key = (lib, case.name, repr(err))
+    if key not in _CRASH_SEEN:
+        _CRASH_SEEN.add(key)
+        print("[CRASH] %s %s: %r" % (lib, case.name, err), file=sys.stderr, flush=True)
+    nan = float("nan")
+    path = case.path if case.path is not None else ()
+    return Violation(lib, case.name, path, case.node, case.node, case.env, (nan, nan), float("inf"))
 
 
 def _check(case: Case, adapter: Adapter) -> Optional[Violation]:
@@ -380,14 +395,17 @@ def _check_separating(case: Case, adapter: Adapter) -> Optional[Violation]:
 
 def _run_cross(case: Case, adapters: Sequence[Adapter]) -> List[Violation]:
     """Cross-check the case on all adapters; if any adapter refuses the formula, the case is skipped."""
+    lib = " vs ".join(adapter.name for adapter in adapters)
     try:
         for adapter in adapters:
             adapter.evaluate(case.node, case.env)
+        violation = cross_check(adapters, case.node, case.env)
     except Unsupported:
         _count("cross", "skipped")
         return []
+    except Exception as err:
+        violation = _crash(case, lib, err)
     _count("cross", "run")
-    violation = cross_check(adapters, case.node, case.env)
     if violation is None:
         return []
     _count("cross", "violations")

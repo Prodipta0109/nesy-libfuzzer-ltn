@@ -257,6 +257,26 @@ def test_cross_check_flags_the_shifted_adapter():
     assert harness.STATS["cross"]["run"] > 0
 
 
+class Crashing(RefAdapter):
+    """Raises ValueError (not Unsupported) on every formula, like an adapter that rejects object constants."""
+
+    name = "crashing"
+
+    def evaluate(self, node: Node, env: Env) -> float:
+        """Always raises ValueError."""
+        raise ValueError("adapter crash")
+
+
+def test_adapter_crash_is_recorded_as_violation_with_infinite_margin():
+    harness.reset()
+    found: List[Violation] = []
+    for data in _inputs(300):
+        found.extend(run_input(data, [Crashing()]))
+    crashes = [v for v in found if math.isinf(v.margin)]
+    assert crashes
+    assert harness.STATS["property"]["violations"] > 0
+
+
 def test_finding_is_written_once_per_rule(tmp_path, monkeypatch):
     monkeypatch.setenv("MR_UNIFIED_FINDINGS", str(tmp_path))
     harness.reset()
