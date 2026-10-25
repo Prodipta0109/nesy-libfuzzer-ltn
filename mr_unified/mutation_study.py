@@ -88,6 +88,7 @@ class Tally:
     runs: int = 0
     skips: int = 0
     fired: bool = False
+    first_case: Optional[int] = None
 
     def attempt(self, check: Callable[[], object]) -> None:
         """Run one check: Unsupported is a skip; a crash, or a truthy result (a Violation or True), is a firing."""
@@ -194,22 +195,30 @@ def _aggregmin_wrong_axis() -> contextlib.AbstractContextManager:
     return _swapped(fz.AggregMin, "__call__", call)
 
 
-def _andluk_stale_cache() -> contextlib.AbstractContextManager:
-    """Law broken: an operator object called again with an input of the same shape returns its previous result."""
+@contextlib.contextmanager
+def _memo_swapped(owner: object, name: str, replacement: Callable, memo: Dict) -> Iterator[None]:
+    """Replace owner.name for the block; on exit restore it and clear the memo, even after an error."""
+    with _swapped(owner, name, replacement):
+        try:
+            yield
+        finally:
+            memo.clear()
+
+
+def _andluk_shape_memo() -> contextlib.AbstractContextManager:
+    """Law broken: a (x) b returns the first result stored for an input shape, whatever the values."""
     fz = _fuzzy()
     original = vars(fz.AndLuk)["__call__"]
-    cache: Dict[int, Tuple[Tuple[int, ...], torch.Tensor]] = {}
+    memo: Dict[Tuple[int, ...], torch.Tensor] = {}
 
     def call(self, x, y):
-        """Cache per operator id: a hit when the same shape was seen for this id, so the old value comes back."""
-        key = id(self)
-        if key in cache and cache[key][0] == tuple(x.shape):
-            return cache[key][1]
-        out = original(self, x, y)
-        cache[key] = (tuple(x.shape), out)
-        return out
+        """Memo keyed by tuple(x.shape): a later call with another value of the same shape gets the stored result."""
+        key = tuple(x.shape)
+        if key not in memo:
+            memo[key] = original(self, x, y)
+        return memo[key]
 
-    return _swapped(fz.AndLuk, "__call__", call)
+    return _memo_swapped(fz.AndLuk, "__call__", call, memo)
 
 
 # ----- LNN mutants ------------------------------------------------------------------------------------------------
@@ -248,8 +257,8 @@ MUTANTS: Dict[str, Mutant] = {
     "AggregMin wrong axis with two free variables": Mutant(
         "ltn", "quantifier reduces the other axis when two variables are free", _aggregmin_wrong_axis
     ),
-    "AndLuk stale result per operator id": Mutant(
-        "ltn", "returns the previous result for the same operator id and shape", _andluk_stale_cache
+    "AndLuk memo by input shape": Mutant(
+        "ltn", "a (x) b returns the first stored result for any input of the same shape", _andluk_shape_memo
     ),
     "LNN And upward computed as min": Mutant("lnn", "strong And upward is the min of operands", _lnn_and_is_min),
     "LNN Implies arguments swapped": Mutant("lnn", "Implies upward with swapped operands", _lnn_implies_swapped),
@@ -378,10 +387,11 @@ def _sweep(oracle: str, adapter: Adapter, n_cases: int, seed: int) -> Tally:
     """Run `oracle` on n_cases seeded cases; stop at the first firing, since the study asks only whether it fires."""
     rng = random.Random(seed)
     tally = Tally()
-    for _ in range(n_cases):
+    for case_no in range(1, n_cases + 1):
         for check in ORACLE_THUNKS[oracle](adapter, rng):
             tally.attempt(check)
         if tally.fired:
+            tally.first_case = case_no
             break
     return tally
 
@@ -421,14 +431,26 @@ def kind(firing: Dict[str, bool]) -> str:
     return KIND_LABELS[fired]
 
 
-def format_table(results: Dict[str, Dict[str, bool]]) -> str:
-    """The table of one row per mutant: whether each oracle fired, and the kind; the note goes under it."""
-    width = max([len("mutant")] + [len(name) for name in results])
-    header = "%-*s  %-12s  %-14s  %-4s  %s" % (width, "mutant", "per_operator", "full_reference", "mr", "kind")
-    lines = [header]
-    for name, firing in results.items():
-        cells = ["yes" if firing[oracle] else "no" for oracle in ORACLES]
-        lines.append("%-*s  %-12s  %-14s  %-4s  %s" % (width, name, cells[0], cells[1], cells[2], kind(firing)))
+def _cell(name: str, oracle: str, firing: Dict[str, bool], first: Optional[Dict[str, Dict[str, int]]]) -> str:
+    """"no", "yes", or "yes, case N" with N the case count at which the oracle first fired (when known)."""
+    if not firing[oracle]:
+        return "no"
+    if first is None or oracle not in first.get(name, {}):
+        return "yes"
+    return "yes, case %d" % first[name][oracle]
+
+
+def format_table(
+    results: Dict[str, Dict[str, bool]], first: Optional[Dict[str, Dict[str, int]]] = None
+) -> str:
+    """One row per mutant: whether each oracle fired (and at which case), the kind; the note goes under the table."""
+    rows = [
+        [name] + [_cell(name, oracle, firing, first) for oracle in ORACLES] + [kind(firing)]
+        for name, firing in results.items()
+    ]
+    head = ["mutant"] + list(ORACLES) + ["kind"]
+    widths = [max(len(row[i]) for row in [head] + rows) for i in range(len(head))]
+    lines = ["  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip() for row in [head] + rows]
     lines.append(NOTE)
     return "\n".join(lines)
 
@@ -453,14 +475,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     libs = ["ltn", "lnn"] if args.lib == "all" else [args.lib]
     baseline_silent = True
     results: Dict[str, Dict[str, bool]] = {}
+    first: Dict[str, Dict[str, int]] = {}
     for lib in libs:
         base = baseline(lib, args.cases, args.seed)
         baseline_silent &= not any(t.fired for t in base.values())
         print("baseline %s (unmutated): %s" % (lib, _summary(base)), file=sys.stderr)
         for name, tallies in measure(lib, args.cases, args.seed).items():
             results[name] = {oracle: tally.fired for oracle, tally in tallies.items()}
+            first[name] = {o: t.first_case for o, t in tallies.items() if t.first_case is not None}
             print("%s: %s" % (name, _summary(tallies)), file=sys.stderr)
-    print(format_table(results))
+    print(format_table(results, first))
     return 0 if baseline_silent else 1
 
 

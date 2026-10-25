@@ -5,12 +5,16 @@ Case counts are small (BASELINE_CASES, CATCH_CASES) so that this file runs in we
 import pytest
 import torch
 
-from mr_unified.mutation_study import MUTANTS, format_table, kind, run, baseline
+from mr_unified.mutation_study import MUTANTS, baseline, format_table, kind, measure, run
 
 SEED = 0
 BASELINE_CASES = 500
 CATCH_CASES = 300
 LTN_NAMES = [name for name, mutant in MUTANTS.items() if mutant.lib == "ltn"]
+LNN_NAMES = [name for name, mutant in MUTANTS.items() if mutant.lib == "lnn"]
+AGG_IGNORES_LAST = "AggregMin ignores last element"
+AGG_WRONG_AXIS = "AggregMin wrong axis with two free variables"
+ANDLUK_MIN = "AndLuk uses min"
 
 
 def _operator_probe():
@@ -79,9 +83,9 @@ def test_patch_restores_original_after_an_error():
 
 
 def test_patch_changes_andluk_only_while_active():
+    pytest.importorskip("ltn")
     import ltn.fuzzy_ops as fz
 
-    pytest.importorskip("ltn")
     x = torch.tensor([0.6], dtype=torch.float64)
     y = torch.tensor([0.9], dtype=torch.float64)
     with MUTANTS["AndLuk uses min"].patch():
@@ -115,3 +119,48 @@ def test_table_has_expected_columns():
 )
 def test_kind_labels_name_the_firing_oracles(firing, label):
     assert kind(firing) == label
+
+
+def _lnn_probe():
+    """LNN values of And, Implies, Or and Not on an unsaturated env; a patched LNN method changes at least one of them."""
+    from mr_unified.adapters.lnn_adapter import LNNAdapter
+    from mr_unified.formula import Env, Node
+
+    env = Env(atoms={"p0": 0.1, "p1": 0.2}, preds={}, domain=())
+    p0, p1 = Node(op="atom", name="p0"), Node(op="atom", name="p1")
+    nodes = [Node(op="and_s", kids=(p0, p1)), Node(op="imp", kids=(p0, p1)),
+             Node(op="or_s", kids=(p0, p1)), Node(op="not", kids=(p0,))]
+    adapter = LNNAdapter()
+    return [adapter.evaluate(node, env) for node in nodes]
+
+
+@pytest.mark.parametrize("name", LNN_NAMES)
+def test_patch_restores_lnn_method(name):
+    pytest.importorskip("lnn")
+    before = _lnn_probe()
+    with MUTANTS[name].patch():
+        during = _lnn_probe()
+    assert during != before, "the LNN patch changed nothing, so the test would not notice a restore failure"
+    assert _lnn_probe() == before
+
+
+def test_aggmin_wrong_axis_is_missed_by_per_operator():
+    pytest.importorskip("ltn")
+    tallies = measure("ltn", n_cases=CATCH_CASES, seed=SEED)[AGG_WRONG_AXIS]
+    assert tallies["per_operator"].runs == CATCH_CASES
+    assert not tallies["per_operator"].fired
+
+
+def test_aggmin_wrong_axis_is_caught_by_full_reference_at_300_cases():
+    pytest.importorskip("ltn")
+    tally = measure("ltn", n_cases=CATCH_CASES, seed=SEED)[AGG_WRONG_AXIS]["full_reference"]
+    assert tally.fired
+    assert tally.first_case <= CATCH_CASES
+
+
+def test_kinds_at_the_saved_table_case_count_match_the_table():
+    pytest.importorskip("ltn")
+    results = run("ltn", n_cases=2000, seed=SEED)
+    assert kind(results[AGG_IGNORES_LAST]) == "MR + full-reference only"
+    assert kind(results[AGG_WRONG_AXIS]) == "MR + full-reference only"
+    assert kind(results[ANDLUK_MIN]) == "all three"
