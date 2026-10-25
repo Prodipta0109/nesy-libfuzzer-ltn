@@ -19,7 +19,7 @@ from mr_unified.cases import Bytes, ByteRandom, Case, decode, format_node
 from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.guidance import guidance_value
 from mr_unified.harness import run_input
-from mr_unified.oracle import Violation, check_rewrite, rewrite_gap
+from mr_unified.oracle import Violation, check_rewrite, cross_gap, env_rule_gap, rewrite_gap
 from mr_unified.rewrites import PROP_ATOMS, QRULES, RULES, random_formula, valid_for
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -453,6 +453,28 @@ def test_bucket_receives_the_guidance_value_of_a_property_margin(monkeypatch):
     assert 0.0 <= seen[0] <= 1.0
 
 
+def test_bucket_receives_the_guidance_value_of_an_env_rule_gap(monkeypatch):
+    seen = []
+    monkeypatch.setattr(harness, "bucket", seen.append)
+    case = next(c for c in _decode_all([REF]) if c.kind == "env_rule")
+    rule = harness.ENV_RULES[case.name]
+    expected = guidance_value(*env_rule_gap(REF, rule, case.node, case.env))
+    harness._check(case, REF)
+    assert seen == [pytest.approx(expected)]
+
+
+def test_bucket_receives_the_guidance_value_of_a_cross_gap(monkeypatch):
+    seen = []
+    monkeypatch.setattr(harness, "bucket", seen.append)
+    node = Node(op="and_s", kids=(Node(op="atom", name="p0"), Node(op="atom", name="p1")))
+    env = Env(atoms={"p0": 0.3, "p1": 0.6}, preds={}, domain=())
+    adapters = [REF, ShiftedRef()]
+    expected = guidance_value(*cross_gap(adapters, node, env))
+    assert expected > 0.0
+    harness._run_cross(Case("cross", node, env, "cross", ()), adapters)
+    assert seen == [pytest.approx(expected)]
+
+
 def test_harness_internal_value_error_propagates(monkeypatch):
     def broken(name, adapter, node, env, rng):
         """A harness bug: raises a ValueError that is not an adapter exception."""
@@ -464,16 +486,6 @@ def test_harness_internal_value_error_propagates(monkeypatch):
     case = Case("property", node, env, "monotone", (), tail=bytes(range(1, 60)))
     with pytest.raises(ValueError):
         harness._check(case, REF)
-
-
-class Crashing(RefAdapter):
-    """Raises ValueError (not Unsupported) on every formula, as an adapter that rejects an input would."""
-
-    name = "crashing"
-
-    def evaluate(self, node: Node, env: Env) -> float:
-        """Always raises ValueError."""
-        raise ValueError("adapter crash")
 
 
 def test_adapter_value_error_is_recorded_as_crash_violation():
