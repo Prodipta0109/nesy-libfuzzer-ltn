@@ -1,9 +1,12 @@
 """Tests for mr_unified.properties: relations A11-A13 and separating checks S1, S2 (spec Task 3)."""
 import random
 
+import numpy as np
 import pytest
 
+from mr_unified.adapters.ref_adapter import RefAdapter
 from mr_unified.formula import Env, Node, ref_eval
+from mr_unified.oracle import eps_of, tol
 from mr_unified.properties import (
     atom_names,
     boolean_margin,
@@ -12,6 +15,7 @@ from mr_unified.properties import (
     polarities,
     separating_report,
     slope_margin,
+    slope_window,
 )
 from mr_unified.rewrites import random_formula
 
@@ -120,23 +124,70 @@ def test_boolean_margin_detects_constant_mutant():
     assert margin == pytest.approx(0.5)
 
 
-def test_slope_margin_zero_for_ref():
-    checked = 0
-    for seed in CASES:
-        rng = random.Random(seed)
-        node = random_formula(rng, 4, ATOMS)
-        env = random_env(rng)
+def rounded_to_float32(evaluate):
+    """Evaluator whose output is rounded through float32, as a float32 library returns it."""
+
+    def rounded(node, env):
+        """The wrapped value rounded to float32 precision."""
+        return float(np.float32(evaluate(node, env)))
+
+    return rounded
+
+
+def slope_sweep(evaluate, dtype):
+    """Run slope_margin on 5000 random propositional formulas; return (compared, linear, failing margins)."""
+    compared = 0
+    linear = 0
+    failing = []
+    for seed in range(5000):
+        node = random_formula(random.Random(seed), 4, ATOMS)
+        env = random_env(random.Random(seed))
+        eps = eps_of(dtype)
         if atom_names(node):
-            checked += 1
-        assert slope_margin(ref_eval, node, env, rng) < 1e-9
-    assert checked > 0
+            compared += 1
+        if slope_window(evaluate, node, env, random.Random(seed), eps) is not None:
+            linear += 1
+        margin = slope_margin(evaluate, node, env, random.Random(seed), eps)
+        if margin > tol(node, node, dtype):
+            failing.append(margin)
+    return compared, linear, failing
 
 
-def test_slope_margin_detects_half_slope_mutant():
+def test_slope_margin_silent_on_float64_ref_over_random_formulas():
+    compared, linear, failing = slope_sweep(RefAdapter().evaluate, "float64")
+    assert compared > 0
+    assert linear > 0
+    assert failing == []
+
+
+def test_slope_margin_silent_on_float32_rounded_ref_over_random_formulas():
+    compared, linear, failing = slope_sweep(rounded_to_float32(ref_eval), "float32")
+    assert compared > 0
+    assert linear > 0
+    assert failing == []
+
+
+def test_slope_margin_detects_half_slope_mutant_in_float64():
     node = binary("and_s", atom("p0"), atom("p1"))
     env = Env(atoms={"p0": 0.5, "p1": 0.9, "p2": 0.0}, preds={}, domain=())
-    margin = slope_margin(half_top_and, node, env, random.Random(0))
-    assert margin == pytest.approx(0.5)
+    margin = slope_margin(half_top_and, node, env, random.Random(0), eps_of("float64"))
+    assert margin == pytest.approx(0.5, abs=1e-9)
+
+
+def test_slope_margin_detects_half_slope_mutant_in_float32_rounded_evaluator():
+    node = binary("and_s", atom("p0"), atom("p1"))
+    env = Env(atoms={"p0": 0.5, "p1": 0.9, "p2": 0.0}, preds={}, domain=())
+    evaluate = rounded_to_float32(half_top_and)
+    margin = slope_margin(evaluate, node, env, random.Random(0), eps_of("float32"))
+    assert margin > tol(node, node, "float32")
+    assert margin == pytest.approx(0.5, abs=1e-3)
+
+
+def test_slope_margin_is_zero_at_a_point_inside_a_kink():
+    node = binary("and_s", atom("p0"), atom("p0"))
+    env = Env(atoms={"p0": 0.5 - 1.0 / 128.0}, preds={}, domain=())
+    assert slope_window(ref_eval, node, env, random.Random(0), eps_of("float64")) is None
+    assert slope_margin(ref_eval, node, env, random.Random(0), eps_of("float64")) == 0.0
 
 
 def test_separating_clean_for_ref():

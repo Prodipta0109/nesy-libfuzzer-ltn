@@ -3,9 +3,9 @@ Implements spec Task 3: monotonicity A11, boolean snapping A12, piecewise-linear
 and spec Task 4 quantifier properties B6 (instantiation) and B8 (domain split).
 """
 import random
-from typing import Callable, Dict, List, Set, Tuple
+from typing import Callable, Dict, List, Optional, Set, Tuple
 
-from mr_unified.formula import QUANT_OPS, Env, Node
+from mr_unified.formula import QUANT_OPS, Env, Node, size
 from mr_unified.rewrites import substitute_var
 
 Evaluate = Callable[[Node, Env], float]
@@ -14,7 +14,6 @@ QuantEvaluate = Callable[[Node, Env, str], float]
 RAISE_LOW = 0.05
 RAISE_HIGH = 0.5
 SLOPE_STEP = 1.0 / 64.0
-SLOPE_TOL = 1e-9
 HALF = 0.5
 
 
@@ -70,19 +69,36 @@ def boolean_margin(evaluate: Evaluate, node: Node, env: Env, rng: random.Random)
     return float(abs(evaluate(node, snapped) - _classical(node, snapped.atoms)))
 
 
-def slope_margin(evaluate: Evaluate, node: Node, env: Env, rng: random.Random) -> float:
-    """Law A13: on one linear piece the slope in an atom is an integer; margin = distance to nearest integer."""
+def slope_noise(node: Node, eps: float) -> float:
+    """Noise bound of one slope quotient: 2 * size * eps / step (two evaluations, each off by at most size * eps)."""
+    return 2.0 * size(node) * eps / SLOPE_STEP
+
+
+def slope_window(
+    evaluate: Evaluate, node: Node, env: Env, rng: random.Random, eps: float
+) -> Optional[Tuple[float, float]]:
+    """Law A13 window: (slope, noise) of one atom over three points; None at a kink or with no atoms."""
     names = sorted(atom_names(node))
     if not names:
-        return 0.0
+        return None
     name = rng.choice(names)
     start = min(env.atoms[name], 1.0 - 2.0 * SLOPE_STEP)
     values = [evaluate(node, _with_atom(env, name, start + k * SLOPE_STEP)) for k in range(3)]
     first = (values[1] - values[0]) / SLOPE_STEP
     second = (values[2] - values[1]) / SLOPE_STEP
-    if abs(first - second) > SLOPE_TOL:
+    noise = slope_noise(node, eps)  # two quotients of the same piece differ by at most 2 * noise
+    if abs(first - second) > 2.0 * noise:
+        return None
+    return second, noise
+
+
+def slope_margin(evaluate: Evaluate, node: Node, env: Env, rng: random.Random, eps: float) -> float:
+    """Law A13: on one linear piece the slope in an atom is an integer; margin = distance to integer minus noise."""
+    window = slope_window(evaluate, node, env, rng, eps)
+    if window is None:
         return 0.0
-    return float(abs(second - round(second)))
+    slope, noise = window
+    return float(max(0.0, abs(slope - round(slope)) - noise))
 
 
 def separating_report(evaluate: Evaluate) -> List[str]:

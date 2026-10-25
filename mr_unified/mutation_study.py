@@ -16,7 +16,7 @@ from mr_unified.adapters.base import Adapter, Unsupported
 from mr_unified.cases import quantifier_rule_ids
 from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.harness import make_adapters
-from mr_unified.oracle import check_env_rule, check_property, check_rewrite, tol
+from mr_unified.oracle import check_env_rule, check_property, check_rewrite, eps_of, tol
 from mr_unified.properties import (
     boolean_margin, instantiation_margin, monotone_margin, separating_report, slope_margin, split_margin,
 )
@@ -326,7 +326,7 @@ def _property_margin(name: str, adapter: Adapter, node: Node, env: Env, rng: ran
     if name == "boolean":
         return boolean_margin(adapter.evaluate, node, env, rng)
     if name == "slope":
-        return slope_margin(adapter.evaluate, node, env, rng)
+        return slope_margin(adapter.evaluate, node, env, rng, eps_of(adapter.dtype_for(node)))
     quant = "minmax" if adapter.declared_quantifiers()["forall"] == "min" else "fold"
     if name == "instantiation":
         return instantiation_margin(_quant_evaluate(adapter), node, env, quant, rng)

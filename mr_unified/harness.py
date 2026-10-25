@@ -29,7 +29,7 @@ with INSTRUMENT:
     from mr_unified.guidance import bucket, guidance_value
     from mr_unified.oracle import (
         ALL_REWRITES, Violation, as_quant_evaluate, check_env_rule, check_property, check_rewrite, cross_check,
-        cross_gap, env_rule_gap, minimise, property_gap, rewrite_gap,
+        cross_gap, env_rule_gap, eps_of, minimise, property_gap, rewrite_gap,
     )
     from mr_unified.properties import (
         boolean_margin, instantiation_margin, monotone_margin, separating_report, slope_margin, split_margin,
@@ -262,7 +262,7 @@ def _margin(name: str, adapter: Adapter, node: Node, env: Env, rng: random.Rando
     if name == "boolean":
         return boolean_margin(evaluate, node, env, rng)
     if name == "slope":
-        return slope_margin(evaluate, node, env, rng)
+        return slope_margin(evaluate, node, env, rng, eps_of(adapter.dtype_for(node)))
     quant = as_quant_evaluate(adapter)
     if name == "instantiation":
         return instantiation_margin(quant, node, env, _quant_of(adapter), rng)
