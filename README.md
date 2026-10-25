@@ -9,6 +9,7 @@
 | `check_f1_f2_f3.py` | The first manual check of F1, F2, F3 only |
 | `classify_dims.py`, `ltn_dimensions.csv` | Static extraction of the fuzzing dimensions D1–D7 from LTN's source, and its output |
 | `docs/` | Final report (`LTN_libFuzzer_Final_Report.md`) and the step-by-step verification files `step1`–`step7` |
+| `mr_unified/` | Metamorphic-relation oracle shared by LTN, LNN and PSL, with thin adapters per library (see its `README.md`) |
 
 Each folder has its own README, the corpora libFuzzer kept, the findings (`findings_*/<id>/input.bin`,
 `program.txt`, `meta.json`) and the campaign logs.
