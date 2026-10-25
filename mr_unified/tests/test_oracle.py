@@ -151,7 +151,7 @@ def _instantiation(adapter, node: Node, env: Env, rng: random.Random) -> float:
 def test_tol_scales_with_size_and_dtype():
     small = _binary("and_s", _atom("p0"), _atom("p1"))
     large = _binary("and_s", small, small)
-    assert tol(small, small, "float64") == 8 * (size(small) + size(small)) * np.finfo("float64").eps
+    assert tol(small, small, "float64") == (size(small) + size(small)) * np.finfo("float64").eps
     assert tol(large, small, "float64") > tol(small, small, "float64")
     assert tol(small, small, "float32") > tol(small, small, "float64")
 
@@ -171,21 +171,25 @@ def test_check_quantified_rewrite_passes_for_ref_adapter():
     assert all(count > 0 for count in counts.values())
 
 
-def test_check_env_rule_passes_for_ref_adapter():
+def test_check_env_rule_b1_passes_for_ref_adapter():
     rng = random.Random(703)
-    permute_count = 0
+    compared = 0
     for node, env in _quant_pairs(rng, CASES):
         assert check_env_rule(REF, ENV_RULES["B1_permute_domain"], node, env) is None
-        permute_count += 1
-    singleton_count = 0
+        compared += 1
+    assert compared > 0
+
+
+def test_check_env_rule_b7_passes_for_ref_adapter():
+    rng = random.Random(712)
+    compared = 0
     for _ in range(CASES):
         node, env = random_quantified(rng, 4, DOMAIN[:1])
         if node.op != "forall":
             continue
         assert check_env_rule(REF, ENV_RULES["B7_singleton"], node, env) is None
-        singleton_count += 1
-    assert permute_count > 0
-    assert singleton_count > 0
+        compared += 1
+    assert compared > 0
 
 
 def test_check_rewrite_catches_planted_bug():
@@ -221,13 +225,21 @@ def test_unsupported_propagates():
         check_rewrite(RefusingAdapter(), RULES["A1_commute"], node, (), env)
 
 
-def test_check_property_passes_for_ref_adapter():
+def test_check_property_monotone_passes_for_ref_adapter():
     rng = random.Random(705)
     compared = 0
     for node, env in _prop_pairs(rng, CASES):
-        for prop in (_monotone, _boolean):
-            assert check_property(REF, prop, node, env, rng) is None
-            compared += 1
+        assert check_property(REF, _monotone, node, env, rng) is None
+        compared += 1
+    assert compared > 0
+
+
+def test_check_property_boolean_passes_for_ref_adapter():
+    rng = random.Random(713)
+    compared = 0
+    for node, env in _prop_pairs(rng, CASES):
+        assert check_property(REF, _boolean, node, env, rng) is None
+        compared += 1
     assert compared > 0
 
 

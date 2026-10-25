@@ -568,10 +568,10 @@ def _permute_apply(n: Node, env: Env) -> Tuple[Node, Env]:
 
 def _singleton_apply(n: Node, env: Env) -> Tuple[Node, Env]:
     """Law B7: on a one-object domain forall x phi == exists x phi; returns the pair unchanged otherwise."""
-    if n.op != "forall" or not env.domain:
+    if n.op != "forall" or len(env.domain) != 1:
         return n, env
     exists_node = Node(op="exists", name=n.name, kids=n.kids)
-    return exists_node, Env(atoms=env.atoms, preds=env.preds, domain=env.domain[:1])
+    return exists_node, env
 
 
 ENV_RULES: Dict[str, EnvRule] = {

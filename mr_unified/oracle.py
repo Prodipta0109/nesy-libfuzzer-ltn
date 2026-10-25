@@ -12,11 +12,15 @@ from mr_unified.adapters.base import Adapter, Unsupported
 from mr_unified.formula import Env, Node, get, paths, replace, size
 from mr_unified.rewrites import ENV_RULES, QRULES, RULES, EnvRule, Rule, apply_at
 
-# Calibration: over 1000 random depth-8 cases the worst |adapter - ref_eval| needed only k = 0.12 (LNN, float32) and
-# k = 0.03 (LTN) times 2 * size * eps. k = 8 passes with a wide margin, so it stays (see task-7-report.md).
-TOL_FACTOR = 8
+# Derivation of TOL_FACTOR = 1. All truth values lie in [0, 1]. One rounding of a value in [0, 1] costs at most eps/2.
+# A Lukasiewicz node computes 1 - a + b or a + b - 1, which is at most two roundings, so at most eps per node. Each
+# connective is 1-Lipschitz in each input, so errors from different subformulas add rather than multiply. Summed over
+# the two trees, the bound is (size(a) + size(b)) * eps. Measured worst needed factors (LTN 0.031, LNN 0.119 over 1000
+# depth-8 cases) are a sanity check only; they are not the justification. See task-7-report.md for the rerun.
+TOL_FACTOR = 1
 NO_VALUE = (float("nan"), float("nan"))
 PropertyCheck = Callable[[Adapter, Node, Env, random.Random], float]
+ALL_REWRITES = {**RULES, **QRULES}
 
 
 @dataclass
@@ -82,8 +86,8 @@ def as_quant_evaluate(adapter: Adapter) -> Callable[[Node, Env, str], float]:
 
 
 def cross_check(adapters: Sequence[Adapter], node: Node, env: Env) -> Optional[Violation]:
-    """Law: every two adapters agree on phi in env within tol(node, node, widest dtype). Adapters raising Unsupported
-    are left out; with fewer than two answers there is nothing to compare and the result is None.
+    """Law: every two adapters agree on phi in env within tol(node, node, widest dtype).
+    Adapters raising Unsupported are silently left out. If fewer than two adapters remain, the result is None.
     """
     answered = _answers(adapters, node, env)
     if len(answered) < 2:
@@ -203,7 +207,7 @@ def _rerun(adapter: Adapter, v: Violation, candidate: Node) -> Optional[Violatio
     """Dispatch the check of `v`'s rule: env rules take no path, rewrites apply at `v.path`."""
     if v.rule in ENV_RULES:
         return check_env_rule(adapter, ENV_RULES[v.rule], candidate, v.env)
-    rule = {**RULES, **QRULES}.get(v.rule)
+    rule = ALL_REWRITES.get(v.rule)
     if rule is None:
         raise ValueError("minimise supports rewrite and env-rule violations, not %s" % v.rule)
     if v.path not in paths(candidate):

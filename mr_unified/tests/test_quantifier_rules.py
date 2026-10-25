@@ -5,13 +5,16 @@ import re
 
 import pytest
 
+from mr_unified.adapters.ref_adapter import RefAdapter
 from mr_unified.formula import Env, Node, get, paths, ref_eval
+from mr_unified.oracle import check_env_rule
 from mr_unified.properties import instantiation_margin, split_margin
 from mr_unified.rewrites import ENV_RULES, QRULES, apply_at, random_quantified, valid_for
 
 DOMAIN = ("o0", "o1", "o2")
 QUANTS = ("minmax", "fold")
 CASES = 300
+REF = RefAdapter()
 DECLARED = {
     "minmax": {"forall": "min", "exists": "max"},
     "fold": {"forall": "fold", "exists": "fold"},
@@ -156,17 +159,31 @@ def test_b7_singleton_forall_agrees_with_exists():
     rule = ENV_RULES["B7_singleton"]
     compared = 0
     for _ in range(CASES):
+        formula, env = random_quantified(rng, rng.randint(1, 4), DOMAIN[:1])
+        if formula.op != "forall":
+            continue
+        new_formula, new_env = rule.apply(formula, env)
+        assert new_formula.op == "exists"
+        assert new_env == env
+        for quant in QUANTS:
+            compared += 1
+            before = ref_eval(formula, env, quant)
+            after = ref_eval(new_formula, env, quant)
+            assert abs(before - after) <= 1e-12, quant
+    assert compared > 0
+
+
+def test_b7_leaves_multi_object_domain_unchanged():
+    rng = random.Random(23)
+    rule = ENV_RULES["B7_singleton"]
+    compared = 0
+    for _ in range(CASES):
         formula, env = random_quantified(rng, rng.randint(1, 4), DOMAIN)
         if formula.op != "forall":
             continue
-        new_formula, cut = rule.apply(formula, env)
-        assert new_formula.op == "exists"
-        assert len(cut.domain) == 1
-        for quant in QUANTS:
-            compared += 1
-            before = ref_eval(formula, cut, quant)
-            after = ref_eval(new_formula, cut, quant)
-            assert abs(before - after) <= 1e-12, quant
+        assert rule.apply(formula, env) == (formula, env)
+        assert check_env_rule(REF, rule, formula, env) is None
+        compared += 1
     assert compared > 0
 
 
