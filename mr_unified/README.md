@@ -42,7 +42,7 @@ design spec, which says those statements still need checking against the book te
 | A3 | `not not a` = `a` | MV-algebra axiom | none |
 | A4 | `a and b` = `not(not a or not b)` (De Morgan) | De Morgan | none |
 | A5 | `a -> b` = `not a or b` | Lukasiewicz implication | none |
-| A6 | `a -> b` = `not b -> not a` (contraposition) | not named in spec | none |
+| A6 | `a -> b` = `not b -> not a` (contraposition) | spec Section 5, row A6 | none |
 | A7 | `max(a, b)` = `(a -> b) -> b` | MV-algebra | none |
 | A8 | `(a -> b) or (b -> a)` is always 1 (prelinearity) | BL-algebra (to confirm) | none |
 | A9 | `min(a, b)` = `a and (a -> b)` (divisibility) | BL-algebra (to confirm) | none |
@@ -150,6 +150,17 @@ quantifiers and no weak `and`/`or`. Formulas deeper than 12 are skipped. NeuPSL'
 - **PSL is checked less tightly.** The solver stops at a set accuracy, so its tolerance is 1e-5 per node, far looser than
   LTN or LNN.
 - **PSL has no quantifiers and no weak connectives.** Those formulas raise `Unsupported`.
+- **The LNN C group is not implemented.** Interval inclusion and downward tightening (spec Section 5, group C) are not
+  tested.
+- **A13 is weaker on float32 and ADMM adapters.** Its noise bound is `2 * size * eps / (1/64)`, so only slope errors
+  above that bound are reported.
+- **G6 differential testing is narrow.** Propositional cross cases use strong connectives only, because LNN raises
+  `Unsupported` on weak ones. Quantified cross cases are generated only when all adapters declare the same quantifiers,
+  which never holds for LTN against LNN. `psl` is not part of `--lib all`.
+- **The "case N" columns are not budget-equal.** The MR oracle runs about 20 checks per case, while per-operator and
+  full-reference run one check each.
+- **"AggregMin wrong axis" is borderline for MR.** MR first fires on it at case 1216 of 2000; full-reference fires at
+  case 26.
 - **LNN is checked only at default weights and bias.** The rules A1-A10 hold only there. LNN also takes only unary
   predicates under a quantifier. Nested quantifiers and quantifiers over a variable the body does not use are skipped.
 - **Some relations are probably caught by simple checks.** The per-operator stand-in catches most A-group bugs, so the MR
@@ -160,5 +171,4 @@ quantifiers and no weak `and`/`or`. Formulas deeper than 12 are skipped. NeuPSL'
   through the command line.
 - **Guided fuzzing has not run for long.** The smoke runs used random inputs. A long libFuzzer (Atheris) run is still to
   do.
-- **Small cleanups are pending.** `LNN_INFO.log` still needs cleaning up, LNN warnings are silenced for the whole process,
-  crash findings are not minimised, and `rewrites.py` is about 670 lines and could be split.
+- **Small cleanups are pending.** LNN warnings are silenced for the whole process, and crash findings are not minimised.

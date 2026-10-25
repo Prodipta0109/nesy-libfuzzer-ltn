@@ -379,7 +379,7 @@ def _random_mode(count: int, seed: int) -> int:
 def _parse(argv: Optional[List[str]]) -> argparse.Namespace:
     """Command-line options; unknown options are left alone so that libFuzzer flags pass through."""
     parser = argparse.ArgumentParser(description="Byte-driven harness for the unified metamorphic oracle.")
-    parser.add_argument("--lib", default="ltn", help="ltn, lnn, ref or all")
+    parser.add_argument("--lib", default="ltn", help="ltn, lnn, ref, psl or all (all = ltn, lnn, ref; psl must be named)")
     parser.add_argument("--random", type=int, default=None, help="run N random inputs instead of Atheris")
     parser.add_argument("--seed", type=int, default=0, help="seed of the random inputs")
     args, _ = parser.parse_known_args(argv)
