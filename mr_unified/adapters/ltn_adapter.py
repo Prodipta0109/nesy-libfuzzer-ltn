@@ -61,12 +61,23 @@ class LTNAdapter:
         """forall is min and exists is max."""
         return {"forall": "min", "exists": "max"}
 
+    def dtype_for(self, node: Node) -> str:
+        """float32 when `node` has a predicate atom (ltn.Predicate casts to float32), else float64."""
+        return "float32" if _has_predicate(node) else "float64"
+
     def evaluate(self, node: Node, env: Env) -> float:
         """Translate `node` over `env` and return its truth value; the formula must be closed."""
         result = _translate(node, _Scope(env, DTYPES[self.dtype]))
         if result.free_vars:
             raise ValueError("formula has free variables: %s" % result.free_vars)
         return float(result.value.item())
+
+
+def _has_predicate(node: Node) -> bool:
+    """Whether some atom of `node` takes arguments, i.e. is a predicate atom P(x, ...)."""
+    if node.op == "atom" and node.args:
+        return True
+    return any(_has_predicate(kid) for kid in node.kids)
 
 
 def _translate(node: Node, scope: _Scope) -> ltn.LTNObject:

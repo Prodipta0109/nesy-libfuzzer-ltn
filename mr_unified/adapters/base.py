@@ -21,3 +21,6 @@ class Adapter(Protocol):
 
     def declared_quantifiers(self) -> Dict[str, str]:
         """Map "forall" and "exists" to the aggregator name the library uses ("min", "max", "fold")."""
+
+    def dtype_for(self, node: Node) -> str:
+        """dtype whose precision bounds the adapter's result for this formula."""
