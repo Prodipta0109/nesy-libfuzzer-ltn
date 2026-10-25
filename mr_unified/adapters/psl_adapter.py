@@ -1,7 +1,12 @@
 """PSL adapter for the unified metamorphic oracle (spec Task 10): the PSL core of NeuPSL, not its neural predicate layer.
-Every formula is compiled to Lukasiewicz conjunctions and negations (or, implies: negated conjunctions), one PSL predicate
-per node, and read off as the MAP value of an output atom. Run: venv_psl/bin/python -m pytest mr_unified/tests/test_psl_adapter.py
+Every formula is compiled to Lukasiewicz conjunctions and negations (or, implies: negated conjunctions); each conjunction is
+one PSL predicate, and each formula is read off as the MAP value of its output atom. MAP is solved by ADMM, so evaluate and
+evaluate_many agree with ref_eval within the "admm" precision of oracle.py, not exactly.
 """
+import os
+import shutil
+import tempfile
+import uuid
 from dataclasses import dataclass, field
 from typing import Dict, List, Sequence, Tuple
 
@@ -10,22 +15,33 @@ from mr_unified.formula import QUANT_OPS, Env, Node
 
 ROW = "c"
 OUTPUT_PRIOR = 1.0
-# ADMM stop tolerance 1e-8: at 1e-6 a 120-case batch was off by up to 1.2e-4 vs ref_eval; 1e-8 passes the tests.
+# Largest compile depth at which 100 random formulas agreed with ref_eval (random depth 7 reached compile depth 12); deeper: Unsupported.
+MAX_VALIDATED_DEPTH = 12
 ADMM_OPTIONS = {"admmreasoner.epsilonabs": "1e-8", "admmreasoner.epsilonrel": "1e-8", "admmreasoner.maxiterations": "100000"}
 WEAK_OPS = ("and_w", "or_w")
 
 Literal = Tuple[str, bool]
 
 
+@dataclass(frozen=True)
+class _Rule:
+    """One PSL rule `body -> head` of case `case`; its weight is set by that case's depth."""
+
+    head: str
+    body: Tuple[Literal, ...]
+    case: int
+
+
 @dataclass
 class _Build:
-    """The PSL pieces of one batch: observed leaves, derived nodes with their prior depth, and the rules over them."""
+    """The PSL pieces of one batch: observed leaves, prior weights, rules, and the compile depth of every case."""
 
     leaves: Dict[str, float] = field(default_factory=dict)
     priors: Dict[str, float] = field(default_factory=dict)
-    rules: List[Tuple[str, Tuple[Literal, ...]]] = field(default_factory=list)
+    rules: List[_Rule] = field(default_factory=list)
+    case_depths: List[int] = field(default_factory=list)
     count: int = 0
-    outputs: int = 0
+    case: int = 0
     depth: int = 0
 
     def fresh(self, prefix: str) -> str:
@@ -38,33 +54,45 @@ class PSLAdapter:
     """PSL core of NeuPSL (not the neural predicate layer): Lukasiewicz connectives via conjunction rules, MAP by ADMM."""
 
     name = "psl"
-    dtype = "float64"
+    dtype = "admm"
 
-    def __init__(self, scale: float = 1.0) -> None:
-        """`scale` multiplies every rule and prior weight; the MAP value does not change with it."""
+    def __init__(self, scale: float = 1.0, rule_copies: int = 1) -> None:
+        """`scale` multiplies every rule and prior weight; `rule_copies` emits each rule that many times (C-group tests only)."""
         self.scale = scale
+        self.rule_copies = rule_copies
 
     def declared_quantifiers(self) -> Dict[str, str]:
-        """No quantifier is declared; PSL grounds universal rules to separate weighted rules, not one aggregate."""
-        return {}
+        """Both quantifiers are "unsupported": PSL grounds universal rules to separate weighted rules, not one aggregate."""
+        return {"forall": "unsupported", "exists": "unsupported"}
 
     def dtype_for(self, node: Node) -> str:
-        """ADMM is accurate to about 1e-6, far from float64; float32 is the closest honest precision (see report)."""
-        return "float32"
+        """The "admm" precision: PSL's ADMM solver stops at a residual tolerance, not at machine precision."""
+        return "admm"
 
     def evaluate(self, node: Node, env: Env) -> float:
         """The truth value of `node` in `env`: one PSL run for one formula."""
         return self.evaluate_many([(node, env)])[0]
 
     def evaluate_many(self, cases: Sequence[Tuple[Node, Env]]) -> List[float]:
-        """The truth values of many (node, env) pairs in ONE PSL run, one output atom per case."""
+        """The truth values of many (node, env) pairs in ONE PSL run; each equals `evaluate` within the ADMM tolerance."""
+        if not cases:
+            return []
         build = _Build()
         for index, (node, env) in enumerate(cases):
-            root = _compile(build, node, env, 1)
-            build.rules.append(("O%d" % index, _with_positive(build, [root])))
-            build.outputs += 1
-        frame = _run(build, self.scale)
+            _compile_case(build, index, node, env)
+        frame = _run(build, self.scale, self.rule_copies)
         return [frame["O%d" % index] for index in range(len(cases))]
+
+
+def _compile_case(build: _Build, index: int, node: Node, env: Env) -> None:
+    """Law: the root literal is copied into the output atom O<index>, whose value is the case's truth value."""
+    build.case = index
+    build.depth = 0
+    root = _compile(build, node, env, 1)
+    build.rules.append(_Rule("O%d" % index, _with_positive(build, [root]), index))
+    build.case_depths.append(build.depth)
+    if build.depth > MAX_VALIDATED_DEPTH:
+        raise Unsupported("formula depth %d exceeds the validated depth %d" % (build.depth, MAX_VALIDATED_DEPTH))
 
 
 def _atom_value(node: Node, env: Env) -> float:
@@ -92,7 +120,7 @@ def _compile(build: _Build, node: Node, env: Env, depth: int) -> Literal:
 
 
 def _compile_connective(build: _Build, node: Node, env: Env, depth: int) -> Literal:
-    """The binary strong connectives as conjunction nodes over literals of their kids."""
+    """The binary strong connectives as conjunction nodes over the literals of their kids."""
     lits = [_compile(build, kid, env, depth + 1) for kid in node.kids]
     if node.op == "and_s":
         return _conj(build, [lits[0], lits[1]], depth)
@@ -116,11 +144,12 @@ def _leaf(build: _Build, value: float) -> Literal:
 
 
 def _conj(build: _Build, lits: List[Literal], depth: int) -> Literal:
-    """Laws: the rule `a & b -> N` makes N >= max(0, a + b - 1); the prior ~N with weight `depth` pins N to it."""
+    """Laws: the rule `a & b -> N` makes N >= max(0, a + b - 1). Its prior ~N has weight 2^depth, which exceeds the ancestors'
+    priors 2^1 + ... + 2^(depth-1) plus the output prior 1, so raising N never pays and MAP pins N to that lower bound."""
     name = build.fresh("N")
     build.priors[name] = 2.0 ** depth
     build.depth = max(build.depth, depth)
-    build.rules.append((name, _with_positive(build, lits)))
+    build.rules.append(_Rule(name, _with_positive(build, lits), build.case))
     return name, True
 
 
@@ -142,35 +171,50 @@ def _rule_text(head: str, body: Sequence[Literal]) -> str:
     return "%s -> %s(X)" % (" & ".join(_literal_text(lit) for lit in body), head)
 
 
-def _rule_weight(build: _Build) -> float:
-    """Laws: the hard weight exceeds every prior a deviation could save (sum of 2^d over ancestors is below 2^(depth+1))."""
-    return 2.0 ** (build.depth + 2)
+def _rule_weight(build: _Build, case: int) -> float:
+    """Laws: the hard weight 2^(d+2) of a case of depth d exceeds any saving a deviation could make, since the case's priors
+    sum to less than 2^(d+1) (see _conj), so every rule of the case is tight at the least solution."""
+    return 2.0 ** (build.case_depths[case] + 2)
 
 
-def _run(build: _Build, scale: float) -> Dict[str, float]:
-    """Solve the batch with PSL MAP inference and return the value of every output atom O<i>."""
+def _run(build: _Build, scale: float, rule_copies: int) -> Dict[str, float]:
+    """Solve the batch in a fresh temp directory (the working directory while PSL runs), removed afterwards."""
+    temp_dir = tempfile.mkdtemp(prefix="psl_run_")
+    previous = os.getcwd()
+    try:
+        os.chdir(temp_dir)
+        return _solve(build, scale, rule_copies)
+    finally:
+        os.chdir(previous)
+        shutil.rmtree(temp_dir)
+
+
+def _solve(build: _Build, scale: float, rule_copies: int) -> Dict[str, float]:
+    """Build the PSL model for the batch, run MAP inference, and return every predicate's inferred value."""
     from pslpython.model import Model
     from pslpython.partition import Partition
     from pslpython.predicate import Predicate
     from pslpython.rule import Rule
 
-    model = Model("psl_batch")
+    model = Model("psl_batch_%s" % uuid.uuid4().hex)
     preds: Dict[str, Predicate] = {}
     for name, value in build.leaves.items():
         preds[name] = Predicate(name, size=1)
         preds[name].add_data_row(Partition.OBSERVATIONS, [ROW], value)
-    derived = list(build.priors) + ["O%d" % i for i in range(build.outputs)]
-    for name in derived:
+    outputs = ["O%d" % i for i in range(len(build.case_depths))]
+    for name in list(build.priors) + outputs:
         preds[name] = Predicate(name, size=1)
         preds[name].add_data_row(Partition.TARGETS, [ROW])
     for pred in preds.values():
         model.add_predicate(pred)
-    for head, body in build.rules:
-        model.add_rule(Rule(_rule_text(head, body), weighted=True, weight=_rule_weight(build) * scale, squared=False))
+    for rule in build.rules:
+        for _ in range(rule_copies):
+            weight = _rule_weight(build, rule.case) * scale
+            model.add_rule(Rule(_rule_text(rule.head, rule.body), weighted=True, weight=weight, squared=False))
     for name, weight in build.priors.items():
         model.add_rule(Rule("!%s(X)" % name, weighted=True, weight=weight * scale, squared=False))
-    for index in range(build.outputs):
-        model.add_rule(Rule("!O%d(X)" % index, weighted=True, weight=OUTPUT_PRIOR * scale, squared=False))
+    for name in outputs:
+        model.add_rule(Rule("!%s(X)" % name, weighted=True, weight=OUTPUT_PRIOR * scale, squared=False))
     frame = model.infer(psl_options=ADMM_OPTIONS)
     return _values(frame)
 

@@ -18,6 +18,9 @@ from mr_unified.rewrites import ENV_RULES, QRULES, RULES, EnvRule, Rule, apply_a
 # the two trees, the bound is (size(a) + size(b)) * eps. Measured worst needed factors (LTN 0.031, LNN 0.119 over 1000
 # depth-8 cases) are a sanity check only; they are not the justification. See task-7-report.md for the rerun.
 TOL_FACTOR = 1
+# Empirical: PSL's ADMM solver stops at a configured residual tolerance, not at machine precision; measured max error vs
+# ref_eval is in mr_unified/tests/test_psl_adapter.py.
+ADMM_EPS = 1e-5
 NO_VALUE = (float("nan"), float("nan"))
 PropertyCheck = Callable[[Adapter, Node, Env, random.Random], float]
 ALL_REWRITES = {**RULES, **QRULES}
@@ -38,8 +41,15 @@ class Violation:
 
 
 def tol(a: Node, b: Node, dtype: str) -> float:
-    """Tolerance for comparing a and b computed in `dtype`: 8 * (size(a) + size(b)) * eps(dtype)."""
-    return TOL_FACTOR * (size(a) + size(b)) * float(np.finfo(dtype).eps)
+    """Tolerance for comparing a and b computed in `dtype`: TOL_FACTOR * (size(a) + size(b)) * eps_of(dtype)."""
+    return TOL_FACTOR * (size(a) + size(b)) * eps_of(dtype)
+
+
+def eps_of(dtype: str) -> float:
+    """Machine epsilon of a float dtype; the "admm" precision of PSL is ADMM_EPS."""
+    if dtype == "admm":
+        return ADMM_EPS
+    return float(np.finfo(dtype).eps)
 
 
 def rewrite_gap(adapter: Adapter, rule: Rule, node: Node, path: Tuple[int, ...], env: Env) -> Tuple[float, float]:
@@ -220,7 +230,7 @@ def _answers(adapters: Sequence[Adapter], node: Node, env: Env) -> List[Tuple[Ad
 
 def _widest_dtype(dtypes: List[str]) -> str:
     """The least precise of `dtypes`: the one with the largest machine epsilon."""
-    return max(dtypes, key=lambda dtype: np.finfo(dtype).eps)
+    return max(dtypes, key=eps_of)
 
 
 def _first_smaller_violation(v: Violation, adapter: Adapter) -> Optional[Violation]:

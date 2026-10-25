@@ -161,3 +161,28 @@ cross       run=0 skipped=0 violations=0
 
 No findings were written. The round 2 crash `ltn instantiation:crash` (`forall x. or_s(exists y. R(x, y), exists y. R(x, x))`)
 no longer occurs, and its saved input replays with no violation.
+
+## Task 10 PSL smoke (lib psl, venv_psl, fresh MR_UNIFIED_FINDINGS)
+
+Command: `venv_psl/bin/python -m mr_unified.harness --lib psl --random 300` (seed 0)
+
+```
+rewrite     run=17 skipped=57 violations=0
+qrewrite    run=0 skipped=72 violations=0
+env_rule    run=34 skipped=32 violations=0
+property    run=29 skipped=59 violations=0
+cross       run=0 skipped=0 violations=0
+```
+
+Command: `venv_psl/bin/python -m mr_unified.harness --lib psl --random 100 --seed 7` (seed 7)
+
+```
+rewrite     run=8 skipped=23 violations=0
+qrewrite    run=0 skipped=24 violations=0
+env_rule    run=7 skipped=16 violations=0
+property    run=9 skipped=13 violations=0
+cross       run=0 skipped=0 violations=0
+```
+
+No findings were written in either run. Skips are adapter-raised Unsupported (quantifiers, weak connectives, depth above 12).
+Cross is 0 because only one library was selected.

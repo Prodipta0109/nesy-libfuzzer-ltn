@@ -90,7 +90,14 @@ def _make_lnn() -> Adapter:
     return LNNAdapter()
 
 
-REGISTRY: Dict[str, Callable[[], Adapter]] = {"ref": RefAdapter, "ltn": _make_ltn, "lnn": _make_lnn}
+def _make_psl() -> Adapter:
+    """The PSL adapter; imported only when selected, since it needs venv_psl (pslpython and the JVM)."""
+    from mr_unified.adapters.psl_adapter import PSLAdapter
+
+    return PSLAdapter()
+
+
+REGISTRY: Dict[str, Callable[[], Adapter]] = {"ref": RefAdapter, "ltn": _make_ltn, "lnn": _make_lnn, "psl": _make_psl}
 
 
 def _blank_stats() -> Dict[str, Dict[str, int]]:

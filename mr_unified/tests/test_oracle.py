@@ -8,6 +8,8 @@ from typing import Dict, Iterable, List, Tuple
 import numpy as np
 import pytest
 
+from mr_unified.oracle import ADMM_EPS, TOL_FACTOR, eps_of, tol
+
 from mr_unified.adapters.base import Unsupported
 from mr_unified.adapters.ref_adapter import RefAdapter
 from mr_unified.formula import Env, Node, paths, ref_eval, size
@@ -331,3 +333,16 @@ def test_deep_formula_within_tolerance_lnn():
         assert abs(adapter.evaluate(node, env) - ref_eval(node, env, "minmax")) <= bound, node
         compared += 1
     assert compared == DEEP_CASES
+
+
+def test_tol_for_admm_precision_uses_admm_eps_times_sizes():
+    """Law: tol(a, b, "admm") == TOL_FACTOR * (size(a) + size(b)) * ADMM_EPS, the empirical PSL precision."""
+    a = Node(op="atom", name="p0")
+    b = Node(op="and_s", kids=(a, a))
+    assert tol(a, b, "admm") == pytest.approx(TOL_FACTOR * (size(a) + size(b)) * 1e-5)
+    assert eps_of("admm") == ADMM_EPS
+
+
+def test_eps_of_float_dtype_is_machine_epsilon():
+    """Law: eps_of("float64") is the float64 machine epsilon, unchanged by the admm key."""
+    assert eps_of("float64") == pytest.approx(np.finfo("float64").eps)
