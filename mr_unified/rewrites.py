@@ -1,5 +1,6 @@
 """Propositional rewrite rules A1-A10, quantifier rules B1-B5, and random formulas for the unified metamorphic oracle.
 Implements the equivalence rules of spec Section 5 (A1-A10, B1-B5, B7), the random generators of spec Tasks 2 and 4.
+A10 here is the negated implication, a building block of the MV distance, not the full distance of the spec.
 """
 import itertools
 import random
@@ -204,7 +205,7 @@ def _a9_bwd_apply(n: Node) -> Node:
     return _op("and_w", n.kids[0], n.kids[1].kids[1])
 
 
-def _distance_fwd_match(n: Node) -> bool:
+def _neg_implication_fwd_match(n: Node) -> bool:
     """a (x) not b == not(a -> b): matches a strong conjunction with a negated right child."""
     return n.op == "and_s" and n.kids[1].op == "not"
 
@@ -215,7 +216,7 @@ def _a10_fwd_apply(n: Node) -> Node:
     return _not(_op("imp", a, not_b.kids[0]))
 
 
-def _distance_bwd_match(n: Node) -> bool:
+def _neg_implication_bwd_match(n: Node) -> bool:
     """not(a -> b) == a (x) not b: matches a negated implication."""
     return n.op == "not" and n.kids[0].op == "imp"
 
@@ -331,17 +332,17 @@ RULES: Dict[str, Rule] = {
             _a9_bwd_apply,
         ),
         Rule(
-            "A10_distance_fwd",
-            "A10: a (x) not b == not(a -> b)",
+            "A10_neg_implication_fwd",
+            "A10: a (x) not b == not(a -> b), a building block of the MV distance",
             "none",
-            _distance_fwd_match,
+            _neg_implication_fwd_match,
             _a10_fwd_apply,
         ),
         Rule(
-            "A10_distance_bwd",
-            "A10: not(a -> b) == a (x) not b",
+            "A10_neg_implication_bwd",
+            "A10: not(a -> b) == a (x) not b, a building block of the MV distance",
             "none",
-            _distance_bwd_match,
+            _neg_implication_bwd_match,
             _a10_bwd_apply,
         ),
     )

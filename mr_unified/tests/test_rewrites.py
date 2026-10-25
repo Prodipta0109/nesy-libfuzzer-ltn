@@ -50,8 +50,8 @@ WITNESSES = {
     ),
     "A9_divisible_fwd": binary("and_w", atom("p0"), atom("p1")),
     "A9_divisible_bwd": binary("and_s", atom("p0"), binary("imp", atom("p0"), atom("p1"))),
-    "A10_distance_fwd": binary("and_s", atom("p0"), negation(atom("p1"))),
-    "A10_distance_bwd": negation(binary("imp", atom("p0"), atom("p1"))),
+    "A10_neg_implication_fwd": binary("and_s", atom("p0"), negation(atom("p1"))),
+    "A10_neg_implication_bwd": negation(binary("imp", atom("p0"), atom("p1"))),
 }
 
 

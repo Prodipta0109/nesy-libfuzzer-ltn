@@ -46,7 +46,7 @@ design spec, which says those statements still need checking against the book te
 | A7 | `max(a, b)` = `(a -> b) -> b` | MV-algebra | none |
 | A8 | `(a -> b) or (b -> a)` is always 1 (prelinearity) | BL-algebra (to confirm) | none |
 | A9 | `min(a, b)` = `a and (a -> b)` (divisibility) | BL-algebra (to confirm) | none |
-| A10 | `a and not b` = `not(a -> b)` (distance) | MV distance function | none |
+| A10 | `a and not b` = `not(a -> b)` (negated implication, a building block of the MV distance; the full distance `\|a-b\|` is not in the grammar) | MV distance function | none |
 | A11 | Raising an input whose effect is monotone never lowers the output the wrong way | residuated lattice | atom with a known sign |
 | A12 | With only 0 and 1 as inputs, the output equals the classical truth table | all | none |
 | A13 | The output is piecewise linear in each atom, with integer slopes | Handbook Ch. IX (to confirm) | none |

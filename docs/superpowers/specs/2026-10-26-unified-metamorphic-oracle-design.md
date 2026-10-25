@@ -186,3 +186,14 @@ pmean/pmean_error: p = 1 equals the arithmetic mean, monotone in p.
 Concrete formula grammar sizes and depth limits, the rewrite engine data structure, minimisation algorithm, file layout
 under `ltn_combined/`, `lnn/` and a new shared directory, and how to hook the oracle into the existing libFuzzer
 `TestOneInput` functions.
+
+## 12. Deviations from this design (as built)
+
+- A10 is `a (x) ~b == ~(a -> b)` (the negated implication), a building block of the MV distance. The spec's
+  `|a-b| = (a (x) ~b) (+) (b (x) ~a)` needs an absolute value, which the grammar does not have, so it is not tested.
+- The adapter interface is `evaluate`, `dtype_for` and `declared_quantifiers`, not the build/eval/infer/bounds/map_state
+  split of the spec. Each adapter turns a Node and Env into one float.
+- The PSL adapter covers the PSL core only: strong connectives and ground atoms. No quantifiers, no weak connectives,
+  and formulas deeper than 12 are skipped.
+- The LNN C-group relations (interval inclusion, downward tightening) are not implemented.
+- NeuPSL's neural layer is not tested.
