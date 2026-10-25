@@ -165,3 +165,54 @@ def test_ltn_instantiation_margin_on_predicate_formula_is_within_tolerance():
     node = Node(op="forall", name="x", kids=(Node(op="atom", name="P", args=("x",)),))
     margin = instantiation_margin(as_quant_evaluate(ADAPTER), node, env, "minmax", random.Random(0))
     assert margin <= tol(node, node, ADAPTER.dtype_for(node))
+
+
+BINARY_ENVS_PER_SHAPE = 20
+BINARY_SHAPES = {
+    0: [("o0", "o2")],
+    1: [("o0", "o2"), ("o0", "x"), ("x", "o2"), ("x", "x")],
+    2: [("o0", "o2"), ("o0", "x"), ("x", "o2"), ("x", "y"), ("y", "x"), ("x", "x")],
+}
+
+
+def _quantifier_prefixes(depth):
+    """Every stack of `depth` quantifiers over the variables x, then y; depth 0 gives the empty stack."""
+    names = ("x", "y")[:depth]
+    ops = ("forall", "exists")
+    if depth == 0:
+        return [()]
+    if depth == 1:
+        return [((op, names[0]),) for op in ops]
+    return [((op1, "x"), (op2, "y")) for op1 in ops for op2 in ops]
+
+
+def _wrap_in_prefix(prefix, body):
+    """The formula Q1 v1. Q2 v2. ... body for the (op, var) pairs of `prefix`, outermost first."""
+    node = body
+    for op, var in reversed(prefix):
+        node = Node(op=op, name=var, kids=(node,))
+    return node
+
+
+def _random_binary_env(rng):
+    """Env over DOMAIN with random and edge truth values for every tuple of the binary predicate R."""
+    table = {(a, b): rng.choice([0.0, 1.0, rng.random()]) for a in DOMAIN for b in DOMAIN}
+    return Env(atoms={}, preds={"R": table}, domain=DOMAIN)
+
+
+SHAPE_CASES = [(depth, args) for depth in (0, 1, 2) for args in BINARY_SHAPES[depth]]
+
+
+@pytest.mark.parametrize(
+    "depth, args",
+    SHAPE_CASES,
+    ids=["depth%d-R(%s,%s)" % (depth, a, b) for depth, (a, b) in SHAPE_CASES],
+)
+def test_ltn_binary_atom_shape_matches_ref(depth, args):
+    rng = random.Random(505 + 10 * depth + len(args[0]))
+    atom = Node(op="atom", name="R", args=args)
+    cases = []
+    for prefix in _quantifier_prefixes(depth):
+        node = _wrap_in_prefix(prefix, atom)
+        cases.extend((node, _random_binary_env(rng)) for _ in range(BINARY_ENVS_PER_SHAPE))
+    assert _count_matches(iter(cases)) == len(_quantifier_prefixes(depth)) * BINARY_ENVS_PER_SHAPE

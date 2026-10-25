@@ -111,10 +111,11 @@ def _predicate_atom(node: Node, scope: _Scope) -> ltn.LTNObject:
 
 
 def _argument(arg: str, scope: _Scope) -> ltn.LTNObject:
-    """An object name of the domain is a one-element constant (its index); any other name is a bound variable."""
+    """An object name of the domain is a constant individual (its index, one feature); any other name is a bound variable."""
     domain = scope.env.domain
     if arg in domain:
-        return ltn.Constant(torch.tensor([[float(domain.index(arg))]], dtype=torch.float32))
+        # A 1-d tensor is one individual with one feature. A [1, 1] tensor would be read as two feature dims by LTN.
+        return ltn.Constant(torch.tensor([float(domain.index(arg))], dtype=torch.float32))
     return _variable(arg, scope)
 
 
