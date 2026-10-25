@@ -107,7 +107,15 @@ def _predicate_atom(node: Node, scope: _Scope) -> ltn.LTNObject:
     """Truth of P(x, ...) read from Env.preds at the domain indices of the variables."""
     table = _predicate_table(node.name, len(node.args), scope)
     predicate = ltn.Predicate(func=_lookup(table))
-    return predicate(*[_variable(arg, scope) for arg in node.args])
+    return predicate(*[_argument(arg, scope) for arg in node.args])
+
+
+def _argument(arg: str, scope: _Scope) -> ltn.LTNObject:
+    """An object name of the domain is a one-element constant (its index); any other name is a bound variable."""
+    domain = scope.env.domain
+    if arg in domain:
+        return ltn.Constant(torch.tensor([[float(domain.index(arg))]], dtype=torch.float32))
+    return _variable(arg, scope)
 
 
 def _predicate_table(name: str, arity: int, scope: _Scope) -> torch.Tensor:

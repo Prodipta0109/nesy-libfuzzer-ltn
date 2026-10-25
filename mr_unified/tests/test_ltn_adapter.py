@@ -8,6 +8,8 @@ import pytest
 import torch
 
 from mr_unified.formula import Env, Node, ref_eval
+from mr_unified.oracle import as_quant_evaluate, tol
+from mr_unified.properties import instantiation_margin
 from mr_unified.rewrites import random_formula, random_quantified
 
 # ltn emits DeprecationWarnings for invalid escape sequences in its own docstrings at import time.
@@ -143,3 +145,23 @@ def test_declared_quantifiers_are_min_and_max():
 def test_ltn_adapter_name_and_dtype():
     assert ADAPTER.name == "ltn"
     assert ADAPTER.dtype == "float64"
+
+
+def test_ltn_ground_predicate_atom_equals_table_value():
+    env = Env(atoms={}, preds={"P": {("o0",): 0.7, ("o1",): 0.2}}, domain=("o0", "o1"))
+    value = ADAPTER.evaluate(Node(op="atom", name="P", args=("o0",)), env)
+    assert abs(value - 0.7) <= TOLERANCES["float32"]
+
+
+def test_ltn_ground_atom_inside_quantifier_matches_ref():
+    env = Env(atoms={}, preds={"P": {("o0",): 0.7, ("o1",): 0.2}}, domain=("o0", "o1"))
+    body = Node(op="and_s", kids=(Node(op="atom", name="P", args=("x",)), Node(op="atom", name="P", args=("o1",))))
+    node = Node(op="forall", name="x", kids=(body,))
+    assert abs(ADAPTER.evaluate(node, env) - ref_eval(node, env, "minmax")) <= TOLERANCES["float32"]
+
+
+def test_ltn_instantiation_margin_on_predicate_formula_is_within_tolerance():
+    env = Env(atoms={}, preds={"P": {("o0",): 0.7, ("o1",): 0.2}}, domain=("o0", "o1"))
+    node = Node(op="forall", name="x", kids=(Node(op="atom", name="P", args=("x",)),))
+    margin = instantiation_margin(as_quant_evaluate(ADAPTER), node, env, "minmax", random.Random(0))
+    assert margin <= tol(node, node, ADAPTER.dtype_for(node))

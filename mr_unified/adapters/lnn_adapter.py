@@ -77,8 +77,17 @@ def _translate(node: Node, env: Env, build: _Build) -> object:
 def _atom(node: Node, env: Env, build: _Build) -> object:
     """A propositional atom is a proposition with point bounds; a predicate atom outside a quantifier is free."""
     if node.args:
-        raise ValueError("formula has free variables: %s" % (node.args,))
+        return _ground_atom(node, env, build)
     return _proposition(build, node.name, env.atoms[node.name])
+
+
+def _ground_atom(node: Node, env: Env, build: _Build) -> object:
+    """A predicate atom over domain objects only, e.g. P(o0): a proposition with the value Env.preds[P][(o0,)]."""
+    unbound = [arg for arg in node.args if arg not in env.domain]
+    if unbound:
+        raise ValueError("formula has free variables: %s" % (unbound,))
+    key = tuple(node.args)
+    return _proposition(build, "%s(%s)" % (node.name, ",".join(key)), env.preds[node.name][key])
 
 
 def _proposition(build: _Build, name: str, value: float) -> object:

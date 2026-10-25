@@ -7,6 +7,8 @@ import warnings
 import pytest
 
 from mr_unified.formula import Env, Node, ref_eval
+from mr_unified.oracle import as_quant_evaluate, tol
+from mr_unified.properties import instantiation_margin
 from mr_unified.rewrites import random_formula
 
 # lnn may emit warnings at import time; they are silenced here, as in lnn/lnn_fuzz.py.
@@ -184,3 +186,23 @@ def test_dtype_for_is_float32_for_propositional_and_quantified_formulas():
 def test_lnn_adapter_name_and_dtype():
     assert ADAPTER.name == "lnn"
     assert ADAPTER.dtype == "float32"
+
+
+def test_lnn_ground_predicate_atom_equals_table_value():
+    env = Env(atoms={}, preds={"P": {("o0",): 0.7, ("o1",): 0.2}}, domain=("o0", "o1"))
+    assert abs(ADAPTER.evaluate(Node(op="atom", name="P", args=("o0",)), env) - 0.7) <= TOLERANCE
+
+
+def test_lnn_instantiation_margin_on_unary_predicate_is_within_tolerance():
+    env = Env(atoms={}, preds={"P": {("o0",): 0.7, ("o1",): 0.2}}, domain=("o0", "o1"))
+    for quant_op in ("forall", "exists"):
+        node = Node(op=quant_op, name="x", kids=(Node(op="atom", name="P", args=("x",)),))
+        margin = instantiation_margin(as_quant_evaluate(ADAPTER), node, env, "fold", random.Random(0))
+        assert margin <= tol(node, node, ADAPTER.dtype_for(node))
+
+
+def test_lnn_instantiation_on_binary_predicate_is_unsupported():
+    env = Env(atoms={}, preds={"R": {("o0", "o0"): 0.7, ("o1", "o1"): 0.2}}, domain=("o0", "o1"))
+    node = Node(op="forall", name="x", kids=(Node(op="atom", name="R", args=("x", "x")),))
+    with pytest.raises(Unsupported):
+        instantiation_margin(as_quant_evaluate(ADAPTER), node, env, "fold", random.Random(0))
