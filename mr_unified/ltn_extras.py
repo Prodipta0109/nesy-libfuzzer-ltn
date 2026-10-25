@@ -1,12 +1,13 @@
 """LTN-only extension checks (spec Task 11, van Krieken et al. Section 6 and Section 7).
-Each check draws random cases in (0, 1), evaluates an ltn.fuzzy_ops operator (stable=False where it exists) and
-compares it with a closed form or a law. Mismatches are returned as ExtraViolation records.
+Each check draws cases (random in (0, 1), with every ENDPOINT_EVERY-th case on the endpoints {0, 1}), evaluates an
+ltn.fuzzy_ops operator (stable=False where it exists) and compares it with a closed form or a law. Cases where the
+closed form has a kink or is undefined are skipped and counted, never silently dropped.
 """
 import itertools
 import random
 from dataclasses import dataclass
 from functools import partial
-from typing import Callable, Dict, List, Sequence
+from typing import Callable, Dict, List, Sequence, Tuple
 
 import torch
 from ltn import fuzzy_ops as fz
@@ -15,8 +16,9 @@ GRAD_TOL = 1e-10
 VALUE_TOL = 1e-12
 TIE_GAP = 1e-9
 PS = (1, 2, 3, 6)
-CASE_COUNTS: Dict[str, int] = {}
-SKIP_COUNTS: Dict[str, int] = {}
+EXPONENTS = (2, 3)
+ENDPOINT_EVERY = 5
+ENDPOINTS = (0.0, 1.0)
 
 
 @dataclass
@@ -29,43 +31,74 @@ class ExtraViolation:
     expected: float
 
 
+@dataclass
+class CheckOutcome:
+    """Result of one check: its name, cases compared, cases skipped (kink or undefined), and violations."""
+
+    name: str
+    compared: int
+    skipped: int
+    violations: List[ExtraViolation]
+
+
+@dataclass
+class ExtraResult:
+    """Result of run_extras: every violation, and per check the number of compared and skipped cases."""
+
+    violations: List[ExtraViolation]
+    case_counts: Dict[str, int]
+    skip_counts: Dict[str, int]
+
+
 # ----- case plumbing ---------------------------------------------------------------------------------------------
 
 
-def _tally(name: str, compared: bool) -> None:
-    """Count one case of check `name` as compared, or as skipped for a near-tie."""
-    counts = CASE_COUNTS if compared else SKIP_COUNTS
-    counts[name] = counts.get(name, 0) + 1
-
-
-def _separated(values: Sequence[float]) -> bool:
-    """Law: every two values are at least TIE_GAP apart (closer pairs are ties and are skipped)."""
-    return all(abs(a - b) >= TIE_GAP for a, b in itertools.combinations(values, 2))
-
-
-def _draw_values(rng: random.Random, low: int, high: int) -> List[float]:
-    """A vector of random values in (0, 1) whose length is between low and high."""
-    size = rng.randint(low, high)
+def _draw_case(rng: random.Random, index: int, size_range: Tuple[int, int]) -> List[float]:
+    """Draw a vector of length in size_range: entries in (0, 1), or from {0, 1} on every ENDPOINT_EVERY-th case."""
+    size = rng.randint(*size_range)
+    if index % ENDPOINT_EVERY == ENDPOINT_EVERY - 1:
+        return [rng.choice(ENDPOINTS) for _ in range(size)]
     return [rng.random() for _ in range(size)]
+
+
+def _never_tie(values: Sequence[float]) -> bool:
+    """No skip: the closed form is defined and smooth on every case of this check."""
+    return False
+
+
+def _pair_sum_tie(values: Sequence[float]) -> bool:
+    """Kink of max(a + b - 1, 0) and min(a + b, 1): the tie |a + b - 1| < TIE_GAP is skipped."""
+    return abs(values[0] + values[1] - 1.0) < TIE_GAP
+
+
+def _close_pair(values: Sequence[float]) -> bool:
+    """Kink of min and max: some two entries are closer than TIE_GAP, so the argmin or argmax is a tie."""
+    return any(abs(a - b) < TIE_GAP for a, b in itertools.combinations(values, 2))
+
+
+def _all_ones(values: Sequence[float]) -> bool:
+    """Undefined closed form: if every entry is 1, the power mean of (1 - x) is 0 and its power 1/p - 1 is undefined."""
+    return all(v == 1.0 for v in values)
 
 
 def _check_cases(
     name: str,
     rng: random.Random,
     n_cases: int,
-    low: int,
-    high: int,
+    size_range: Tuple[int, int],
+    is_tie: Callable[[Sequence[float]], bool],
     check_one: Callable[[List[float]], List[ExtraViolation]],
-) -> List[ExtraViolation]:
-    """Law-free driver: run check_one on n_cases random vectors, skipping and counting near-ties."""
-    found: List[ExtraViolation] = []
-    for _ in range(n_cases):
-        values = _draw_values(rng, low, high)
-        compared = _separated(values)
-        _tally(name, compared)
-        if compared:
-            found.extend(check_one(values))
-    return found
+) -> CheckOutcome:
+    """Law-free driver: run check_one on the non-skipped cases, and count skipped cases instead of dropping them."""
+    outcome = CheckOutcome(name, 0, 0, [])
+    for index in range(n_cases):
+        values = _draw_case(rng, index, size_range)
+        if is_tie(values):
+            outcome.skipped += 1
+            continue
+        outcome.compared += 1
+        outcome.violations.extend(check_one(values))
+    return outcome
 
 
 # ----- tensor evaluation -----------------------------------------------------------------------------------------
@@ -83,7 +116,7 @@ def _vector_value(op: Callable, values: Sequence[float]) -> float:
     return float(op(torch.tensor(values, dtype=torch.float64)))
 
 
-# ----- operators under test (all with stable=False where the operator has that flag) ------------------------------
+# ----- operators under test --------------------------------------------------------------------------------------
 
 
 def _and_luk(xs: torch.Tensor) -> torch.Tensor:
@@ -205,12 +238,14 @@ def _duality_mismatches(name: str, conj: Callable, disj: Callable, values: List[
 
 
 def _invariance_mismatches(name: str, op: Callable, values: List[float]) -> List[ExtraViolation]:
-    """Law: op(f(x)) == f(op(x)) for the squaring map f(t) = t**2 (Godel order-invariance)."""
-    got = _vector_value(op, [v * v for v in values])
-    expected = _vector_value(op, values) ** 2
-    if abs(got - expected) > VALUE_TOL:
-        return [ExtraViolation(name, list(values), got, expected)]
-    return []
+    """Law: op(f(x)) == f(op(x)) for f(t) = t**k, k in {2, 3} (Godel order-invariance)."""
+    found: List[ExtraViolation] = []
+    for k in EXPONENTS:
+        got = _vector_value(op, [v ** k for v in values])
+        expected = _vector_value(op, values) ** k
+        if abs(got - expected) > VALUE_TOL:
+            found.append(ExtraViolation(name, list(values), got, expected))
+    return found
 
 
 def _equal_mismatches(name: str, got_op: Callable, expected_op: Callable, values: List[float]) -> List[ExtraViolation]:
@@ -264,106 +299,123 @@ def _pmean_monotone(name: str, values: List[float]) -> List[ExtraViolation]:
 # ----- one function per check ------------------------------------------------------------------------------------
 
 
-def check_andluk_gradient(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_andluk_gradient(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (eq. 33): the autograd gradient of AndLuk equals 1 if a + b > 1 else 0."""
     name = "AndLuk gradient"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_gradient_mismatches, name, _and_luk, _andluk_grad))
+    check_one = partial(_gradient_mismatches, name, _and_luk, _andluk_grad)
+    return _check_cases(name, rng, n_cases, (2, 2), _pair_sum_tie, check_one)
 
 
-def check_orluk_gradient(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_orluk_gradient(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (eq. 33 dual): the autograd gradient of OrLuk equals 1 if a + b < 1 else 0."""
     name = "OrLuk gradient"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_gradient_mismatches, name, _or_luk, _orluk_grad))
+    check_one = partial(_gradient_mismatches, name, _or_luk, _orluk_grad)
+    return _check_cases(name, rng, n_cases, (2, 2), _pair_sum_tie, check_one)
 
 
-def check_andmin_gradient(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_andmin_gradient(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (eq. 32): the autograd gradient of AndMin is 1 for the smaller argument and 0 for the other."""
     name = "AndMin gradient"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_gradient_mismatches, name, _and_min, _andmin_grad))
+    check_one = partial(_gradient_mismatches, name, _and_min, _andmin_grad)
+    return _check_cases(name, rng, n_cases, (2, 2), _close_pair, check_one)
 
 
-def check_ormax_gradient(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_ormax_gradient(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (eq. 32 dual): the autograd gradient of OrMax is 1 for the larger argument and 0 for the other."""
     name = "OrMax gradient"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_gradient_mismatches, name, _or_max, _ormax_grad))
+    check_one = partial(_gradient_mismatches, name, _or_max, _ormax_grad)
+    return _check_cases(name, rng, n_cases, (2, 2), _close_pair, check_one)
 
 
-def check_aggregmin_gradient(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_aggregmin_gradient(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (eq. 14): the autograd gradient of AggregMin is 1 at the argmin entry and 0 elsewhere."""
     name = "AggregMin gradient"
-    return _check_cases(name, rng, n_cases, 2, 5, partial(_gradient_mismatches, name, _agg_min, _aggmin_grad))
+    check_one = partial(_gradient_mismatches, name, _agg_min, _aggmin_grad)
+    return _check_cases(name, rng, n_cases, (1, 5), _close_pair, check_one)
 
 
-def check_pmean_error_gradient(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_pmean_error_gradient(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (eq. 19): the autograd gradient of AggregPMeanError matches its closed form for p in {1, 2, 3}."""
     name = "AggregPMeanError gradient"
-    return _check_cases(name, rng, n_cases, 2, 5, partial(_pmean_error_gradient_all_p, name))
+    check_one = partial(_pmean_error_gradient_all_p, name)
+    return _check_cases(name, rng, n_cases, (1, 5), _all_ones, check_one)
 
 
-def check_duality_luk(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_duality_luk(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (Section 7): d AndLuk(1-a, 1-b)/d(1-a) == d OrLuk(a, b)/da."""
     name = "duality Lukasiewicz"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_duality_mismatches, name, _and_luk, _or_luk))
+    check_one = partial(_duality_mismatches, name, _and_luk, _or_luk)
+    return _check_cases(name, rng, n_cases, (2, 2), _pair_sum_tie, check_one)
 
 
-def check_duality_minmax(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_duality_minmax(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (Section 7): d AndMin(1-a, 1-b)/d(1-a) == d OrMax(a, b)/da."""
     name = "duality min/max"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_duality_mismatches, name, _and_min, _or_max))
+    check_one = partial(_duality_mismatches, name, _and_min, _or_max)
+    return _check_cases(name, rng, n_cases, (2, 2), _close_pair, check_one)
 
 
-def check_duality_product(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_duality_product(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law (Section 7): d AndProd(1-a, 1-b)/d(1-a) == d OrProbSum(a, b)/da."""
     name = "duality product/probsum"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_duality_mismatches, name, _product, _probsum))
+    check_one = partial(_duality_mismatches, name, _product, _probsum)
+    return _check_cases(name, rng, n_cases, (2, 2), _never_tie, check_one)
 
 
-def check_godel_invariance_andmin(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
-    """Law: min(a**2, b**2) == min(a, b)**2 (order-invariance of Godel AndMin under t -> t**2)."""
+def check_godel_invariance_andmin(rng: random.Random, n_cases: int) -> CheckOutcome:
+    """Law: min(a^k, b^k) == min(a, b)^k for k in {2, 3} (order-invariance of Godel AndMin)."""
     name = "Godel invariance AndMin"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_invariance_mismatches, name, _and_min))
+    check_one = partial(_invariance_mismatches, name, _and_min)
+    return _check_cases(name, rng, n_cases, (2, 2), _close_pair, check_one)
 
 
-def check_godel_invariance_ormax(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
-    """Law: max(a**2, b**2) == max(a, b)**2 (order-invariance of Godel OrMax under t -> t**2)."""
+def check_godel_invariance_ormax(rng: random.Random, n_cases: int) -> CheckOutcome:
+    """Law: max(a^k, b^k) == max(a, b)^k for k in {2, 3} (order-invariance of Godel OrMax)."""
     name = "Godel invariance OrMax"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_invariance_mismatches, name, _or_max))
+    check_one = partial(_invariance_mismatches, name, _or_max)
+    return _check_cases(name, rng, n_cases, (2, 2), _close_pair, check_one)
 
 
-def check_godel_invariance_implies(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
-    """Law: ImpliesGodel(a**2, b**2) == ImpliesGodel(a, b)**2 (order-invariance under t -> t**2)."""
+def check_godel_invariance_implies(rng: random.Random, n_cases: int) -> CheckOutcome:
+    """Law: ImpliesGodel(a^k, b^k) == ImpliesGodel(a, b)^k for k in {2, 3} (order-invariance)."""
     name = "Godel invariance ImpliesGodel"
-    return _check_cases(name, rng, n_cases, 2, 2, partial(_invariance_mismatches, name, _implies_godel))
+    check_one = partial(_invariance_mismatches, name, _implies_godel)
+    return _check_cases(name, rng, n_cases, (2, 2), _close_pair, check_one)
 
 
-def check_godel_invariance_not(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
-    """Law: NotGodel(a**2) == NotGodel(a)**2 (order-invariance of Godel negation under t -> t**2)."""
+def check_godel_invariance_not(rng: random.Random, n_cases: int) -> CheckOutcome:
+    """Law: NotGodel(a^k) == NotGodel(a)^k for k in {2, 3} (order-invariance of Godel negation)."""
     name = "Godel invariance NotGodel"
-    return _check_cases(name, rng, n_cases, 1, 1, partial(_invariance_mismatches, name, _not_godel))
+    check_one = partial(_invariance_mismatches, name, _not_godel)
+    return _check_cases(name, rng, n_cases, (1, 1), _never_tie, check_one)
 
 
-def check_pmean_p1_is_mean(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_pmean_p1_is_mean(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law: AggregPMean with p = 1 equals AggregMean."""
     name = "AggregPMean p=1 equals AggregMean"
-    return _check_cases(name, rng, n_cases, 2, 5, partial(_equal_mismatches, name, _pmean_op(1), _mean_op))
+    check_one = partial(_equal_mismatches, name, _pmean_op(1), _mean_op)
+    return _check_cases(name, rng, n_cases, (1, 5), _never_tie, check_one)
 
 
-def check_pmean_error_p1_is_mean(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_pmean_error_p1_is_mean(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law: AggregPMeanError with p = 1 equals AggregMean."""
     name = "AggregPMeanError p=1 equals AggregMean"
-    return _check_cases(name, rng, n_cases, 2, 5, partial(_equal_mismatches, name, _pmean_error_op(1), _mean_op))
+    check_one = partial(_equal_mismatches, name, _pmean_error_op(1), _mean_op)
+    return _check_cases(name, rng, n_cases, (1, 5), _never_tie, check_one)
 
 
-def check_pmean_error_monotone(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_pmean_error_monotone(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law: AggregPMeanError is non-increasing in p over p in {1, 2, 3, 6}."""
     name = "AggregPMeanError non-increasing in p"
-    return _check_cases(name, rng, n_cases, 2, 5, partial(_pmean_error_monotone, name))
+    check_one = partial(_pmean_error_monotone, name)
+    return _check_cases(name, rng, n_cases, (1, 5), _never_tie, check_one)
 
 
-def check_pmean_monotone(rng: random.Random, n_cases: int) -> List[ExtraViolation]:
+def check_pmean_monotone(rng: random.Random, n_cases: int) -> CheckOutcome:
     """Law: AggregPMean is non-decreasing in p over p in {1, 2, 3, 6}."""
     name = "AggregPMean non-decreasing in p"
-    return _check_cases(name, rng, n_cases, 2, 5, partial(_pmean_monotone, name))
+    check_one = partial(_pmean_monotone, name)
+    return _check_cases(name, rng, n_cases, (1, 5), _never_tie, check_one)
 
 
 CHECKS = (
@@ -387,12 +439,12 @@ CHECKS = (
 )
 
 
-def run_extras(n_cases: int = 500, seed: int = 0) -> List[ExtraViolation]:
-    """Run every extra check on n_cases seeded random cases and return all violations; counts go to CASE_COUNTS."""
-    CASE_COUNTS.clear()
-    SKIP_COUNTS.clear()
+def run_extras(n_cases: int = 500, seed: int = 0) -> ExtraResult:
+    """Run every extra check on n_cases seeded cases; return all violations and per-check compared/skipped counts."""
     rng = random.Random(seed)
-    found: List[ExtraViolation] = []
-    for check in CHECKS:
-        found.extend(check(rng, n_cases))
-    return found
+    outcomes = [check(rng, n_cases) for check in CHECKS]
+    return ExtraResult(
+        violations=[v for outcome in outcomes for v in outcome.violations],
+        case_counts={o.name: o.compared for o in outcomes},
+        skip_counts={o.name: o.skipped for o in outcomes},
+    )
