@@ -1,12 +1,15 @@
 """Property relations and separating checks for the unified metamorphic oracle.
-Implements spec Task 3: monotonicity A11, boolean snapping A12, piecewise-linear slope A13, and separation checks S1, S2.
+Implements spec Task 3: monotonicity A11, boolean snapping A12, piecewise-linear slope A13, separation checks S1, S2,
+and spec Task 4 quantifier properties B6 (instantiation) and B8 (domain split).
 """
 import random
-from typing import Callable, Dict, List, Set
+from typing import Callable, Dict, List, Set, Tuple
 
-from mr_unified.formula import Env, Node
+from mr_unified.formula import QUANT_OPS, Env, Node
+from mr_unified.rewrites import substitute_var
 
 Evaluate = Callable[[Node, Env], float]
+QuantEvaluate = Callable[[Node, Env, str], float]
 
 RAISE_LOW = 0.05
 RAISE_HIGH = 0.5
@@ -128,3 +131,58 @@ def _with_atom(env: Env, name: str, value: float) -> Env:
     atoms = dict(env.atoms)
     atoms[name] = value
     return Env(atoms=atoms, preds=env.preds, domain=env.domain)
+
+
+def instantiation_margin(
+    evaluate: QuantEvaluate, node: Node, env: Env, quant: str, rng: random.Random
+) -> float:
+    """Law B6: forall x phi <= phi[c/x] <= exists x phi for a random object c of the domain."""
+    _require_quantifier(node)
+    if not env.domain:
+        raise ValueError("instantiation needs a non-empty domain")
+    body = node.kids[0]
+    obj = rng.choice(env.domain)
+    lower = evaluate(Node(op="forall", name=node.name, kids=(body,)), env, quant)
+    upper = evaluate(Node(op="exists", name=node.name, kids=(body,)), env, quant)
+    instance = evaluate(substitute_var(body, node.name, obj), env, quant)
+    return float(max(0.0, lower - instance, instance - upper))
+
+
+def split_margin(
+    evaluate: QuantEvaluate, node: Node, env: Env, quant: str, rng: random.Random
+) -> float:
+    """Law B8: a quantifier over L + R equals and_w/and_s (forall) or or_w/or_s (exists) of its two halves."""
+    _require_quantifier(node)
+    if _has_quantifier(node.kids[0]):
+        raise ValueError("split needs a quantifier-free body: inner quantifiers read the env domain")
+    cut = rng.randint(0, len(env.domain))
+    left = _with_domain(env, env.domain[:cut])
+    right = _with_domain(env, env.domain[cut:])
+    whole = evaluate(node, env, quant)
+    halves = _combine(node.op, quant, evaluate(node, left, quant), evaluate(node, right, quant))
+    return float(abs(whole - halves))
+
+
+def _require_quantifier(node: Node) -> None:
+    """Raise unless `node` is a forall or exists node."""
+    if node.op not in QUANT_OPS:
+        raise ValueError("expected a quantifier node, got %s" % node.op)
+
+
+def _has_quantifier(n: Node) -> bool:
+    """True if some node of `n`, `n` included, is a forall or exists."""
+    return n.op in QUANT_OPS or any(_has_quantifier(kid) for kid in n.kids)
+
+
+def _with_domain(env: Env, domain: Tuple[str, ...]) -> Env:
+    """Copy of `env` whose quantifier domain is `domain`; atoms and predicate tables are shared."""
+    return Env(atoms=env.atoms, preds=env.preds, domain=domain)
+
+
+def _combine(op: str, quant: str, left: float, right: float) -> float:
+    """Laws: forall splits as and_w = min (minmax) or and_s = max(a+b-1, 0) (fold); exists as or_w or or_s = min(a+b, 1)."""
+    if quant == "minmax":
+        return min(left, right) if op == "forall" else max(left, right)
+    if quant == "fold":
+        return max(left + right - 1.0, 0.0) if op == "forall" else min(left + right, 1.0)
+    raise ValueError("unknown quant: %s" % quant)

@@ -1,11 +1,12 @@
-"""Propositional rewrite rules A1-A10 and random formulas for the unified metamorphic oracle.
-Implements the equivalence rules of spec Section 5 (A1-A10) and the random generator of spec Task 2.
+"""Propositional rewrite rules A1-A10, quantifier rules B1-B5, and random formulas for the unified metamorphic oracle.
+Implements the equivalence rules of spec Section 5 (A1-A10, B1-B5, B7), the random generators of spec Tasks 2 and 4.
 """
+import itertools
 import random
 from dataclasses import dataclass
-from typing import Callable, Dict, Optional, Sequence, Tuple
+from typing import Callable, Dict, Optional, Sequence, Tuple, Union
 
-from mr_unified.formula import MAX_NODES, Node, get, paths, replace, size
+from mr_unified.formula import MAX_NODES, QUANT_OPS, Env, Node, get, paths, replace, size
 
 COMMUTATIVE_OPS = ("and_s", "or_s", "and_w", "or_w")
 CONNECTIVE_OPS = ("not", "and_s", "or_s", "imp", "and_w", "or_w")
@@ -13,6 +14,13 @@ CONST_PROBABILITY = 0.1
 LEAF_PROBABILITY = 0.25
 COPY_PROBABILITY = 0.3
 PATTERN_PROBABILITY = 0.15
+QUANT_PROBABILITY = 0.3
+VACUOUS_PROBABILITY = 0.2
+PROP_ATOM_PROBABILITY = 0.2
+BINARY_PRED_PROBABILITY = 0.5
+QUANT_VARS = ("x", "y")
+PROP_ATOMS = ("p0", "p1")
+VACUOUS_VAR = "x"
 
 
 @dataclass(frozen=True)
@@ -406,3 +414,256 @@ def _random_leaf(rng: random.Random, atoms: Sequence[str]) -> Node:
     if rng.random() < CONST_PROBABILITY:
         return Node(op="const", value=rng.choice([0.0, 1.0]))
     return Node(op="atom", name=rng.choice(atoms))
+
+
+@dataclass(frozen=True)
+class EnvRule:
+    """A rule on (formula, env) pairs: `apply` returns the rewritten pair; ids start with the B-number."""
+
+    id: str
+    source: str
+    side_condition: str
+    apply: Callable[[Node, Env], Tuple[Node, Env]]
+
+
+def _mentions(n: Node, var: str) -> bool:
+    """Conservative occurrence test: `var` is a predicate argument or a binder somewhere in `n`."""
+    if var in n.args or (n.op in QUANT_OPS and n.name == var):
+        return True
+    return any(_mentions(kid, var) for kid in n.kids)
+
+
+def substitute_var(n: Node, old: str, new: str) -> Node:
+    """Replace the free occurrences of variable `old` by `new` in `n`; a rebinding of `old` shadows."""
+    if n.op in QUANT_OPS and n.name == old:
+        return n
+    args = tuple(new if arg == old else arg for arg in n.args)
+    kids = tuple(substitute_var(kid, old, new) for kid in n.kids)
+    return Node(op=n.op, kids=kids, name=n.name, args=args, value=n.value)
+
+
+def _other_var(var: str) -> str:
+    """The fresh name for alpha-renaming: y for x, and x for anything else."""
+    return "x" if var == "y" else "y"
+
+
+def _alpha_match(n: Node) -> bool:
+    """A quantifier whose fresh partner name does not occur in its body."""
+    return n.op in QUANT_OPS and not _mentions(n.kids[0], _other_var(n.name))
+
+
+def _alpha_apply(n: Node) -> Node:
+    """forall x phi == forall y phi[y/x] (and likewise for exists), y fresh in phi."""
+    new = _other_var(n.name)
+    return Node(op=n.op, kids=(substitute_var(n.kids[0], n.name, new),), name=new)
+
+
+def _swap_match(n: Node) -> bool:
+    """forall x forall y phi with x != y (and likewise for exists)."""
+    return n.op in QUANT_OPS and n.kids[0].op == n.op and n.kids[0].name != n.name
+
+
+def _swap_apply(n: Node) -> Node:
+    """forall x forall y phi == forall y forall x phi (and likewise for exists)."""
+    inner = n.kids[0]
+    return Node(op=n.op, name=inner.name, kids=(Node(op=n.op, name=n.name, kids=inner.kids),))
+
+
+def _dual_fwd_match(n: Node) -> bool:
+    """not forall x phi."""
+    return n.op == "not" and n.kids[0].op == "forall"
+
+
+def _dual_fwd_apply(n: Node) -> Node:
+    """not forall x phi == exists x not phi."""
+    quant = n.kids[0]
+    return Node(op="exists", name=quant.name, kids=(_not(quant.kids[0]),))
+
+
+def _dual_bwd_match(n: Node) -> bool:
+    """exists x not phi."""
+    return n.op == "exists" and n.kids[0].op == "not"
+
+
+def _dual_bwd_apply(n: Node) -> Node:
+    """exists x not phi == not forall x phi."""
+    body = n.kids[0].kids[0]
+    return _not(Node(op="forall", name=n.name, kids=(body,)))
+
+
+def _vacuous_elim_match(n: Node) -> bool:
+    """forall x phi with x not occurring in phi."""
+    return n.op == "forall" and not _mentions(n.kids[0], n.name)
+
+
+def _vacuous_elim_apply(n: Node) -> Node:
+    """forall x phi == phi when x is not in phi (needs a non-empty domain)."""
+    return n.kids[0]
+
+
+def _vacuous_intro_match(n: Node) -> bool:
+    """Any node phi in which the variable VACUOUS_VAR does not occur."""
+    return not _mentions(n, VACUOUS_VAR)
+
+
+def _vacuous_intro_apply(n: Node) -> Node:
+    """phi == forall x phi when x is not in phi (needs a non-empty domain)."""
+    return Node(op="forall", name=VACUOUS_VAR, kids=(n,))
+
+
+QRULES: Dict[str, Rule] = {
+    rule.id: rule
+    for rule in (
+        Rule(
+            "B2_rename_var",
+            "B2: forall x phi == forall y phi[y/x]",
+            "none",
+            _alpha_match,
+            _alpha_apply,
+        ),
+        Rule(
+            "B3_swap_quantifiers",
+            "B3: forall x forall y phi == forall y forall x phi",
+            "none",
+            _swap_match,
+            _swap_apply,
+        ),
+        Rule(
+            "B4_duality_fwd",
+            "B4: not forall x phi == exists x not phi",
+            "dual",
+            _dual_fwd_match,
+            _dual_fwd_apply,
+        ),
+        Rule(
+            "B4_duality_bwd",
+            "B4: exists x not phi == not forall x phi",
+            "dual",
+            _dual_bwd_match,
+            _dual_bwd_apply,
+        ),
+        Rule(
+            "B5_vacuous_fwd",
+            "B5: forall x phi == phi, x not in phi",
+            "minmax",
+            _vacuous_elim_match,
+            _vacuous_elim_apply,
+        ),
+        Rule(
+            "B5_vacuous_bwd",
+            "B5: phi == forall x phi, x not in phi",
+            "minmax",
+            _vacuous_intro_match,
+            _vacuous_intro_apply,
+        ),
+    )
+}
+
+
+def _permute_apply(n: Node, env: Env) -> Tuple[Node, Env]:
+    """Law B1: a rotation of the domain keeps forall and exists (min/max and fold are order-free)."""
+    rotated = env.domain[1:] + env.domain[:1]
+    return n, Env(atoms=env.atoms, preds=env.preds, domain=rotated)
+
+
+def _singleton_apply(n: Node, env: Env) -> Tuple[Node, Env]:
+    """Law B7: on a one-object domain forall x phi == exists x phi; returns the pair unchanged otherwise."""
+    if n.op != "forall" or not env.domain:
+        return n, env
+    exists_node = Node(op="exists", name=n.name, kids=n.kids)
+    return exists_node, Env(atoms=env.atoms, preds=env.preds, domain=env.domain[:1])
+
+
+ENV_RULES: Dict[str, EnvRule] = {
+    rule.id: rule
+    for rule in (
+        EnvRule(
+            "B1_permute_domain",
+            "B1: permuting the domain leaves forall and exists unchanged",
+            "none",
+            _permute_apply,
+        ),
+        EnvRule(
+            "B7_singleton",
+            "B7: on a one-object domain forall x phi == exists x phi",
+            "none",
+            _singleton_apply,
+        ),
+    )
+}
+
+
+def valid_for(rule: Union[Rule, EnvRule], declared: Dict[str, str]) -> bool:
+    """Whether `rule` holds when forall uses declared["forall"] and exists uses declared["exists"]."""
+    side = rule.side_condition
+    if side == "none":
+        return True
+    if side == "minmax":
+        return declared["forall"] == "min" and declared["exists"] == "max"
+    if side == "dual":
+        return (declared["forall"], declared["exists"]) in (("min", "max"), ("fold", "fold"))
+    raise ValueError("unknown side condition: %s" % side)
+
+
+def random_quantified(rng: random.Random, depth: int, domain: Tuple[str, ...]) -> Tuple[Node, Env]:
+    """Draw a closed quantified formula of depth <= `depth` over x, y and an Env over `domain`."""
+    return _quant_formula(rng, depth, ()), _random_quant_env(rng, domain)
+
+
+def _quant_formula(rng: random.Random, depth: int, scope: Tuple[str, ...]) -> Node:
+    """Draw a formula whose predicate arguments are all bound in `scope`."""
+    if depth == 0 or rng.random() < LEAF_PROBABILITY:
+        return _quant_leaf(rng, scope)
+    if rng.random() < QUANT_PROBABILITY:
+        return _quant_node(rng, depth, scope)
+    return _quant_connective(rng, depth, scope)
+
+
+def _quant_connective(rng: random.Random, depth: int, scope: Tuple[str, ...]) -> Node:
+    """Draw a propositional connective over sub-formulas drawn in the same scope."""
+    op = rng.choice(CONNECTIVE_OPS)
+    if op == "not":
+        return _not(_quant_formula(rng, depth - 1, scope))
+    left = _quant_formula(rng, depth - 1, scope)
+    right = _quant_formula(rng, depth - 1, scope)
+    return _op(op, left, right)
+
+
+def _quant_node(rng: random.Random, depth: int, scope: Tuple[str, ...]) -> Node:
+    """Draw forall/exists over x or y; with p=VACUOUS_PROBABILITY the body ignores the new variable."""
+    op = rng.choice(QUANT_OPS)
+    var = rng.choice(QUANT_VARS)
+    body_scope = scope if rng.random() < VACUOUS_PROBABILITY else scope + (var,)
+    return Node(op=op, name=var, kids=(_quant_formula(rng, depth - 1, body_scope),))
+
+
+def _quant_leaf(rng: random.Random, scope: Tuple[str, ...]) -> Node:
+    """Draw a constant, a propositional atom, or a predicate over variables bound in `scope`."""
+    if rng.random() < CONST_PROBABILITY:
+        return Node(op="const", value=rng.choice([0.0, 1.0]))
+    if not scope or rng.random() < PROP_ATOM_PROBABILITY:
+        return Node(op="atom", name=rng.choice(PROP_ATOMS))
+    if rng.random() < BINARY_PRED_PROBABILITY:
+        return Node(op="atom", name="R", args=(rng.choice(scope), rng.choice(scope)))
+    return Node(op="atom", name=rng.choice(("P", "Q")), args=(rng.choice(scope),))
+
+
+def _random_quant_env(rng: random.Random, domain: Tuple[str, ...]) -> Env:
+    """Env with truth values for p0, p1 and for every tuple over `domain` in P, Q (unary) and R (binary)."""
+    atoms = {name: _random_truth(rng) for name in PROP_ATOMS}
+    preds = {
+        "P": _random_table(rng, domain, 1),
+        "Q": _random_table(rng, domain, 1),
+        "R": _random_table(rng, domain, 2),
+    }
+    return Env(atoms=atoms, preds=preds, domain=domain)
+
+
+def _random_table(rng: random.Random, domain: Tuple[str, ...], arity: int) -> Dict[Tuple[str, ...], float]:
+    """A random truth value for every tuple of `arity` objects drawn from `domain`."""
+    return {tup: _random_truth(rng) for tup in itertools.product(domain, repeat=arity)}
+
+
+def _random_truth(rng: random.Random) -> float:
+    """A truth value: 0.0, 1.0, or a uniform draw, as in the propositional `random_env`."""
+    return rng.choice([0.0, 1.0, rng.random()])
