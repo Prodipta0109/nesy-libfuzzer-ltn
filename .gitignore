@@ -11,3 +11,5 @@ __pycache__/
 *.pyc
 *:Zone.Identifier
 corpus*/
+mr_unified/findings/
+LNN_INFO.log

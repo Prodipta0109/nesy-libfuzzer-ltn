@@ -42,12 +42,32 @@ def tol(a: Node, b: Node, dtype: str) -> float:
     return TOL_FACTOR * (size(a) + size(b)) * float(np.finfo(dtype).eps)
 
 
+def rewrite_gap(adapter: Adapter, rule: Rule, node: Node, path: Tuple[int, ...], env: Env) -> Tuple[float, float]:
+    """Gap |phi - rewrite(phi)| in `env` and its tolerance; (nan, nan) if the rule does not apply.
+    An adapter exception other than Unsupported gives an infinite gap; Unsupported propagates.
+    """
+    after = apply_at(node, rule, path)
+    if after is None:
+        return NO_VALUE
+    bound = tol(node, after, adapter.dtype_for(node))
+    try:
+        got = (adapter.evaluate(node, env), adapter.evaluate(after, env))
+    except Unsupported:
+        raise
+    except Exception:
+        return float("inf"), bound
+    return abs(got[0] - got[1]), bound
+
+
 def check_rewrite(adapter: Adapter, rule: Rule, node: Node, path: Tuple[int, ...], env: Env) -> Optional[Violation]:
     """Law of `rule` at `path`: phi == rewrite(phi) in `env`. None if the rule does not apply or the law holds.
     An adapter exception other than Unsupported becomes a Violation with margin inf; Unsupported propagates.
     """
     after = apply_at(node, rule, path)
     if after is None:
+        return None
+    gap, bound = rewrite_gap(adapter, rule, node, path, env)
+    if gap <= bound:
         return None
     return _compare(adapter, rule.id, path, node, env, after, env)
 
