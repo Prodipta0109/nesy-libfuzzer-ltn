@@ -46,21 +46,19 @@ amount by which the law is broken. A margin of 0 means the law holds.
 
 "Direction" says which directions are implemented as rewrite rules. All hold in Łukasiewicz logic.
 
-| ID | Law | Direction | Source in the design spec |
-|---|---|---|---|
-| A1 | `a ∘ b = b ∘ a` for `∘` in ⊗, ⊕, ∧w, ∨w | one rule | MV-algebra axioms |
-| A2 | `(a ∘ b) ∘ c = a ∘ (b ∘ c)` for the same four operators | both | MV-algebra axioms |
-| A3 | `¬¬a = a` | elimination only | MV-algebra axiom |
-| A4 | `a ⊗ b = ¬(¬a ⊕ ¬b)` (De Morgan) | both | De Morgan |
-| A5 | `a → b = ¬a ⊕ b` | both | Łukasiewicz implication |
-| A6 | `a → b = ¬b → ¬a` (contraposition) | one rule | contraposition |
-| A7 | `a ∨w b = (a → b) → b` | both | MV-algebra |
-| A8 | `(a → b) ∨w (b → a) = 1` (prelinearity) | forward only | BL-algebra, to confirm |
-| A9 | `a ∧w b = a ⊗ (a → b)` (divisibility) | both | BL-algebra, to confirm |
-| A10 | `a ⊗ ¬b = ¬(a → b)` (negated implication; a building block of the MV distance `\|a − b\|`, which itself is not in the grammar) | both | MV distance function |
-| A11 | Monotonicity: raising an atom that occurs with one polarity never moves the output the wrong way (`¬` and the antecedent of `→` flip the polarity). Atoms of mixed polarity are skipped | property | residuated lattice |
-| A12 | With all atoms in {0, 1}, the output equals the classical truth value | property | all |
-| A13 | The output is piecewise linear in each atom with integer slope (checked at three points 1/64 apart on one linear piece, with a noise bound `2 · size · eps / (1/64)`) | property | McNaughton, Handbook Ch. IX, to confirm |
+| ID | Law | Direction |
+|---|---|---|
+| A1 | `a ∘ b = b ∘ a` for `∘` in ⊗, ⊕, ∧w, ∨w | one rule |
+| A2 | `(a ∘ b) ∘ c = a ∘ (b ∘ c)` for the same four operators | both |
+| A3 | `¬¬a = a` | elimination only |
+| A4 | `a ⊗ b = ¬(¬a ⊕ ¬b)` (De Morgan) | both |
+| A5 | `a → b = ¬a ⊕ b` | both |
+| A6 | `a → b = ¬b → ¬a` (contraposition) | one rule |
+| A7 | `a ∨w b = (a → b) → b` | both |
+| A8 | `(a → b) ∨w (b → a) = 1` (prelinearity) | forward only |
+| A9 | `a ∧w b = a ⊗ (a → b)` (divisibility) | both |
+| A10 | `a ⊗ ¬b = ¬(a → b)` (negated implication; a building block of the MV distance `\|a − b\|`, which itself is not in the grammar) | both |
+| A11 | With all atoms in {0, 1}, the output equals the classical truth value | property |
 
 Notes on directions:
 - A3 is elimination only (`¬¬a → a`); the reverse would match every node and grow the formula.
@@ -96,12 +94,6 @@ The side-condition says when a relation is generated. It is taken from each adap
 | B7 | On a one-object domain, `∀x φ = ∃x φ = φ(c)` | environment rule | domain has one object |
 | B8 | A quantifier over a concatenated domain `L + R` equals the combination of its two halves. For `minmax`: `∀(L+R) = ∀L ∧w ∀R` and `∃(L+R) = ∃L ∨w ∃R`. For `fold`: `∀(L+R) = ∀L ⊗ ∀R` and `∃(L+R) = ∃L ⊕ ∃R` | property | aggregator is a T-norm fold or min/max |
 
-Notes:
-- B5 is deliberately strict. Under `fold`, `v ⊗ v ⊗ v = max(3v − 2, 0) ≠ v`, so B5 fails there. It therefore shows
-  which aggregator a library really uses, and catches a library that declares one aggregator but computes another.
-- B5 and B7 need a non-empty domain. B7 is only generated when the domain has exactly one object.
-- B4 holds under both modes: `1 − min(vi) = max(1 − vi)` for `minmax`, and
-  `1 − max(Σvi − (n−1), 0) = min(Σ(1 − vi), 1)` for `fold`.
 
 ## Where the laws come from, and what is confirmed
 
@@ -113,3 +105,6 @@ Notes:
 
 What the van Krieken paper supports, by relation: A1 and A2 (Def. 14, 16), A3 (Def. 13), A4 (eq. A.1), A5 (Def. 20),
 A6 (Def. 19(d) and Table 4), B1 (App. A.4), B8 (eq. 2 with Def. 14). A7 to A13, B2 to B6 and B7 are not in that paper.
+
+The mathematics of every rewrite rule was also checked numerically against a float64 reference evaluator, which
+confirms the laws but not the citations.
