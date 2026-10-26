@@ -13,7 +13,9 @@ results that a library's own unit tests and simple closed-form checks miss.
 | File | What it is |
 |---|---|
 | `formula.py` | The formula tree (`Node`), the truth-value environment (`Env`) and `ref_eval`, a plain float64 reference evaluator |
-| `rewrites.py` | The rewrite rules (A1-A10, B2-B5, B1 and B7), the random formula generator and the rule that applies a rewrite at a random spot |
+| `rewrites.py` | The propositional rewrite rules (A1-A10), the `Rule` type, and the rule that applies a rewrite at a random spot |
+| `quantifier_rules.py` | The quantifier rewrite rules (B2-B5), the environment rules (B1, B7), `valid_for` (which rules hold for the declared quantifiers) and `substitute_var` |
+| `generators.py` | The random generators: propositional formulas, closed quantified formulas and their environments |
 | `properties.py` | Checks that are not rewrites: monotonicity (A11), 0/1 behaviour (A12), piecewise slope (A13), separation (S1, S2), quantifier instantiation (B6) and domain split (B8) |
 | `oracle.py` | The tolerance, the checks that compare two sides, the cross-library comparison and the minimiser that shrinks a failing formula |
 | `cases.py` | Turns fuzz bytes into one test case (a rewrite, quantifier rewrite, property, environment rule or cross-library check) |

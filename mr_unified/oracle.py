@@ -11,7 +11,8 @@ import numpy as np
 from mr_unified.adapters.base import Adapter, Unsupported
 from mr_unified.formula import Env, Node, get, paths, replace, size
 from mr_unified.properties import boolean_margin, instantiation_margin, monotone_margin, slope_margin, split_margin
-from mr_unified.rewrites import ENV_RULES, QRULES, RULES, EnvRule, Rule, apply_at
+from mr_unified.quantifier_rules import ENV_RULES, QRULES, EnvRule
+from mr_unified.rewrites import RULES, Rule, apply_at
 
 # Derivation of TOL_FACTOR = 1. All truth values lie in [0, 1]. One rounding of a value in [0, 1] costs at most eps/2.
 # A Lukasiewicz node computes 1 - a + b or a + b - 1, which is at most two roundings, so at most eps per node. Each

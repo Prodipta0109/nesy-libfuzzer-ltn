@@ -19,9 +19,9 @@ from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.harness import make_adapters
 from mr_unified.oracle import check_env_rule, check_property, check_rewrite, property_margin, tol
 from mr_unified.properties import separating_report
-from mr_unified.rewrites import (
-    CONNECTIVE_OPS, ENV_RULES, PROP_ATOMS, QRULES, RULES, Rule, random_formula, random_quantified,
-)
+from mr_unified.generators import random_formula, random_quantified
+from mr_unified.quantifier_rules import ENV_RULES, QRULES
+from mr_unified.rewrites import CONNECTIVE_OPS, PROP_ATOMS, RULES, Rule
 
 MAX_DEPTH = 4
 DOMAIN = ("o0", "o1", "o2")

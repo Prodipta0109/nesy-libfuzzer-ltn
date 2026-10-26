@@ -20,7 +20,9 @@ from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.guidance import guidance_value
 from mr_unified.harness import run_input
 from mr_unified.oracle import Violation, check_rewrite, cross_gap, env_rule_gap, property_margin, quant_of, rewrite_gap
-from mr_unified.rewrites import PROP_ATOMS, QRULES, RULES, random_formula, valid_for
+from mr_unified.generators import random_formula
+from mr_unified.quantifier_rules import QRULES, valid_for
+from mr_unified.rewrites import PROP_ATOMS, RULES
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SEEDS = range(40)

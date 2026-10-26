@@ -7,7 +7,9 @@ from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 from mr_unified.adapters.base import Adapter
 from mr_unified.formula import QUANT_OPS, Env, Node, paths
-from mr_unified.rewrites import PROP_ATOMS, QRULES, RULES, Rule, apply_at, random_formula, random_quantified, valid_for
+from mr_unified.generators import random_formula, random_quantified
+from mr_unified.quantifier_rules import QRULES, valid_for
+from mr_unified.rewrites import PROP_ATOMS, RULES, Rule, apply_at
 
 MAX_DEPTH = 4
 DOMAIN = ("o0", "o1", "o2")

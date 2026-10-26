@@ -9,7 +9,7 @@ import pytest
 from mr_unified.formula import Env, Node, ref_eval
 from mr_unified.oracle import as_quant_evaluate, tol
 from mr_unified.properties import instantiation_margin
-from mr_unified.rewrites import random_formula
+from mr_unified.generators import random_formula
 
 # lnn may emit warnings at import time; they are silenced here, as in lnn/lnn_fuzz.py.
 with warnings.catch_warnings():

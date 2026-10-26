@@ -6,7 +6,7 @@ import random
 from typing import Callable, Dict, List, Optional, Set, Tuple
 
 from mr_unified.formula import QUANT_OPS, Env, Node, size
-from mr_unified.rewrites import substitute_var
+from mr_unified.quantifier_rules import substitute_var
 
 Evaluate = Callable[[Node, Env], float]
 QuantEvaluate = Callable[[Node, Env, str], float]

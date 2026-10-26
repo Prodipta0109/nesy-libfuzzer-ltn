@@ -8,7 +8,7 @@ import sys
 import pytest
 
 from mr_unified.formula import Env, Node, ref_eval
-from mr_unified.rewrites import random_formula
+from mr_unified.generators import random_formula
 
 pytest.importorskip("pslpython")
 if "venv_psl" not in sys.prefix:

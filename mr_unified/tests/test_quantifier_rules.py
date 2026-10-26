@@ -9,7 +9,9 @@ from mr_unified.adapters.ref_adapter import RefAdapter
 from mr_unified.formula import Env, Node, get, paths, ref_eval
 from mr_unified.oracle import check_env_rule
 from mr_unified.properties import instantiation_margin, split_margin
-from mr_unified.rewrites import ENV_RULES, QRULES, apply_at, random_quantified, valid_for
+from mr_unified.generators import random_quantified
+from mr_unified.quantifier_rules import ENV_RULES, QRULES, valid_for
+from mr_unified.rewrites import apply_at
 
 DOMAIN = ("o0", "o1", "o2")
 QUANTS = ("minmax", "fold")

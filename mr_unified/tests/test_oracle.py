@@ -23,7 +23,9 @@ from mr_unified.oracle import (
     tol,
 )
 from mr_unified.properties import boolean_margin, instantiation_margin, monotone_margin
-from mr_unified.rewrites import ENV_RULES, QRULES, RULES, apply_at, random_formula, random_quantified, valid_for
+from mr_unified.generators import random_formula, random_quantified
+from mr_unified.quantifier_rules import ENV_RULES, QRULES, valid_for
+from mr_unified.rewrites import RULES, apply_at
 
 ATOMS = ("p0", "p1", "p2")
 PROP_ATOMS = ("p0", "p1")

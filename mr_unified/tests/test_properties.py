@@ -17,7 +17,7 @@ from mr_unified.properties import (
     slope_margin,
     slope_window,
 )
-from mr_unified.rewrites import random_formula
+from mr_unified.generators import random_formula
 
 ATOMS = ("p0", "p1", "p2")
 CASES = range(200)

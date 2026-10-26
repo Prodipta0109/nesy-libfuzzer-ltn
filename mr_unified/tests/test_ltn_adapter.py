@@ -10,7 +10,7 @@ import torch
 from mr_unified.formula import Env, Node, ref_eval
 from mr_unified.oracle import as_quant_evaluate, tol
 from mr_unified.properties import instantiation_margin
-from mr_unified.rewrites import random_formula, random_quantified
+from mr_unified.generators import random_formula, random_quantified
 
 # ltn emits DeprecationWarnings for invalid escape sequences in its own docstrings at import time.
 with warnings.catch_warnings():

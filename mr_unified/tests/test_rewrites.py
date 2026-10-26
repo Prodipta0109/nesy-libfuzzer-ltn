@@ -2,7 +2,8 @@
 import random
 
 from mr_unified.formula import Env, Node, get, paths, ref_eval, size
-from mr_unified.rewrites import RULES, apply_at, random_formula
+from mr_unified.generators import random_formula
+from mr_unified.rewrites import RULES, apply_at
 
 ATOMS = ("p0", "p1", "p2")
 

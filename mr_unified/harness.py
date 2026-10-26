@@ -32,7 +32,7 @@ with INSTRUMENT:
         minimise, property_gap, property_margin, rewrite_gap,
     )
     from mr_unified.properties import separating_report
-    from mr_unified.rewrites import ENV_RULES
+    from mr_unified.quantifier_rules import ENV_RULES
 
 KINDS = ("rewrite", "qrewrite", "env_rule", "property", "cross")
 ALL_LIBS = ("ltn", "lnn", "ref")
