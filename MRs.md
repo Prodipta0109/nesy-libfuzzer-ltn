@@ -47,7 +47,7 @@ amount by which the law is broken. A margin of 0 means the law holds.
 | A2 | `(a ∘ b) ∘ c = a ∘ (b ∘ c)` for the same four operators
 | A3 | `¬¬a = a` 
 | A4 | `a ⊗ b = ¬(¬a ⊕ ¬b)` (De Morgan) 
-| A5 | `a → b = ¬a ⊕ b` | both |
+| A5 | `a → b = ¬a ⊕ b` 
 | A6 | `a → b = ¬b → ¬a` (contraposition) 
 | A7 | `a ∨w b = (a → b) → b` 
 | A8 | `(a → b) ∨w (b → a) = 1` (prelinearity) 
