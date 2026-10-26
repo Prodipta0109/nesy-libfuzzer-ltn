@@ -1,10 +1,5 @@
-# Metamorphic relations for fuzzy-logic libraries (A and B groups)
+# Metamorphic relations 
 
-This catalogue lists the metamorphic relations (MRs) used to test LTN, LNN and the PSL core. All three compute
-"how true is this formula" with fuzzy logic (truth values in [0, 1]). The relations come from Łukasiewicz logic,
-the fuzzy logic the three share. Each relation says that two formulas, or one formula in two equivalent
-environments, must have the same truth value. No expected values and no reference implementation are needed: a
-library that disagrees with itself is wrong.
 
 - **A group:** propositional relations (A1 to A13).
 - **B group:** domain and quantifier relations (B1 to B8).
