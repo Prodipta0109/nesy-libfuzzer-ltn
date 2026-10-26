@@ -148,13 +148,17 @@ def as_quant_evaluate(adapter: Adapter) -> Callable[[Node, Env, str], float]:
 
 
 def quant_of(adapter: Adapter) -> str:
-    """The quant argument of B6 and B8 from the adapter's declared forall: "min" is minmax, "fold" is fold."""
+    """The quant argument of B6 and B8 from the adapter's declared forall: "min" is minmax, "fold" is fold.
+    Nothing declared or "unsupported" raises Unsupported; any other name is a ValueError (an adapter bug).
+    """
     forall = adapter.declared_quantifiers().get("forall")
     if forall == "min":
         return "minmax"
     if forall == "fold":
         return "fold"
-    raise Unsupported("no quantifier semantics declared for forall: %r" % forall)
+    if forall in (None, "unsupported"):
+        raise Unsupported("no quantifier semantics declared for forall: %r" % forall)
+    raise ValueError("unknown forall semantics declared by %s: %r" % (adapter.name, forall))
 
 
 def property_margin(name: str, adapter: Adapter, node: Node, env: Env, rng: random.Random) -> float:

@@ -206,3 +206,12 @@ def test_lnn_instantiation_on_binary_predicate_is_unsupported():
     node = Node(op="forall", name="x", kids=(Node(op="atom", name="R", args=("x", "x")),))
     with pytest.raises(Unsupported):
         instantiation_margin(as_quant_evaluate(ADAPTER), node, env, "fold", random.Random(0))
+
+
+def test_bounds_in_raises_when_the_model_lacks_the_node():
+    from types import SimpleNamespace
+
+    from mr_unified.adapters.lnn_adapter import _bounds_in
+
+    with pytest.raises(ValueError):
+        _bounds_in(SimpleNamespace(nodes={}), SimpleNamespace(name="missing"))

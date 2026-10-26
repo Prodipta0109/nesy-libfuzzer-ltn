@@ -114,9 +114,10 @@ def test_deep_formula_in_batch_leaves_shallow_result_unchanged():
     shallow = Node(op="or_s", kids=(Node(op="atom", name="p0"), Node(op="atom", name="p2")))
     deep = _and_chain(psl_adapter.MAX_VALIDATED_DEPTH)
     alone = ADAPTER.evaluate(shallow, env)
-    in_batch = ADAPTER.evaluate_many([(shallow, env), (deep, env)])[0]
+    in_batch, deep_in_batch = ADAPTER.evaluate_many([(shallow, env), (deep, env)])
     assert abs(in_batch - alone) <= TOLERANCE
     assert abs(in_batch - ref_eval(shallow, env)) <= TOLERANCE
+    assert abs(deep_in_batch - ref_eval(deep, env)) <= TOLERANCE
 
 
 def test_psl_leaves_no_temp_files_behind(tmp_path, monkeypatch):

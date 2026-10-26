@@ -147,6 +147,8 @@ def _remember(build: _Build, formula: object) -> object:
 
 def _bounds_in(model: Model, formula: object) -> Tuple[float, float]:
     """The bounds the model holds for `formula`, found by printed name (LNN keys nodes by name)."""
-    stored = next((n for n in model.nodes.values() if n.name == formula.name), formula)
+    stored = next((n for n in model.nodes.values() if n.name == formula.name), None)
+    if stored is None:
+        raise ValueError("LNN model holds no node named %r" % formula.name)
     bounds = stored.get_data().detach().flatten().tolist()
     return bounds[0], bounds[1]

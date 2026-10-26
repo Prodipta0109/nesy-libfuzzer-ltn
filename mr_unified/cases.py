@@ -12,6 +12,7 @@ from mr_unified.rewrites import PROP_ATOMS, QRULES, RULES, Rule, apply_at, rando
 MAX_DEPTH = 4
 DOMAIN = ("o0", "o1", "o2")
 VAR = "x"
+SUPPORTED_AGGREGATORS = ("min", "max", "fold")
 B1 = "B1_permute_domain"
 B7 = "B7_singleton"
 
@@ -104,9 +105,12 @@ def quantifier_rule_ids(adapters: Sequence[Adapter]) -> List[str]:
 
 
 def same_quantifiers(adapters: Sequence[Adapter]) -> bool:
-    """Whether every adapter declares the same quantifier semantics (so quantified cross checks are meaningful)."""
+    """Law: quantified cross checks need one shared, supported declaration; empty or unsupported ones never match."""
     declared = {tuple(sorted(adapter.declared_quantifiers().items())) for adapter in adapters}
-    return len(declared) <= 1
+    if len(declared) != 1:
+        return False
+    (items,) = declared
+    return bool(items) and all(value in SUPPORTED_AGGREGATORS for _, value in items)
 
 
 def _domain(stream: Bytes) -> Tuple[str, ...]:

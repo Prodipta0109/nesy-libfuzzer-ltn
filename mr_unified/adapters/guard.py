@@ -18,6 +18,8 @@ class AdapterCrash(Exception):
 class GuardedAdapter:
     """Thin proxy: forwards every call to the adapter; evaluate re-raises any non-Unsupported exception as AdapterCrash.
     Only exceptions raised inside evaluate are library crashes, so harness exceptions elsewhere still propagate.
+    oracle.rewrite_gap and oracle._compare also convert exceptions (to an infinite gap), so rewrite and env-rule crashes
+    reach the harness as margin-inf violations and are labelled `<rule>:crash` by harness._crash_mark.
     """
 
     def __init__(self, adapter: Adapter) -> None:

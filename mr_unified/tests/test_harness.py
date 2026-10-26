@@ -15,7 +15,7 @@ import pytest
 from mr_unified import findings_io, harness, replay
 from mr_unified.adapters.base import Unsupported
 from mr_unified.adapters.ref_adapter import RefAdapter
-from mr_unified.cases import Bytes, ByteRandom, Case, decode, format_node
+from mr_unified.cases import Bytes, ByteRandom, Case, decode, format_node, same_quantifiers
 from mr_unified.formula import QUANT_OPS, Env, Node, paths, ref_eval
 from mr_unified.guidance import guidance_value
 from mr_unified.harness import run_input
@@ -390,6 +390,23 @@ class Undeclared(RefAdapter):
         return {}
 
 
+class Declared(RefAdapter):
+    """A RefAdapter with the quantifier declaration given to its constructor."""
+
+    name = "declared"
+
+    def __init__(self, declared):
+        """Store the declaration that declared_quantifiers returns."""
+        self._declared = declared
+
+    def declared_quantifiers(self):
+        """The declaration given to the constructor."""
+        return dict(self._declared)
+
+
+PSL_LIKE = {"forall": "unsupported", "exists": "unsupported"}
+
+
 def test_split_margin_is_zero_for_fold_declared_adapter():
     rng = random.Random(5)
     compared = 0
@@ -406,6 +423,32 @@ def test_split_margin_is_zero_for_fold_declared_adapter():
 
 def test_quant_of_minmax_adapter_is_minmax():
     assert quant_of(REF) == "minmax"
+
+
+def test_quant_of_unsupported_forall_raises_unsupported():
+    with pytest.raises(Unsupported):
+        quant_of(Declared(PSL_LIKE))
+
+
+def test_quant_of_unknown_forall_name_is_a_value_error():
+    with pytest.raises(ValueError):
+        quant_of(Declared({"forall": "mean", "exists": "max"}))
+
+
+def test_two_unsupported_adapters_are_not_quantified_equal():
+    assert not same_quantifiers([Declared(PSL_LIKE), Declared(PSL_LIKE)])
+
+
+def test_two_undeclared_adapters_are_not_quantified_equal():
+    assert not same_quantifiers([Declared({}), Declared({})])
+
+
+def test_matching_supported_declarations_are_quantified_equal():
+    assert same_quantifiers([REF, RefAdapter()])
+
+
+def test_mismatched_supported_declarations_are_not_quantified_equal():
+    assert not same_quantifiers([REF, Declared({"forall": "fold", "exists": "fold"})])
 
 
 def test_adapter_without_declared_quantifiers_is_skipped_for_split():

@@ -12,8 +12,12 @@ from typing import Callable, Dict, List, Sequence, Tuple
 import torch
 from ltn import fuzzy_ops as fz
 
+# Float64 closed-form comparisons: rounding costs a few ulps (about 2e-16 relative) of the largest intermediate value.
+# GRAD_TOL and VALUE_TOL sit many orders above that, so rounding alone never fires.
 GRAD_TOL = 1e-10
 VALUE_TOL = 1e-12
+# Kink margin: autograd picks one side of a kink arbitrarily when two candidates tie, so cases closer than TIE_GAP to
+# a kink are skipped and counted, not compared.
 TIE_GAP = 1e-9
 PS = (1, 2, 3, 6)
 EXPONENTS = (2, 3)

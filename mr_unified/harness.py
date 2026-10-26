@@ -143,7 +143,9 @@ def _run_on(case: Case, adapter: Adapter) -> List[Violation]:
 
 
 def _crash(case: Case, lib: str, crash: AdapterCrash) -> Violation:
-    """The violation of an adapter crash: rule label `<label>:crash`, margin inf. Printed once per distinct error."""
+    """The violation of an adapter crash: rule label `<label>:crash`, margin inf. Printed once per distinct error.
+    Crashes inside oracle.rewrite_gap or oracle._compare are converted there instead; _crash_mark labels those.
+    """
     label = _label(case)
     key = (lib, label, repr(crash.original))
     if key not in _CRASH_SEEN:
