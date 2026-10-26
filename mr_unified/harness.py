@@ -34,6 +34,8 @@ with INSTRUMENT:
     from mr_unified.properties import separating_report
     from mr_unified.quantifier_rules import ENV_RULES
 
+from mr_unified import case_log  # outside INSTRUMENT on purpose: its file writes would add edges that are not coverage of the oracle
+
 KINDS = ("rewrite", "qrewrite", "env_rule", "property", "cross")
 ALL_LIBS = ("ltn", "lnn", "ref")
 INPUT_BYTES = 1024
@@ -105,6 +107,14 @@ def run_input(data: bytes, adapters: Sequence[Adapter]) -> List[Violation]:
     counts once); a cross case counts once for all adapters together.
     """
     case = decode(data, adapters)
+    run_before, skipped_before = STATS[case.kind]["run"], STATS[case.kind]["skipped"]
+    found = _run_case(case, adapters)
+    case_log.record(case, STATS[case.kind]["run"] - run_before, STATS[case.kind]["skipped"] - skipped_before, found, data, SELECTION)
+    return found
+
+
+def _run_case(case: Case, adapters: Sequence[Adapter]) -> List[Violation]:
+    """Run one decoded case on `adapters` and return its violations."""
     if case.kind == "cross":
         return _run_cross(case, adapters)
     if case.path is None:
@@ -320,6 +330,7 @@ def _parse(argv: Optional[List[str]]) -> argparse.Namespace:
     parser.add_argument("--lib", default="ltn", help="ltn, lnn, ref, psl or all (all = ltn, lnn, ref; psl must be named)")
     parser.add_argument("--random", type=int, default=None, help="run N random inputs instead of Atheris")
     parser.add_argument("--seed", type=int, default=0, help="seed of the random inputs")
+    parser.add_argument("--log", default=None, help="write every case (formula, rewrite, env, outcome) to this .jsonl file")
     args, _ = parser.parse_known_args(argv)
     return args
 
@@ -332,8 +343,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     except ValueError as err:
         print(err, file=sys.stderr)
         return 2
+    if args.log:
+        case_log.open_log(args.log)
     if args.random is not None:
-        return _random_mode(args.random, args.seed)
+        code = _random_mode(args.random, args.seed)
+        if args.log:
+            print("case log: %d cases in %s (read with: python -m mr_unified.case_log %s)" % (case_log.close_log(), args.log, args.log))
+        return code
     if atheris is None:
         print("atheris is not installed; use --random N", file=sys.stderr)
         return 2

@@ -1,6 +1,4 @@
-"""Metamorphic oracle for the unified harness (spec Task 7): tolerance, rewrite and property checks, cross-check,
-and the minimiser. A check returns None when the law holds and a Violation when it fails. Unsupported propagates.
-"""
+
 import itertools
 import random
 from dataclasses import dataclass

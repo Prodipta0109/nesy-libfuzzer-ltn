@@ -1,4 +1,3 @@
-"""Tests for mr_unified.formula: Lukasiewicz connectives, quantifier semantics and tree paths (spec Task 1)."""
 import pytest
 
 from mr_unified.formula import Env, Node, get, paths, ref_eval, replace, size
