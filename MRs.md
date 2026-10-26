@@ -43,17 +43,17 @@ amount by which the law is broken. A margin of 0 means the law holds.
 
 | ID | Law | Direction |
 |---|---|---|
-| A1 | `a ∘ b = b ∘ a` for `∘` in ⊗, ⊕, ∧w, ∨w | one rule |
-| A2 | `(a ∘ b) ∘ c = a ∘ (b ∘ c)` for the same four operators | both |
-| A3 | `¬¬a = a` | elimination only |
-| A4 | `a ⊗ b = ¬(¬a ⊕ ¬b)` (De Morgan) | both |
+| A1 | `a ∘ b = b ∘ a` for `∘` in ⊗, ⊕, ∧w, ∨w
+| A2 | `(a ∘ b) ∘ c = a ∘ (b ∘ c)` for the same four operators
+| A3 | `¬¬a = a` 
+| A4 | `a ⊗ b = ¬(¬a ⊕ ¬b)` (De Morgan) 
 | A5 | `a → b = ¬a ⊕ b` | both |
-| A6 | `a → b = ¬b → ¬a` (contraposition) | one rule |
-| A7 | `a ∨w b = (a → b) → b` | both |
-| A8 | `(a → b) ∨w (b → a) = 1` (prelinearity) | forward only |
-| A9 | `a ∧w b = a ⊗ (a → b)` (divisibility) | both |
-| A10 | `a ⊗ ¬b = ¬(a → b)` (negated implication; a building block of the MV distance `\|a − b\|`, which itself is not in the grammar) | both |
-| A11 | With all atoms in {0, 1}, the output equals the classical truth value | property |
+| A6 | `a → b = ¬b → ¬a` (contraposition) 
+| A7 | `a ∨w b = (a → b) → b` 
+| A8 | `(a → b) ∨w (b → a) = 1` (prelinearity) 
+| A9 | `a ∧w b = a ⊗ (a → b)` (divisibility) 
+| A10 | `a ⊗ ¬b = ¬(a → b)` 
+| A11 | With all atoms in {0, 1}, the output equals the classical truth value 
 
 Notes on directions:
 - A3 is elimination only (`¬¬a → a`); the reverse would match every node and grow the formula.
